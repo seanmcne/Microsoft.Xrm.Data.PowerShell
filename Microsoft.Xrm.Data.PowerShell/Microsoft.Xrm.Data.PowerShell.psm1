@@ -2325,7 +2325,7 @@ function Get-CrmEntityAllMetadata{
         [parameter(Mandatory=$false)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
         [parameter(Mandatory=$false, Position=1)]
-        [bool]$OnlyPublished=$true,
+        [bool]$OnlyPublished=$true, 
         [parameter(Mandatory=$false, Position=2)]
         [string]$EntityFilters
     )
