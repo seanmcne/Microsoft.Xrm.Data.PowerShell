@@ -2324,8 +2324,8 @@ function Get-CrmEntityAllMetadata{
     PARAM( 
         [parameter(Mandatory=$false)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
-        [parameter(Mandatory=$true, Position=1)]
-        [bool]$OnlyPublished,
+        [parameter(Mandatory=$false, Position=1)]
+        [bool]$OnlyPublished=$true,
         [parameter(Mandatory=$false, Position=2)]
         [string]$EntityFilters
     )
@@ -3368,33 +3368,51 @@ function Import-CrmSolution{
         Write-Verbose "Please wait while importing"
         $result = $conn.ImportSolutionToCrm($SolutionFilePath, [ref]$importId, $ActivatePlugIns,
                 $OverwriteUnManagedCustomizations, $SkipDependancyOnProductUpdateCheckOnInstall)
-
-        Start-Sleep -Seconds 5;
-       
-        $xml = [xml](Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields data).data
+              
+        Start-Sleep -Seconds 5;        
+        $import = Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields data,completedon,startedon,progress    
         
+        $xml = [xml]($import).data
         $importresult = $xml.importexportxml.solutionManifests.solutionManifest.result
         
-        write-verbose "Import of file completed, importId: $importId"
+        $ProcPercent = $import.progress
+        $ProcStart = $import.startedon
+        $ProcComplete = $import.completedon
 
+        $stillProcessing = if($ProcComplete -eq $null) {$true} else {$false}; 
+
+        write-verbose "Import of file completed, importId: $importId - Progress: $ProcPercent Start: $ProcStart Complete: $ProcComplete"
+        
+        $delay = 3;
         $loopCount = 0;  
-        while($importresult.result -ne "failure" -and $importresult.result -ne "success" -and $loopCount -lt 5)
+        write-verbose "ImportJob start time is: $ProcStart - polling job for completion time." 
+        while($stillProcessing -and $ProcComplete -eq $null -and $loopCount -lt 80)
         {
-            $importManifest = ([xml](Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields data).data).importexportxml.solutionManifests.solutionManifest
-            $impProcessed = if ($importManifest.processed -eq $null) { "false" } else { $importManifest.processed }; 
+            $import = Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields data,completedon,startedon,progress
+            $importManifest = ([xml]($import).data).importexportxml.solutionManifests.solutionManifest
+	        $importresult = $importManifest.result;
             $impResult = $importManifest.result.result
+
+            $ProcPercent = $import.progress
+            $ProcStart = $import.startedon
+            $ProcComplete = $import.completedon
+
+            $stillProcessing = if($ProcComplete -eq $null) {$true} else {$false}; 
+
             $loopCount = $loopCount+1;
-            $delay = 10;
-            write-verbose "Waiting for import completion: Processed: $impProcessed, not completed yet delaying another $delay seconds..."; 
+            $waitSeconds = $loopCount * $delay
+            write-verbose "Waiting for completion, waiting for $waitSeconds seconds... Progress: $ProcPercent"; 
             Start-Sleep -Seconds $delay;
         }
+	    
+        write-verbose "Import completed at: $ProcComplete"; 
 
-        if($importresult.result -eq "failure")
+        if($importresult.result -eq "failure" -or $ProcPercent -lt 100) #Must look at %age instead of this result as the result is usually wrong!
         {
             $importresultresult = $importresult.result
             $importresulterrortext = $importresult.errortext
             Write-Verbose "Import result: $importresultresult"
-            Write-Verbose "Import result: $importresulterrortext"
+            Write-Verbose "Import result: $importresulterrortext - job with ID: $importId failed at $ProcPercent complete."
             throw $importresulterrortext
         }
         else
@@ -3412,7 +3430,7 @@ function Import-CrmSolution{
                     Write-Verbose "Import Complete don't forget to publish customizations."
                 }
             }
-            return $ImportId
+            #return $ImportId
         }
     }
     catch
@@ -6516,6 +6534,74 @@ function Remove-CrmUserManager{
     } 
 }
 
+function Set-CrmConnectionTimeout{
+
+<#
+ .SYNOPSIS
+ Sets CRM Connection timeout value in seconds.
+
+ .DESCRIPTION
+ The Set-CrmConnectionTimeout lets you set CRM Connection timeout value in seconds.
+
+ .PARAMETER conn
+ A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
+
+ .PARAMETER TimeoutInSeconds
+ Timeout value for CRM connection.
+
+ .PARAMETER SetDefault
+ Specyfing SetDefault will set default value to the connection. (120 seconds)
+
+ .EXAMPLE
+ Set-CrmConnectionTimeout -conn $conn -TimeoutInSeconds 1000
+
+ This example sets CRM Connection timeout to 1000 seconds.
+
+ .EXAMPLE
+ Set-CrmConnectionTimeout -conn $conn -SetDefault
+ 
+ This example sets CRM Connection timeout to default. (120 seconds)
+
+#>
+
+ [CmdletBinding()]
+    PARAM( 
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$false, position=1)]
+        [Int64]$TimeoutInSeconds,
+        [parameter(Mandatory=$false, position=1)]
+        [switch]$SetDefault
+    )
+
+    if($conn -eq $null)
+    {
+        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
+        if($connobj.Value -eq $null)
+        {
+            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
+            break;
+        }
+        else
+        {
+            $conn = $connobj.Value
+        }
+    }
+
+    if($SetDefault)
+    {
+        $timeSpan = New-Object System.TimeSpan -ArgumentList 0,0,120
+    }
+    else
+    {
+        $currentTimeout = $conn.OrganizationServiceProxy.Timeout.TotalSeconds
+        Write-Verbose "Current Timeout is $currentTimeout seconds"
+        $timeSpan = New-Object System.TimeSpan -ArgumentList 0,0,$TimeoutInSeconds
+    }
+
+    $conn.OrganizationServiceProxy.Timeout = $timeSpan
+}
+
 function Set-CrmSystemSettings {
 
 <#
@@ -7473,19 +7559,19 @@ function New-CrmMoney{
  This example instantiates Money object with Value of 1000.
 
  .EXAMPLE
- New-CrmMoney 1000
- Value ExtensionData
- ----- -------------
- 1000
+ New-CrmMoney 1000.01
+   Value ExtensionData
+   ----- -------------
+ 1000.01
 
- This example instantiates Money object with Value of 1000 by ommiting parameter names.
+ This example instantiates Money object with Value of 1000.01 by ommiting parameter names.
 
 #>
 
  [CmdletBinding()]
     PARAM(        
         [parameter(Mandatory=$true, Position=0)]
-        [int]$Value
+        [double]$Value
     )
 
     $crmMoney = New-Object -TypeName Microsoft.Xrm.Sdk.Money
@@ -7636,7 +7722,7 @@ function Test-XrmTimerStop{
         $crmtimer = $crmtimerobj.Value
         $crmtimer.Stop()
         $perf = "The operation took " + $crmtimer.Elapsed.ToString()
-        Remove-Variable crmtimer -Scope Script
+        Remove-Variable crmtimer  -Scope global
         return $perf
     }
 }
