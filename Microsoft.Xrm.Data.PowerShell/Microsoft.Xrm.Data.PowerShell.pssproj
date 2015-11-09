@@ -31,7 +31,6 @@
     <Compile Include="Microsoft.Crm.Sdk.Proxy.dll" />
     <Compile Include="Microsoft.Xrm.Data.PowerShell.psd1" />
     <Compile Include="Microsoft.Xrm.Data.PowerShell.psm1" />
-    <Compile Include="Microsoft.Xrm.Data.PowerShell.tests.ps1" />
     <Compile Include="Microsoft.Xrm.Sdk.Deployment.dll" />
     <Compile Include="Microsoft.Xrm.Sdk.dll" />
     <Compile Include="Microsoft.Xrm.Tooling.Connector.dll" />
