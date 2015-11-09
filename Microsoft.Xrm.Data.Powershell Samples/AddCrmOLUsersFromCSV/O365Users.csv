@@ -1,0 +1,2 @@
+UserPrincipalName,DisplayName,FirstName,LastName,PhoneNumber,MobilePhone,PostalCode,City,Country,State,StreetAddress,Title,Department,Office,Fax,UsageLocation,Password,StrongPasswordRequired,PasswordNeverExpires,ForceChangePassword,BusinessUnitName,SecurityRoleName,SystemUserId,BusinessUnitId
+testuser021@crm2015training15.onmicrosoft.com,test user021,test,user021,555-555x,555-555x,999-999x,Seattle,United States,WA,Sample Street,Sales Rep.,Sales,Seattle,,US,Pa$$w0rd,TRUE,FALSE,FALSE,CSS,salesperson,,

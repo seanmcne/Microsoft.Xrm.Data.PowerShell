@@ -1,0 +1,3 @@
+User,Password,Type,OrganizationName,ServerUrl,DeploymentRegion
+contoso\administrator,password,OnPrem,org1,http://crmserver:5555,
+administrator@contoso.onmicrosoft.com,password,Online,org2,,NorthAmerica
