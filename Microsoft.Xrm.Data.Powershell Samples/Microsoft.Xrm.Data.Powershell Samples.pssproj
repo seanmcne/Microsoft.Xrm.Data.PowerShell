@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5bccc6ed-577e-41c9-a8b3-9b5cbbea7a30}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>MyApplication</RootNamespace>
+    <AssemblyName>MyApplication</AssemblyName>
+    <Name>Microsoft.Xrm.Data.Powershell Samples</Name>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="AddCrmOLUsersFromCSV\" />
+    <Folder Include="AddCrmUsersFromCSV\" />
+    <Folder Include="AddCrmUsersFromOU\" />
+    <Folder Include="MultiOrgOperation\" />
+    <Folder Include="ReprovisionCrmLanguage\" />
+    <Folder Include="UpdateCrmUsersSettings\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddCrmOLUsersFromCSV\AddCrmOLUsersFromCSV.ps1" />
+    <Compile Include="AddCrmOLUsersFromCSV\O365Users.csv" />
+    <Compile Include="AddCrmOLUsersFromCSV\ReadMe.docx" />
+    <Compile Include="AddCrmUsersFromCSV\AddCrmUsersFromCSV.ps1" />
+    <Compile Include="AddCrmUsersFromCSV\ADUsers.csv" />
+    <Compile Include="AddCrmUsersFromCSV\ReadMe.docx" />
+    <Compile Include="AddCrmUsersFromOU\AddCrmUsersFromOU.ps1" />
+    <Compile Include="AddCrmUsersFromOU\ReadMe.docx" />
+    <Compile Include="MultiOrgOperation\connectionssource.csv" />
+    <Compile Include="MultiOrgOperation\MultiOrgOperation.ps1" />
+    <Compile Include="MultiOrgOperation\ReadMe.docx" />
+    <Compile Include="ReprovisionCrmLanguage\ReadMe.docx" />
+    <Compile Include="ReprovisionCrmLanguage\ReprovisionCrmLanguage.ps1" />
+    <Compile Include="UpdateCrmUsersSettings\ReadMe.docx" />
+    <Compile Include="UpdateCrmUsersSettings\UpdateCrmUsersSettings.ps1" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Target Name="Build" />
+</Project>
