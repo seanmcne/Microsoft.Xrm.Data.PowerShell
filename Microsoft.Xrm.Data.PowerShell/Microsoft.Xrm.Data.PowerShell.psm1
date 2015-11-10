@@ -6009,14 +6009,14 @@ function Get-CrmUserMailbox{
     return $psobj
 }
 
-function Get-CrmUserRoles{
+function Get-CrmUserSecurityRoles{
 
 <#
  .SYNOPSIS
  Retrieves Security Roles assigned to a CRM User.
 
  .DESCRIPTION
- The Get-CrmUserRoles cmdlet lets you retrieve Security Roles assigned to a CRM User.
+ The Get-CrmUserSecurityRoles cmdlet lets you retrieve Security Roles assigned to a CRM User.
 
  .PARAMETER conn
  A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
@@ -6028,7 +6028,7 @@ function Get-CrmUserRoles{
  When you specify the IncludeTeamRoles switch, Security Roles from teams are also retured.
    
  .EXAMPLE
- Get-CrmUserRoles -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d
+ Get-CrmUserSecurityRoles -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d
  RoleName            
  --------            
  Salesperson         
@@ -6038,7 +6038,7 @@ function Get-CrmUserRoles{
  This example retrieves Security Roles assigned to the CRM User.
 
  .EXAMPLE
- Get-CrmUserRoles -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d -IncludeTeamRoles
+ Get-CrmUserSecurityRoles -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d -IncludeTeamRoles
  RoleName             TeamName
  --------             --------
  CSR Manager          TeamA   
@@ -6049,7 +6049,7 @@ function Get-CrmUserRoles{
  This example retrieves Security Roles assigned to the CRM User and Teams which the CRM User belongs to.
 
  .EXAMPLE
- Get-CrmUserRoles f9d40920-7a43-4f51-9749-0549c4caf67d -IncludeTeamRoles
+ Get-CrmUserSecurityRoles f9d40920-7a43-4f51-9749-0549c4caf67d -IncludeTeamRoles
  RoleName             TeamName
  --------             --------
  CSR Manager          TeamA   
