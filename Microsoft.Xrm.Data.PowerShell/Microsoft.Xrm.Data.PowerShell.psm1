@@ -6110,7 +6110,7 @@ function Get-CrmUserSecurityRoles{
 		</fetch>
 "@ -F $UserId
 		
-		(Get-CrmRecordsByFetch $fetch).CrmRecords | select @{name="RoleName";expression={$_.name}}, @{name="TeamName";expression={$_.'team.name'}} | % {$roles.Add($_)}	
+		(Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords | select @{name="RoleName";expression={$_.name}}, @{name="TeamName";expression={$_.'team.name'}} | % {$roles.Add($_)}	
 	}
 
 	$fetch = @"
@@ -6131,7 +6131,7 @@ function Get-CrmUserSecurityRoles{
 	</fetch>
 "@ -F $UserId
 	
-	(Get-CrmRecordsByFetch $fetch).CrmRecords | select @{name="RoleName";expression={$_.name}}| % {$roles.Add($_)}
+	(Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords | select @{name="RoleName";expression={$_.name}}| % {$roles.Add($_)}
 	
 	return $roles
 }
