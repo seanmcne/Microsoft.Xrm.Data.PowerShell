@@ -453,6 +453,10 @@ function Get-CrmRecord{
         {
             Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value.Name
         }
+		elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue])
+        {
+			Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value.Value
+        }
         else
         {
             Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value
@@ -2689,6 +2693,10 @@ function Get-CrmRecordsByFetch{
                     {
                         Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value.Name
                     }
+					elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue])
+					{
+						Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value.Value
+					}
                     else
                     {
                         Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value
@@ -5999,6 +6007,133 @@ function Get-CrmUserMailbox{
     }
 
     return $psobj
+}
+
+function Get-CrmUserRoles{
+
+<#
+ .SYNOPSIS
+ Retrieves Security Roles assigned to a CRM User.
+
+ .DESCRIPTION
+ The Get-CrmUserRoles cmdlet lets you retrieve Security Roles assigned to a CRM User.
+
+ .PARAMETER conn
+ A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
+
+ .PARAMETER UserId
+ An Id (guid) of CRM User.
+
+ .PARAMETER IncludeTeamRoles
+ When you specify the IncludeTeamRoles switch, Security Roles from teams are also retured.
+   
+ .EXAMPLE
+ Get-CrmUserRoles -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d
+ RoleName            
+ --------            
+ Salesperson         
+ System Administrator
+ ...
+
+ This example retrieves Security Roles assigned to the CRM User.
+
+ .EXAMPLE
+ Get-CrmUserRoles -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d -IncludeTeamRoles
+ RoleName             TeamName
+ --------             --------
+ CSR Manager          TeamA   
+ Salesperson                  
+ System Administrator 
+ ...
+
+ This example retrieves Security Roles assigned to the CRM User and Teams which the CRM User belongs to.
+
+ .EXAMPLE
+ Get-CrmUserRoles f9d40920-7a43-4f51-9749-0549c4caf67d -IncludeTeamRoles
+ RoleName             TeamName
+ --------             --------
+ CSR Manager          TeamA   
+ Salesperson                  
+ System Administrator 
+ ...
+
+ This example retrieves Security Roles assigned to the CRM User and Teams which the CRM User belongs to by omitting parameter names.
+ When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+
+#>
+
+    [CmdletBinding()]
+    PARAM(
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1)]
+        [string]$UserId,
+        [parameter(Mandatory=$false)]
+        [switch]$IncludeTeamRoles
+    )
+
+    if($conn -eq $null)
+    {
+        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
+        if($connobj.Value -eq $null)
+        {
+            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
+            break;
+        }
+        else
+        {
+            $conn = $connobj.Value
+        }
+    }
+    
+    $roles = New-Object System.Collections.Generic.List[PSObject]
+    
+    if($IncludeTeamRoles)
+	{
+		$fetch = @"
+		<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
+		  <entity name="role">
+		    <attribute name="name"/>
+		    <link-entity name="teamroles" from="roleid" to="roleid" visible="false" intersect="true">
+		      <link-entity name="team" from="teamid" to="teamid" alias="team">
+		      <attribute name="name"/>
+		        <link-entity name="teammembership" from="teamid" to="teamid" visible="false" intersect="true">
+		          <link-entity name="systemuser" from="systemuserid" to="systemuserid" alias="af">
+		            <filter type="and">
+		              <condition attribute="systemuserid" operator="eq" value="{0}" />
+		            </filter>
+		          </link-entity>
+		        </link-entity>
+		      </link-entity>
+		    </link-entity>
+		  </entity>
+		</fetch>
+"@ -F $UserId
+		
+		(Get-CrmRecordsByFetch $fetch).CrmRecords | select @{name="RoleName";expression={$_.name}}, @{name="TeamName";expression={$_.'team.name'}} | % {$roles.Add($_)}	
+	}
+
+	$fetch = @"
+	<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
+	  <entity name="role">
+	    <attribute name="name" />
+	    <attribute name="businessunitid" />
+	    <attribute name="roleid" />
+	    <order attribute="name" descending="false" />
+	    <link-entity name="systemuserroles" from="roleid" to="roleid" visible="false" intersect="true">
+	      <link-entity name="systemuser" from="systemuserid" to="systemuserid" alias="ag">
+	        <filter type="and">
+	          <condition attribute="systemuserid" operator="eq" value="{0}" />
+	        </filter>
+	      </link-entity>
+	    </link-entity>
+	  </entity>
+	</fetch>
+"@ -F $UserId
+	
+	(Get-CrmRecordsByFetch $fetch).CrmRecords | select @{name="RoleName";expression={$_.name}}| % {$roles.Add($_)}
+	
+	return $roles
 }
 
 function Get-CrmUserSettings{
