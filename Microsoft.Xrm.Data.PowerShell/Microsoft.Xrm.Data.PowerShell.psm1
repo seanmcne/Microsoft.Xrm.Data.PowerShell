@@ -6359,7 +6359,7 @@ function Get-CrmUserSecurityRoles{
     if($IncludeTeamRoles)
 	{
 		$fetch = @"
-		<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
+		<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" no-lock="true">
 		  <entity name="role">
 		    <attribute name="name"/>
 			<attribute name="roleid" />
@@ -6387,7 +6387,7 @@ function Get-CrmUserSecurityRoles{
 	}
 
 	$fetch = @"
-	<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
+	<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" no-lock="true">
 	  <entity name="role">
 	    <attribute name="name" />
 	    <attribute name="roleid" />
