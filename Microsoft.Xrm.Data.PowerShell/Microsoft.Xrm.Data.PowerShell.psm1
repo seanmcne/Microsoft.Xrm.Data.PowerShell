@@ -3373,17 +3373,17 @@ function Import-CrmSolution{
         Write-Verbose "Importing solution file: $SolutionFilePath"
         Write-Verbose "OverwriteCustomizations: $OverwriteUnManagedCustomizations"
         Write-Verbose "SkipDependancyCheck: $SkipDependancyOnProductUpdateCheckOnInstall"
-        Write-Verbose "Please wait while importing"
+        Write-Verbose "Please wait while running .ImportSolutionToCrm()..."
         $result = $conn.ImportSolutionToCrm($SolutionFilePath, [ref]$importId, $ActivatePlugIns,
                 $OverwriteUnManagedCustomizations, $SkipDependancyOnProductUpdateCheckOnInstall)
               
-        Start-Sleep -Seconds 5;        
+        Start-Sleep -Seconds 5;  #pause before checking the import status 
         $import = Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields data,completedon,startedon,progress    
         
         $xml = [xml]($import).data
         $importresult = $xml.importexportxml.solutionManifests.solutionManifest.result
         
-        $ProcPercent = $import.progress
+        $ProcPercent = Coalesce $import.progress 0
         $ProcStart = $import.startedon
         $ProcComplete = $import.completedon
 
@@ -3393,23 +3393,24 @@ function Import-CrmSolution{
         
         $delay = 3;
         $loopCount = 0;  
-        write-verbose "ImportJob start time is: $ProcStart - polling job for completion time." 
-        while($stillProcessing -and $ProcComplete -eq $null -and $loopCount -lt 80)
-        {
+		$maxLoops = 80;
+        write-verbose "ImportJob start time is: $ProcStart - polling job for completion time."; 
+        while($stillProcessing -and $ProcComplete -eq $null -and $loopCount -lt $maxLoops){
             $import = Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields data,completedon,startedon,progress
             $importManifest = ([xml]($import).data).importexportxml.solutionManifests.solutionManifest
 	        $importresult = $importManifest.result;
             $impResult = $importManifest.result.result
 
-            $ProcPercent = $import.progress
+            $ProcPercent = Coalesce $import.progress 0
             $ProcStart = $import.startedon
             $ProcComplete = $import.completedon
 
             $stillProcessing = if($ProcComplete -eq $null) {$true} else {$false}; 
 
             $loopCount = $loopCount+1;
-            $waitSeconds = $loopCount * $delay
-            write-verbose "Waiting for completion, waiting for $waitSeconds seconds... Progress: $ProcPercent"; 
+            $maxWait = $maxLoops * $delay; 
+
+            write-verbose "Waiting for completion, waiting for up to $maxWait seconds... Progress: $ProcPercent"; 
             Start-Sleep -Seconds $delay;
         }
 	    
@@ -3438,7 +3439,6 @@ function Import-CrmSolution{
                     Write-Verbose "Import Complete don't forget to publish customizations."
                 }
             }
-            #return $ImportId
         }
     }
     catch
@@ -7860,4 +7860,12 @@ function Test-XrmTimerStop{
         Remove-Variable crmtimer  -Scope global
         return $perf
     }
+}
+
+function Coalesce {
+	foreach($i in $args){
+		if($i -ne $null){
+			return $i;
+		}
+	}
 }
