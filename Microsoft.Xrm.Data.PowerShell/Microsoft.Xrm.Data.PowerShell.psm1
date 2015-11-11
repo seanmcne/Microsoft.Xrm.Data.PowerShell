@@ -71,8 +71,8 @@ function Connect-CrmOnlineDiscovery{
  This example prompts you to enter username/password, displays all CRM organization, and returns connection.
 
  .EXAMPLE
- C:\PS>$cred = Get-Credential
- C:\PS>Connect-CrmOnlineDiscovery $cred
+ PS C:\>$cred = Get-Credential
+ PS C:\>Connect-CrmOnlineDiscovery $cred
  
  IsReady                        : True
  IsBatchOperationsAvailable     : True
@@ -92,7 +92,7 @@ function Connect-CrmOnlineDiscovery{
  This example displays all CRM organization, and returns connection.
  
  .EXAMPLE
- C:\PS>Connect-CrmOnlineDiscovery -InteractiveMode
+ PS C:\>Connect-CrmOnlineDiscovery -InteractiveMode
  
  IsReady                        : True
  IsBatchOperationsAvailable     : True
@@ -223,11 +223,11 @@ function New-CrmRecord{
  This example creates an account record by specifying past date for CreatedOn. You can create DateTime object by casting like this Example or use Get-Date cmdlets.
 
  .EXAMPLE 
- C:\PS>$parentId = New-CrmRecord account @{"name"="parent account name"}
+ PS C:\>$parentId = New-CrmRecord account @{"name"="parent account name"}
  
- C:\PS>$parentReference = New-CrmEntityReference -EntityLogicalName account -Id $parentId
+ PS C:\>$parentReference = New-CrmEntityReference -EntityLogicalName account -Id $parentId
  
- C:\PS>$childId = New-CrmRecord account @{"name"="child account name";"parentaccountid"=$parentReference}
+ PS C:\>$childId = New-CrmRecord account @{"name"="child account name";"parentaccountid"=$parentReference}
  Guid
  ----
  59bd1c45-2b17-e511-80dc-c4346bc4fc6c
@@ -515,9 +515,9 @@ function Set-CrmRecord{
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE 
- C:\PS>$account = Get-CrmRecord account b202caab-6c16-e511-80d6-c4346bc43dc0 name
+ PS C:\>$account = Get-CrmRecord account b202caab-6c16-e511-80d6-c4346bc43dc0 name
 
- C:\PS>$account
+ PS C:\>$account
  name_Property      : [name, Adventure Works (sample)]
  name               : Adventure Works (sample)
  accountid_Property : [accountid, b202caab-6c16-e511-80d6-c4346bc43dc0]
@@ -526,11 +526,11 @@ function Set-CrmRecord{
                       b202caab-6c16-e511-80d6-c4346bc43dc0]], [accountid, b202caab-6c16-e511-80d6-c4346bc43dc0]}
  logicalname        : account
 
- C:\PS>$account.name = $account.name + " updated!"
+ PS C:\>$account.name = $account.name + " updated!"
 
- C:\PS>Set-CrmRecord $account
+ PS C:\>Set-CrmRecord $account
 
- C:\PS>Get-CrmRecord account b202caab-6c16-e511-80d6-c4346bc43dc0 name
+ PS C:\>Get-CrmRecord account b202caab-6c16-e511-80d6-c4346bc43dc0 name
  name_Property      : [name, Adventure Works (sample) updated!]
  name               : Adventure Works (sample)updated!
  accountid_Property : [accountid, b202caab-6c16-e511-80d6-c4346bc43dc0]
@@ -544,7 +544,7 @@ function Set-CrmRecord{
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE 
- C:\PS>$fetch = @"
+ PS C:\>$fetch = @"
  <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
     <entity name="account">
       <attribute name="name" />
@@ -552,7 +552,7 @@ function Set-CrmRecord{
   </fetch>
  "@
 
- C:\PS>(Get-CrmRecordsByFetch $fetch).CrmRecords | % { $_.name = $_.name + " updated!"; Set-CrmRecord -CrmRecord $_}
+ PS C:\>(Get-CrmRecordsByFetch $fetch).CrmRecords | % { $_.name = $_.name + " updated!"; Set-CrmRecord -CrmRecord $_}
  
  This example retrieves and stores account records by using FetchXML and pipe results (CrmRecords). In the next pipe, it does foreach operation (%) and assign new value for name. Then it updates each record using Set-CrmRecord.
 
@@ -911,18 +911,18 @@ function Remove-CrmRecord{
  This example deletes an account record by using Id
 
  .EXAMPLE 
- C:\PS>$account = Get-CrmRecord account b202caab-6c16-e511-80d6-c4346bc43dc0 name
+ PS C:\>$account = Get-CrmRecord account b202caab-6c16-e511-80d6-c4346bc43dc0 name
 
- C:\PS>$account
+ PS C:\>$account
  accountid_Property : [accountid, b202caab-6c16-e511-80d6-c4346bc43dc0]
  accountid          : b202caab-6c16-e511-80d6-c4346bc43dc0
  original           : {[name_Property, [name, Adventure Works (sample)]], [name, Adventure Works (sample)], [accountid_Property, [accountid, 
                       b202caab-6c16-e511-80d6-c4346bc43dc0]], [accountid, b202caab-6c16-e511-80d6-c4346bc43dc0]}
  logicalname        : account
 
- C:\PS>Remove-CrmRecord $account
+ PS C:\>Remove-CrmRecord $account
 
- C:\PS>Get-CrmRecord account b202caab-6c16-e511-80d6-c4346bc43dc0 name
+ PS C:\>Get-CrmRecord account b202caab-6c16-e511-80d6-c4346bc43dc0 name
  WARNING: Record Id: b202caab-6c16-e511-80d6-c4346bc43dc0Does Not Exist
 
  This example retrieves and store an account record to $account object, then pass it to Remove-CrmRecord cmdlet.
@@ -930,7 +930,7 @@ function Remove-CrmRecord{
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE 
- C:\PS>$fetch = @"
+ PS C:\>$fetch = @"
  <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
     <entity name="account">
       <attribute name="name" />
@@ -938,9 +938,9 @@ function Remove-CrmRecord{
   </fetch>
  "@
 
- C:\PS>(Get-CrmRecordsByFetch $fetch).CrmRecords | % { Remove-CrmRecord $conn -CrmRecord $_}
+ PS C:\>(Get-CrmRecordsByFetch $fetch).CrmRecords | % { Remove-CrmRecord $conn -CrmRecord $_}
  
- C:\PS>Get-CrmRecordsByFetch $fetch
+ PS C:\>Get-CrmRecordsByFetch $fetch
  WARNING: No Result
 
  This example retrieves and stores account records by using FetchXML and pipe results (CrmRecords). In the next pipe, it updates each record using Remove-CrmRecord.
@@ -1046,9 +1046,9 @@ function Move-CrmRecordToQueue{
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE 
- C:\PS>$incident = Get-CrmRecord incident 20005a70-6317-e511-80da-c4346bc43d94 title
+ PS C:\>$incident = Get-CrmRecord incident 20005a70-6317-e511-80da-c4346bc43d94 title
  
- C:\PS>Move-CrmRecordToQueue $incident "Support Queue" f9d40920-7a43-4f51-9749-0549c4caf67d $True
+ PS C:\>Move-CrmRecordToQueue $incident "Support Queue" f9d40920-7a43-4f51-9749-0549c4caf67d $True
 
  This example retrieves and store an incident record, then pass it to Move-CrmRecordToQueue.
 #>
@@ -1150,9 +1150,9 @@ function Set-CrmRecordOwner{
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE 
- C:\PS>$contact = Get-CrmRecord contact e1d47674-4017-e511-80db-c4346bc42d18 fullname
+ PS C:\>$contact = Get-CrmRecord contact e1d47674-4017-e511-80db-c4346bc42d18 fullname
  
- C:\PS>Set-CrmRecordOwner $contact f9d40920-7a43-4f51-9749-0549c4caf67d
+ PS C:\>Set-CrmRecordOwner $contact f9d40920-7a43-4f51-9749-0549c4caf67d
 
  This example retrieves and store a contact record, then pass it to Set-CrmRecordOwner.
 #>
@@ -1273,9 +1273,9 @@ function Set-CrmActivityRecordToCloseState{
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE 
- C:\PS>$task = Get-CrmRecord task a0025a70-6317-e511-80da-c4346bc43d94 subject
+ PS C:\>$task = Get-CrmRecord task a0025a70-6317-e511-80da-c4346bc43d94 subject
  
- C:\PS>Set-CrmActivityRecordToCloseState $task Open "Not Started"
+ PS C:\>Set-CrmActivityRecordToCloseState $task Open "Not Started"
 
  This example retrieves and store a task record, then pass it to Set-CrmActivityRecordToCloseState
 #>
@@ -1483,20 +1483,20 @@ function Add-CrmRecordAssociation{
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
- C:\PS>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
+ PS C:\>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
 
- C:\PS>$contact = Get-CrmRecord contact 66005a70-6317-e511-80da-c4346bc43d94 fullname
+ PS C:\>$contact = Get-CrmRecord contact 66005a70-6317-e511-80da-c4346bc43d94 fullname
 
- C:\PS>Add-CrmRecordAssociation -conn $conn -CrmRecord1 $account -CrmRecord2 $contact -RelationshipName new_accounts_contacts
+ PS C:\>Add-CrmRecordAssociation -conn $conn -CrmRecord1 $account -CrmRecord2 $contact -RelationshipName new_accounts_contacts
 
  This example retrieves and stores an account and a contact records to variables, then pass them to Add-CrmRecordAssociation cmdlets.
 
  .EXAMPLE
- C:\PS>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
+ PS C:\>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
 
- C:\PS>$contact = Get-CrmRecord contact 66005a70-6317-e511-80da-c4346bc43d94 fullname
+ PS C:\>$contact = Get-CrmRecord contact 66005a70-6317-e511-80da-c4346bc43d94 fullname
 
- C:\PS>Add-CrmRecordAssociation $account $contact new_accounts_contacts
+ PS C:\>Add-CrmRecordAssociation $account $contact new_accounts_contacts
 
  This example retrieves and stores an account and a contact records to variables, then pass them to Add-CrmRecordAssociation cmdlets.
 
@@ -1615,9 +1615,9 @@ function Add-CrmMultiRecordAssociation{
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
- C:\PS>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
+ PS C:\>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
 
- C:\PS>$fetch = @"
+ PS C:\>$fetch = @"
 <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
   <entity name="contact">
     <attribute name="fullname" />
@@ -1628,9 +1628,9 @@ function Add-CrmMultiRecordAssociation{
 </fetch>
 "@
 
- C:\PS>$contacts = Get-CrmRecordsByFetch $fetch
+ PS C:\>$contacts = Get-CrmRecordsByFetch $fetch
 
- C:\PS>Add-CrmMultiRecordAssociation $account $contacts.CrmRecords new_accounts_contacts
+ PS C:\>Add-CrmMultiRecordAssociation $account $contacts.CrmRecords new_accounts_contacts
 
  This example retrieves contacts by using FetchXML and stores to a variable, then retrieves and store an account record to another variable.
  Then passes those variables Add-CrmMultiRecordAssociation.
@@ -1768,11 +1768,11 @@ function Add-CrmActivityToCrmRecord{
  This example adds a task to an account record with Due Date and Priority fields.
 
  .EXAMPLE
- c:\PS>$account = Get-CrmRecord account feff5970-6317-e511-80da-c4346bc43d94 name
+ PS C:\>$account = Get-CrmRecord account feff5970-6317-e511-80da-c4346bc43d94 name
 
- C:\PS>user = Get-MyCrmUserId
+ PS C:\>user = Get-MyCrmUserId
 
- c:\PS>Add-CrmActivityToCrmRecord $account task "sample task" "sample task description" $user
+ PS C:\>Add-CrmActivityToCrmRecord $account task "sample task" "sample task description" $user
  
  This example retrieves and stores an account, and login user Id (guid) to variables. Then passes them to Add-CrmActivityToCrmRecord.
 #>
@@ -1939,20 +1939,20 @@ function Remove-CrmRecordAssociation{
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
- C:\PS>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
+ PS C:\>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
 
- C:\PS>$contact = Get-CrmRecord contact 66005a70-6317-e511-80da-c4346bc43d94 fullname
+ PS C:\>$contact = Get-CrmRecord contact 66005a70-6317-e511-80da-c4346bc43d94 fullname
 
- C:\PS>Remove-CrmRecordAssociation -conn $conn -CrmRecord1 $account -CrmRecord2 $contact -RelationshipName new_accounts_contacts
+ PS C:\>Remove-CrmRecordAssociation -conn $conn -CrmRecord1 $account -CrmRecord2 $contact -RelationshipName new_accounts_contacts
 
  This example retrieves and stores an account and a contact records to variables, then pass them to Remove-CrmRecordAssociation cmdlets.
 
  .EXAMPLE
- C:\PS>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
+ PS C:\>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
 
- C:\PS>$contact = Get-CrmRecord contact 66005a70-6317-e511-80da-c4346bc43d94 fullname
+ PS C:\>$contact = Get-CrmRecord contact 66005a70-6317-e511-80da-c4346bc43d94 fullname
 
- C:\PS>Remove-CrmRecordAssociation $account $contact new_accounts_contacts
+ PS C:\>Remove-CrmRecordAssociation $account $contact new_accounts_contacts
 
  This example retrieves and stores an account and a contact records to variables, then pass them to Remove-CrmRecordAssociation cmdlets.
 #>
@@ -2068,9 +2068,9 @@ function Invoke-CrmRecordWorkflow{
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
- C:\PS>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
+ PS C:\>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
 
- C:\PS>Invoke-CrmRecordWorkflow $account "Sample Workflow for Account"
+ PS C:\>Invoke-CrmRecordWorkflow $account "Sample Workflow for Account"
 
  This example runs an on-demand workflow named "Sample Workflow for Accoutn" for an account by ommiting parameter names.
 
@@ -2548,7 +2548,7 @@ function Get-CrmRecordsByFetch{
  </fetch>
  "@
 
- C:\PS>$result.CrmRecords
+ PS C:\>$result.CrmRecords
  name_Property             : [name, A. Datum Corporation (sample)]
  name                      : A. Datum Corporation (sample)
  primarycontactid_Property : [primarycontactid, Microsoft.Xrm.Sdk.EntityReference]
@@ -2583,16 +2583,16 @@ function Get-CrmRecordsByFetch{
  </fetch>
  "@
 
- C:\PS>$result1.CrmRecords.Count
+ PS C:\>$result1.CrmRecords.Count
  5000
 
- C:\PS>$result1.NextPage
+ PS C:\>$result1.NextPage
  True
 
- C:\PS>$result1.PagingCookie
+ PS C:\>$result1.PagingCookie
  <cookie page="1"><contactid last="{890FDA88-4217-E511-80DB-C4346BC42D18}" first="{E1D47674-4017-E511-80DB-C4346BC42D18}" /></cookie>
 
- C:\PS>$result2 = Get-CrmRecordsByFetch -conn $conn -Fetch @"
+ PS C:\>$result2 = Get-CrmRecordsByFetch -conn $conn -Fetch @"
  <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
    <entity name="contact">
      <attribute name="fullname" />
@@ -2600,10 +2600,10 @@ function Get-CrmRecordsByFetch{
  </fetch>
  "@ -TopCount 5000 -PageNumber 2 -PageCookie $result1.PagingCookie
 
- C:\PS>$result2.CrmRecords.Count
+ PS C:\>$result2.CrmRecords.Count
  453
 
- C:\PS>$result2.NextPage
+ PS C:\>$result2.NextPage
  False
 
  This example stores retrieved result into $result1 variable, then use $result1.PagingCookie data for next iteration.
@@ -3164,8 +3164,8 @@ function Get-CrmGlobalOptionSet{
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
- C:\PS>$optionset = Get-CrmGlobalOptionSet incident_caseorigincode
- C:\PS>$optionset.Options | % {[string]$_.Value + ":" + $_.Label.LocalizedLabels.Label}
+ PS C:\>$optionset = Get-CrmGlobalOptionSet incident_caseorigincode
+ PS C:\>$optionset.Options | % {[string]$_.Value + ":" + $_.Label.LocalizedLabels.Label}
  1:Phone
  2:Email
  3:Web
@@ -3812,9 +3812,9 @@ function Set-CrmRecordState{
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE 
- C:\PS>$contact = Get-CrmRecord contact 81f8d93d-1f18-e511-80da-c4346bc43d94 fullname
+ PS C:\>$contact = Get-CrmRecord contact 81f8d93d-1f18-e511-80da-c4346bc43d94 fullname
  
- C:\PS>Set-CrmRecordState $contact Inactive Inactive
+ PS C:\>Set-CrmRecordState $contact Inactive Inactive
 
  This example retrieves and store a contact record, then pass it to Set-CrmRecordState to disable it.
 #>
@@ -3874,7 +3874,7 @@ function Add-CrmSecurityRoleToTeam{
  Assigns a security role to a team.
 
  .DESCRIPTION
- The Set-CrmSecurityRoleToUser cmdlet lets you assign a security role to a team. 
+ The Add-CrmSecurityRoleToTeam cmdlet lets you assign a security role to a team. 
 
  There are two ways to specify records.
  
@@ -3896,26 +3896,31 @@ function Add-CrmSecurityRoleToTeam{
  .PARAMETER SecurityRoleId
  An Id (guid) of security role record
 
- .EXAMPLE
- Set-CrmSecurityRoleToTeam -conn $conn -TeamId 00005a70-6317-e511-80da-c4346bc43d94 -SecurityRoleId 66005a70-6317-e511-80da-c4346bc43d94
-
- This example assigns a security role to a team by using Id.
+ .PARAMETER SecurityRoleName
+ A name of security role record
 
  .EXAMPLE
- Set-CrmSecurityRoleToTeam 00005a70-6317-e511-80da-c4346bc43d94 66005a70-6317-e511-80da-c4346bc43d94
+ Add-CrmSecurityRoleToTeam -conn $conn -TeamId 00005a70-6317-e511-80da-c4346bc43d94 -SecurityRoleId 66005a70-6317-e511-80da-c4346bc43d94
+
+ This example assigns the security role to the team by using Id.
+
+ .EXAMPLE
+ Add-CrmSecurityRoleToTeam 00005a70-6317-e511-80da-c4346bc43d94 66005a70-6317-e511-80da-c4346bc43d94
  
- This example assigns a security role to a team by using Id by ommiting parameters names.
+ This example assigns the security role to the team by using Id by ommiting parameters names.
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
- C:\PS>$team = Get-CrmRecord team 00005a70-6317-e511-80da-c4346bc43d94 name
+ PS C:\>$team = Get-CrmRecord team 00005a70-6317-e511-80da-c4346bc43d94 name
+ PS C:\>$role = Get-CrmRecord role 66005a70-6317-e511-80da-c4346bc43d94 name
+ PS C:\>Add-CrmSecurityRoleToTeam $team $role
 
- C:\PS>$role = Get-CrmRecord role 66005a70-6317-e511-80da-c4346bc43d94 name
+ This example assigns the security role to the team by using record objects.
 
- C:\PS>Set-CrmSecurityRoleToTeam $team $role
-
- This example assigns a security role to a team by using record objects.
-
+ .EXAMPLE
+ Add-CrmSecurityRoleToUser -conn $conn -TeamId 00005a70-6317-e511-80da-c4346bc43d94 -SecurityRoleName "salesperson"
+ 
+ This example assigns the salesperson role to the team by using Id and role name.
 #>
 
     [CmdletBinding()]
@@ -3924,12 +3929,14 @@ function Add-CrmSecurityRoleToTeam{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
         [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord")]
         [PSObject]$TeamRecord,
-        [parameter(Mandatory=$true, Position=2, ParameterSetName="CrmRecord")]
+        [parameter(Mandatory=$false, Position=2, ParameterSetName="CrmRecord")]
         [PSObject]$SecurityRoleRecord,
         [parameter(Mandatory=$true, Position=1, ParameterSetName="Id")]
         [string]$TeamId,
-        [parameter(Mandatory=$true, Position=2, ParameterSetName="Id")]
-        [string]$SecurityRoleId
+        [parameter(Mandatory=$false, Position=2, ParameterSetName="Id")]
+        [string]$SecurityRoleId,
+        [parameter(Mandatory=$false, Position=2)]
+        [string]$SecurityRoleName
     )
 
     if($conn -eq $null)
@@ -3946,9 +3953,51 @@ function Add-CrmSecurityRoleToTeam{
         }
     }
 
-    if($PrincipalRecord -ne $null)
+    if($SecurityRoleRecord -eq $null -and $SecurityRoleId -eq "" -and $SecurityRoleName -eq "")
     {
-        Add-CrmRecordAssociation -conn $conn -CrmRecord1 $UserRecord -CrmRecord2 $SecurityRoleRecord -RelationshipName systemuserroles_association
+        Write-Warning "You need to specify Security Role information"
+        return
+    }
+    
+    if($SecurityRoleName -ne "")
+    {
+        if($TeamRecord -eq $null -or $TeamRecord.businessunitid -eq $null)
+        {
+            $TeamRecord = Get-CrmRecord -conn $conn -EntityLogicalName team -Id $TeamId -Fields businessunitid
+        }
+
+        $fetch = @"
+        <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
+          <entity name="role">
+            <attribute name="businessunitid" />
+            <attribute name="roleid" />
+            <filter type="and">
+              <condition attribute="name" operator="eq" value="{0}" />
+              <condition attribute="businessunitid" operator="eq" value="{1}" />
+            </filter>
+          </entity>
+        </fetch>
+"@ -F $SecurityRoleName, $TeamRecord.businessunitid_Property.Value.Id
+        
+        $roles = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch)
+        if($roles.CrmRecords.Count -eq 0)
+        {
+            Write-Warning "Not Security Role found"
+            return
+        }
+        else
+        {
+            $role = $roles.CrmRecords[0]
+        }
+    }
+
+    if($SecurityRoleName -ne "")
+    {
+        Add-CrmRecordAssociation -conn $conn -CrmRecord1 $TeamRecord -CrmRecord2 $role -RelationshipName teamroles_association
+    }
+    elseif($TeamRecord -ne $null)
+    {
+        Add-CrmRecordAssociation -conn $conn -CrmRecord1 $TeamRecord -CrmRecord2 $SecurityRoleRecord -RelationshipName teamroles_association
     }
     else
     {
@@ -3963,7 +4012,7 @@ function Add-CrmSecurityRoleToUser{
  Assigns a security role to a user.
 
  .DESCRIPTION
- The Set-CrmSecurityRoleToUser cmdlet lets you assign a security role to a user. 
+ The Add-CrmSecurityRoleToUser cmdlet lets you assign a security role to a user. 
 
  There are two ways to specify records.
  
@@ -3984,27 +4033,34 @@ function Add-CrmSecurityRoleToUser{
 
  .PARAMETER SecurityRoleId
  An Id (guid) of security role record
-
- .EXAMPLE
- Set-CrmSecurityRoleToUser -conn $conn -UserId 00005a70-6317-e511-80da-c4346bc43d94 -SecurityRoleId 66005a70-6317-e511-80da-c4346bc43d94
-
- This example assigns a security role to a user by using Id.
-
- .EXAMPLE
- Set-CrmSecurityRoleToUser 00005a70-6317-e511-80da-c4346bc43d94 66005a70-6317-e511-80da-c4346bc43d94
  
- This example assigns a security role to a user by using Id by ommiting parameters names.
+ .PARAMETER SecurityRoleName
+ A name of security role record
+
+ .EXAMPLE
+ Add-CrmSecurityRoleToUser -conn $conn -UserId 00005a70-6317-e511-80da-c4346bc43d94 -SecurityRoleId 66005a70-6317-e511-80da-c4346bc43d94
+
+ This example assigns the security role to the user by using Id.
+
+ .EXAMPLE
+ Add-CrmSecurityRoleToUser 00005a70-6317-e511-80da-c4346bc43d94 66005a70-6317-e511-80da-c4346bc43d94
+ 
+ This example assigns the security role to the user by using Id by ommiting parameters names.
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
- C:\PS>$user = Get-CrmRecord sysetmuser 00005a70-6317-e511-80da-c4346bc43d94 fullname
+ PS C:\>$user = Get-CrmRecord sysetmuser 00005a70-6317-e511-80da-c4346bc43d94 fullname
 
- C:\PS>$role = Get-CrmRecord role 66005a70-6317-e511-80da-c4346bc43d94 name
+ PS C:\>$role = Get-CrmRecord role 66005a70-6317-e511-80da-c4346bc43d94 name
 
- C:\PS>Set-CrmSecurityRoleToUser $user $role
+ PS C:\>Add-CrmSecurityRoleToUser $user $role
 
- This example assigns a security role to a user by using record objects.
+ This example assigns the security role to the user by using record objects.
 
+ .EXAMPLE
+ Add-CrmSecurityRoleToUser -conn $conn -UserId 00005a70-6317-e511-80da-c4346bc43d94 -SecurityRoleName "salesperson"
+ 
+ This example assigns the salesperson role to the user by using Id and role name.
 #>
 
     [CmdletBinding()]
@@ -4013,12 +4069,14 @@ function Add-CrmSecurityRoleToUser{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
         [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord")]
         [PSObject]$UserRecord,
-        [parameter(Mandatory=$true, Position=2, ParameterSetName="CrmRecord")]
+        [parameter(Mandatory=$false, Position=2, ParameterSetName="CrmRecord")]
         [PSObject]$SecurityRoleRecord,
         [parameter(Mandatory=$true, Position=1, ParameterSetName="Id")]
         [string]$UserId,
-        [parameter(Mandatory=$true, Position=2, ParameterSetName="Id")]
-        [string]$SecurityRoleId
+        [parameter(Mandatory=$false, Position=2, ParameterSetName="Id")]
+        [string]$SecurityRoleId,
+        [parameter(Mandatory=$false, Position=2)]
+        [string]$SecurityRoleName
     )
 
     if($conn -eq $null)
@@ -4035,7 +4093,49 @@ function Add-CrmSecurityRoleToUser{
         }
     }
 
-    if($PrincipalRecord -ne $null)
+    if($SecurityRoleRecord -eq $null -and $SecurityRoleId -eq "" -and $SecurityRoleName -eq "")
+    {
+        Write-Warning "You need to specify Security Role information"
+        return
+    }
+    
+    if($SecurityRoleName -ne "")
+    {
+        if($UserRecord -eq $null -or $UserRecord.businessunitid -eq $null)
+        {
+            $UserRecord = Get-CrmRecord -conn $conn -EntityLogicalName team -Id $UserId -Fields businessunitid
+        }
+
+        $fetch = @"
+        <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
+          <entity name="role">
+            <attribute name="businessunitid" />
+            <attribute name="roleid" />
+            <filter type="and">
+              <condition attribute="name" operator="eq" value="{0}" />
+              <condition attribute="businessunitid" operator="eq" value="{1}" />
+            </filter>
+          </entity>
+        </fetch>
+"@ -F $SecurityRoleName, $UserRecord.businessunitid_Property.Value.Id
+        
+        $roles = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch)
+        if($roles.CrmRecords.Count -eq 0)
+        {
+            Write-Warning "Not Security Role found"
+            return
+        }
+        else
+        {
+            $role = $roles.CrmRecords[0]
+        }
+    }
+
+    if($SecurityRoleName -ne "")
+    {
+        Add-CrmRecordAssociation -conn $conn -CrmRecord1 $UserRecord -CrmRecord2 $role -RelationshipName systemuserroles_association
+    }
+    elseif($UserRecord -ne $null)
     {
         Add-CrmRecordAssociation -conn $conn -CrmRecord1 $UserRecord -CrmRecord2 $SecurityRoleRecord -RelationshipName systemuserroles_association
     }
@@ -6597,11 +6697,11 @@ function Remove-CrmSecurityRoleFromTeam{
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
- C:\PS>$team = Get-CrmRecord team 00005a70-6317-e511-80da-c4346bc43d94 name
+ PS C:\>$team = Get-CrmRecord team 00005a70-6317-e511-80da-c4346bc43d94 name
 
- C:\PS>$role = Get-CrmRecord role 66005a70-6317-e511-80da-c4346bc43d94 name
+ PS C:\>$role = Get-CrmRecord role 66005a70-6317-e511-80da-c4346bc43d94 name
 
- C:\PS>Remove-CrmSecurityRoleFromTeam $team $role
+ PS C:\>Remove-CrmSecurityRoleFromTeam $team $role
 
  This example removes a security role to a team by using record objects.
 
@@ -6686,11 +6786,11 @@ function Remove-CrmSecurityRoleFromUser{
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
- C:\PS>$user = Get-CrmRecord sysetmuser 00005a70-6317-e511-80da-c4346bc43d94 fullname
+ PS C:\>$user = Get-CrmRecord sysetmuser 00005a70-6317-e511-80da-c4346bc43d94 fullname
 
- C:\PS>$role = Get-CrmRecord role 66005a70-6317-e511-80da-c4346bc43d94 name
+ PS C:\>$role = Get-CrmRecord role 66005a70-6317-e511-80da-c4346bc43d94 name
 
- C:\PS>Remove-CrmSecurityRoleFromUser $user $role
+ PS C:\>Remove-CrmSecurityRoleFromUser $user $role
 
  This example removes a security role to a user by using record objects.
 
@@ -7752,16 +7852,16 @@ function Set-CrmUserSettings{
  A CRMUserSettings object. Use Get-CrmUserSettings to retrieve the setting.
    
  .EXAMPLE
- C:\PS>$userSettings = Get-CrmUserSettings -conn $conn -UserId (Get-MyCrmUserId) -Fields *
- C:\PS>$userSettings.timezonecode = 4
- C:\PS>Set-CrmUserSettings -conn $conn -CrmRecord $userSettings
+ PS C:\>$userSettings = Get-CrmUserSettings -conn $conn -UserId (Get-MyCrmUserId) -Fields *
+ PS C:\>$userSettings.timezonecode = 4
+ PS C:\>Set-CrmUserSettings -conn $conn -CrmRecord $userSettings
 
  This example retrieves retrieves all fields from login User's UserSettings update TimeZone to Pacific Time.
 
  .EXAMPLE
- C:\PS>$userSettings = Get-CrmUserSettings (Get-MyCrmUserId) *
- C:\PS>$userSettings.paginglimit = 100
- C:\PS>Set-CrmUserSettings $userSettings
+ PS C:\>$userSettings = Get-CrmUserSettings (Get-MyCrmUserId) *
+ PS C:\>$userSettings.paginglimit = 100
+ PS C:\>Set-CrmUserSettings $userSettings
 
  This example retrieves all fields from login User's UserSettings and update PagingLimit to 100 by omitting parameter names.
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
@@ -7824,8 +7924,8 @@ function New-CrmMoney{
 
  .EXAMPLE
  New-CrmMoney 1000.01
-   Value ExtensionData
-   ----- -------------
+ Value ExtensionData
+ ----- -------------
  1000.01
 
  This example instantiates Money object with Value of 1000.01 by ommiting parameter names.
