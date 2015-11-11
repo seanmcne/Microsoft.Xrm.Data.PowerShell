@@ -6117,10 +6117,14 @@ function Get-CrmUserPrivileges{
 
  .DESCRIPTION
  The Get-CrmUserPrivileges cmdlet lets you retrieve privileges a CRM User has. Result set contains following properties.
+
  Depth: Accumulated privilege Depth
  PrivilegeId: Privilege ID
  PrivilegeName: Privilege Name
- Origin: Indicate where the privilege comes from. RoleName(TeamName):Depth format 
+ Origin: Indicate where the privilege comes from. RoleName:Depth format
+ PrincipalType: User or Team
+ PrincipalName: User's fullname or Team's name
+ BusinessUnitName: User's or Team's BusinessUnitName
 
  .PARAMETER conn
  A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
@@ -6130,19 +6134,41 @@ function Get-CrmUserPrivileges{
    
  .EXAMPLE
  Get-CrmUserPrivileges -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d
- Depth PrivilegeId                          PrivilegeName           Origin                                                                  
- ----- -----------                          -------------           ------                                                                  
- Global 78777c10-09ab-4326-b4c8-cf5729702937 prvAppendActivity      CSR Manager(TeamA):Deep,Salesperson:Local,System Administrator:Global   
- Global 3004684d-5d30-40a8-a8c0-7e92a2c9f326 prvAppendnew_entitya   System Administrator:Global 
+ Depth            : Global
+ PrivilegeId      : 59f49e9a-a621-4836-8a35-b44f1f7122fb
+ PrivilegeName    : prvAppendToConvertRule
+ Origin           : Marketing Manager:Global,System Administrator:Global
+ PrincipalType    : User
+ PrincipalName    : kenichiro nakamura
+ BusinessUnitName : Contoso
+ 
+ Depth            : Global
+ PrivilegeId      : 368aff3b-95b1-45c1-bf73-01a7becdedc5
+ PrivilegeName    : prvAppendToCustomerOpportunityRole
+ Origin           : Salesperson:Global
+ PrincipalType    : Team
+ PrincipalName    : TeamA
+ BusinessUnitName : Contoso 
  ...
 
  This example retrieves privileges assigned to the CRM User.
 
  Get-CrmUserPrivileges f9d40920-7a43-4f51-9749-0549c4caf67d
- Depth PrivilegeId                          PrivilegeName           Origin                                                                  
- ----- -----------                          -------------           ------                                                                  
- Global 78777c10-09ab-4326-b4c8-cf5729702937 prvAppendActivity      CSR Manager(TeamA):Deep,Salesperson:Local,System Administrator:Global   
- Global 3004684d-5d30-40a8-a8c0-7e92a2c9f326 prvAppendnew_entitya   System Administrator:Global 
+ Depth            : Global
+ PrivilegeId      : 59f49e9a-a621-4836-8a35-b44f1f7122fb
+ PrivilegeName    : prvAppendToConvertRule
+ Origin           : Marketing Manager:Global,System Administrator:Global
+ PrincipalType    : User
+ PrincipalName    : kenichiro nakamura
+ BusinessUnitName : Contoso
+ 
+ Depth            : Global
+ PrivilegeId      : 368aff3b-95b1-45c1-bf73-01a7becdedc5
+ PrivilegeName    : prvAppendToCustomerOpportunityRole
+ Origin           : Salesperson:Global
+ PrincipalType    : Team
+ PrincipalName    : TeamA
+ BusinessUnitName : Contoso 
  ...
 
  This example retrieves privileges assigned to the CRM User by omitting parameter names.
@@ -6174,6 +6200,8 @@ function Get-CrmUserPrivileges{
     
     # Get User Rolls including Team
     $roles = Get-CrmUserSecurityRoles -conn $conn -UserId $UserId -IncludeTeamRoles
+    # Get User name
+    $user = Get-CrmRecord -conn $conn -EntityLogicalName systemuser -Id $UserId -Fields fullname
     # Get all privilege records for PrivilegeName
 	$privilegeRecords = (Get-CrmRecords -conn $conn -EntityLogicalName privilege -Fields name,privilegeid -WarningAction SilentlyContinue).CrmRecords
     # Create hash for performance reason
@@ -6183,11 +6211,12 @@ function Get-CrmUserPrivileges{
     # Create Result as hash for performance reason
     $results = @{}
     
-	foreach($role in $roles)
+    $isUserRoleInitialized = $false
+	foreach($role in $roles | sort TeamName)
 	{
         # Get all privileges for the role
 	    $request = New-Object Microsoft.Crm.Sdk.Messages.RetrieveRolePrivilegesRoleRequest
-	        
+	    
 	    try
 	    {
 	        $request.RoleId = $role.RoleId
@@ -6200,20 +6229,15 @@ function Get-CrmUserPrivileges{
 	    
 	    foreach($rolePrivilege in $rolePrivileges)
 	    {
-            # Create origin as "RoleName(TeamName):Depth" format
-            if($role.TeamName -eq $null) 
-            {
-                $origin = $role.RoleName + ":" + $rolePrivilege.Depth
-            }
-            else
-            {
-                $origin = $role.RoleName + "(" + $role.TeamName + "):" + $rolePrivilege.Depth
-            }
-                        
-	        if($results.Contains($rolePrivilege.PrivilegeId))
+            # Create origin as "RoleName:Depth" format
+            $origin = $role.RoleName + ":" + $rolePrivilege.Depth
+            
+            # If the role is assigned to a team, then add them separately.
+            # For roles assign to the user, then accumulate them.
+	        if($isUserRoleInitialized -and $results.Contains($rolePrivilege.PrivilegeId))
 	        {
                 $existingObj = $results[$rolePrivilege.PrivilegeId]
-
+                                
                 # Overwrite Depth only if it has higher privilege
                 if([Microsoft.Crm.Sdk.Messages.PrivilegeDepth]::($rolePrivilege.Depth) -gt [Microsoft.Crm.Sdk.Messages.PrivilegeDepth]::($existingObj.Depth))
                 {
@@ -6226,16 +6250,33 @@ function Get-CrmUserPrivileges{
 	        {       
                 # Create new result object     
 	            $psobj = New-Object -TypeName System.Management.Automation.PSObject
+                if($role.TeamName -eq $null)
+                {
+                    $principalType = "User"
+                    $principalName = $user.fullname
+                    $key = $rolePrivilege.PrivilegeId
+                }
+                else
+                {
+                    $principalType = "Team"
+                    $principalName = $role.TeamName
+                    $key = $rolePrivilege.PrivilegeId.Guid + $origin
+                }
 	            Add-Member -InputObject $psobj -MemberType NoteProperty -Name "Depth" -Value $rolePrivilege.Depth
 	            Add-Member -InputObject $psobj -MemberType NoteProperty -Name "PrivilegeId" -Value $rolePrivilege.PrivilegeId
 	            Add-Member -InputObject $psobj -MemberType NoteProperty -Name "PrivilegeName" -Value $privileges[($rolePrivilege.PrivilegeId)]
 	            Add-Member -InputObject $psobj -MemberType NoteProperty -Name "Origin" -Value $origin
-	            $results[$rolePrivilege.PrivilegeId] = $psobj
+                Add-Member -InputObject $psobj -MemberType NoteProperty -Name "PrincipalType" -Value $principalType
+                Add-Member -InputObject $psobj -MemberType NoteProperty -Name "PrincipalName" -Value $principalName
+                Add-Member -InputObject $psobj -MemberType NoteProperty -Name "BusinessUnitName" -Value $role.BusinessUnitName
+	            $results[$key] = $psobj
 	        }
 	    }
+
+        if($role.TeamName -eq $null) {$isUserRoleInitialized = $true} 
 	}
     
-    return $results.Values | sort PrivilegeName
+    return $results.Values | sort principalName, PrivilegeName
 }
 
 function Get-CrmUserSecurityRoles{
@@ -6258,32 +6299,30 @@ function Get-CrmUserSecurityRoles{
    
  .EXAMPLE
  Get-CrmUserSecurityRoles -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d
- RoleName            
- --------            
- Salesperson         
- System Administrator
+ RoleId                               RoleName             TeamName BusinessUnitName 
+ ------                               --------             -------- ---------------- 
+ cac2d2c7-c6f7-e411-80de-c4346bc520c0 Marketing Manager    TeamA    Contoso
+ 57d5d2c7-c6f7-e411-80de-c4346bc520c0 Salesperson                   Contoso
  ...
 
  This example retrieves Security Roles assigned to the CRM User.
 
  .EXAMPLE
  Get-CrmUserSecurityRoles -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d -IncludeTeamRoles
- RoleName             TeamName
- --------             --------
- CSR Manager          TeamA   
- Salesperson                  
- System Administrator 
+ RoleId                               RoleName             TeamName BusinessUnitName 
+ ------                               --------             -------- ---------------- 
+ cac2d2c7-c6f7-e411-80de-c4346bc520c0 Marketing Manager    TeamA    Contoso
+ 57d5d2c7-c6f7-e411-80de-c4346bc520c0 Salesperson                   Contoso
  ...
 
  This example retrieves Security Roles assigned to the CRM User and Teams which the CRM User belongs to.
 
  .EXAMPLE
  Get-CrmUserSecurityRoles f9d40920-7a43-4f51-9749-0549c4caf67d -IncludeTeamRoles
- RoleName             TeamName
- --------             --------
- CSR Manager          TeamA   
- Salesperson                  
- System Administrator 
+ RoleId                               RoleName             TeamName BusinessUnitName 
+ ------                               --------             -------- ---------------- 
+ cac2d2c7-c6f7-e411-80de-c4346bc520c0 Marketing Manager    TeamA    Contoso
+ 57d5d2c7-c6f7-e411-80de-c4346bc520c0 Salesperson                   Contoso
  ...
 
  This example retrieves Security Roles assigned to the CRM User and Teams which the CRM User belongs to by omitting parameter names.
@@ -6327,6 +6366,7 @@ function Get-CrmUserSecurityRoles{
 		    <link-entity name="teamroles" from="roleid" to="roleid" visible="false" intersect="true">
 		      <link-entity name="team" from="teamid" to="teamid" alias="team">
 		      <attribute name="name"/>
+              <attribute name="businessunitid"/>
 		        <link-entity name="teammembership" from="teamid" to="teamid" visible="false" intersect="true">
 		          <link-entity name="systemuser" from="systemuserid" to="systemuserid" alias="af">
 		            <filter type="and">
@@ -6340,7 +6380,10 @@ function Get-CrmUserSecurityRoles{
 		</fetch>
 "@ -F $UserId
 		
-		(Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords | select @{name="RoleId";expression={$_.roleid}}, @{name="RoleName";expression={$_.name}}, @{name="TeamName";expression={$_.'team.name'}} | % {$roles.Add($_)}	
+		(Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords | `
+        select @{name="RoleId";expression={$_.roleid}}, @{name="RoleName";expression={$_.name}}, `
+        @{name="TeamName";expression={$_.'team.name'}}, @{name="BusinessUnitName";expression={($_.'team.businessunitid').Name}} | `
+        % {$roles.Add($_)}	
 	}
 
 	$fetch = @"
@@ -6350,7 +6393,8 @@ function Get-CrmUserSecurityRoles{
 	    <attribute name="roleid" />
 	    <order attribute="name" descending="false" />
 	    <link-entity name="systemuserroles" from="roleid" to="roleid" visible="false" intersect="true">
-	      <link-entity name="systemuser" from="systemuserid" to="systemuserid" alias="ag">
+	      <link-entity name="systemuser" from="systemuserid" to="systemuserid" alias="user">
+          <attribute name="businessunitid"/>
 	        <filter type="and">
 	          <condition attribute="systemuserid" operator="eq" value="{0}" />
 	        </filter>
@@ -6360,7 +6404,9 @@ function Get-CrmUserSecurityRoles{
 	</fetch>
 "@ -F $UserId
 	
-	(Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords | select @{name="RoleId";expression={$_.roleid}}, @{name="RoleName";expression={$_.name}} | % { $roles.Add($_) }
+	(Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords | `
+    select @{name="RoleId";expression={$_.roleid}}, @{name="RoleName";expression={$_.name}}, `
+    @{name="BusinessUnitName";expression={($_.'user.businessunitid').Name}}  | % { $roles.Add($_) }
 	
 	return $roles
 }
