@@ -6009,6 +6009,135 @@ function Get-CrmUserMailbox{
     return $psobj
 }
 
+function Get-CrmUserPrivileges{
+
+<#
+ .SYNOPSIS
+ Retrieves privileges a CRM User has.
+
+ .DESCRIPTION
+ The Get-CrmUserPrivileges cmdlet lets you retrieve privileges a CRM User has. Result set contains following properties.
+ Depth: Accumulated privilege Depth
+ PrivilegeId: Privilege ID
+ PrivilegeName: Privilege Name
+ Origin: Indicate where the privilege comes from. RoleName(TeamName):Depth format 
+
+ .PARAMETER conn
+ A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
+
+ .PARAMETER UserId
+ An Id (guid) of CRM User.
+   
+ .EXAMPLE
+ Get-CrmUserPrivileges -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d
+ Depth PrivilegeId                          PrivilegeName           Origin                                                                  
+ ----- -----------                          -------------           ------                                                                  
+ Global 78777c10-09ab-4326-b4c8-cf5729702937 prvAppendActivity      CSR Manager(TeamA):Deep,Salesperson:Local,System Administrator:Global   
+ Global 3004684d-5d30-40a8-a8c0-7e92a2c9f326 prvAppendnew_entitya   System Administrator:Global 
+ ...
+
+ This example retrieves privileges assigned to the CRM User.
+
+ Get-CrmUserPrivileges f9d40920-7a43-4f51-9749-0549c4caf67d
+ Depth PrivilegeId                          PrivilegeName           Origin                                                                  
+ ----- -----------                          -------------           ------                                                                  
+ Global 78777c10-09ab-4326-b4c8-cf5729702937 prvAppendActivity      CSR Manager(TeamA):Deep,Salesperson:Local,System Administrator:Global   
+ Global 3004684d-5d30-40a8-a8c0-7e92a2c9f326 prvAppendnew_entitya   System Administrator:Global 
+ ...
+
+ This example retrieves privileges assigned to the CRM User by omitting parameter names.
+ When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+
+#>
+
+    [CmdletBinding()]
+    PARAM(
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1)]
+        [string]$UserId
+    )
+
+    if($conn -eq $null)
+    {
+        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
+        if($connobj.Value -eq $null)
+        {
+            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
+            break;
+        }
+        else
+        {
+            $conn = $connobj.Value
+        }
+    }
+    
+    # Get User Rolls including Team
+    $roles = Get-CrmUserSecurityRoles -conn $conn -UserId $UserId -IncludeTeamRoles
+    # Get all privilege records for PrivilegeName
+	$privilegeRecords = (Get-CrmRecords -conn $conn -EntityLogicalName privilege -Fields name,privilegeid -WarningAction SilentlyContinue).CrmRecords
+    # Create hash for performance reason
+    $privileges = @{}
+    $privilegeRecords | % {$privileges[$_.privilegeid] = $_.name} 
+
+    # Create Result as hash for performance reason
+    $results = @{}
+    
+	foreach($role in $roles)
+	{
+        # Get all privileges for the role
+	    $request = New-Object Microsoft.Crm.Sdk.Messages.RetrieveRolePrivilegesRoleRequest
+	        
+	    try
+	    {
+	        $request.RoleId = $role.RoleId
+	        $rolePrivileges = ($conn.ExecuteCrmOrganizationRequest($request, $null)).RolePrivileges            
+	    }
+	    catch
+	    {
+	        return $conn.LastCrmException
+	    }	    
+	    
+	    foreach($rolePrivilege in $rolePrivileges)
+	    {
+            # Create origin as "RoleName(TeamName):Depth" format
+            if($role.TeamName -eq $null) 
+            {
+                $origin = $role.RoleName + ":" + $rolePrivilege.Depth
+            }
+            else
+            {
+                $origin = $role.RoleName + "(" + $role.TeamName + "):" + $rolePrivilege.Depth
+            }
+                        
+	        if($results.Contains($rolePrivilege.PrivilegeId))
+	        {
+                $existingObj = $results[$rolePrivilege.PrivilegeId]
+
+                # Overwrite Depth only if it has higher privilege
+                if([Microsoft.Crm.Sdk.Messages.PrivilegeDepth]::($rolePrivilege.Depth) -gt [Microsoft.Crm.Sdk.Messages.PrivilegeDepth]::($existingObj.Depth))
+                {
+                    $existingObj.Depth = $rolePrivilege.Depth
+                }
+
+                $existingObj.Origin += "," + $origin
+	        }
+	        else
+	        {       
+                # Create new result object     
+	            $psobj = New-Object -TypeName System.Management.Automation.PSObject
+	            Add-Member -InputObject $psobj -MemberType NoteProperty -Name "Depth" -Value $rolePrivilege.Depth
+	            Add-Member -InputObject $psobj -MemberType NoteProperty -Name "PrivilegeId" -Value $rolePrivilege.PrivilegeId
+	            Add-Member -InputObject $psobj -MemberType NoteProperty -Name "PrivilegeName" -Value $privileges[($rolePrivilege.PrivilegeId)]
+	            Add-Member -InputObject $psobj -MemberType NoteProperty -Name "Origin" -Value $origin
+	            $results[$rolePrivilege.PrivilegeId] = $psobj
+	        }
+	    }
+	}
+    
+    return $results.Values | sort PrivilegeName
+}
+
 function Get-CrmUserSecurityRoles{
 
 <#
@@ -6094,6 +6223,7 @@ function Get-CrmUserSecurityRoles{
 		<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
 		  <entity name="role">
 		    <attribute name="name"/>
+			<attribute name="roleid" />
 		    <link-entity name="teamroles" from="roleid" to="roleid" visible="false" intersect="true">
 		      <link-entity name="team" from="teamid" to="teamid" alias="team">
 		      <attribute name="name"/>
@@ -6110,14 +6240,13 @@ function Get-CrmUserSecurityRoles{
 		</fetch>
 "@ -F $UserId
 		
-		(Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords | select @{name="RoleName";expression={$_.name}}, @{name="TeamName";expression={$_.'team.name'}} | % {$roles.Add($_)}	
+		(Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords | select @{name="RoleId";expression={$_.roleid}}, @{name="RoleName";expression={$_.name}}, @{name="TeamName";expression={$_.'team.name'}} | % {$roles.Add($_)}	
 	}
 
 	$fetch = @"
 	<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
 	  <entity name="role">
 	    <attribute name="name" />
-	    <attribute name="businessunitid" />
 	    <attribute name="roleid" />
 	    <order attribute="name" descending="false" />
 	    <link-entity name="systemuserroles" from="roleid" to="roleid" visible="false" intersect="true">
@@ -6131,7 +6260,7 @@ function Get-CrmUserSecurityRoles{
 	</fetch>
 "@ -F $UserId
 	
-	(Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords | select @{name="RoleName";expression={$_.name}}| % {$roles.Add($_)}
+	(Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords | select @{name="RoleId";expression={$_.roleid}}, @{name="RoleName";expression={$_.name}} | % { $roles.Add($_) }
 	
 	return $roles
 }
@@ -7857,7 +7986,7 @@ function Test-XrmTimerStop{
         $crmtimer = $crmtimerobj.Value
         $crmtimer.Stop()
         $perf = "The operation took " + $crmtimer.Elapsed.ToString()
-        Remove-Variable crmtimer  -Scope global
+        Remove-Variable crmtimer  -Scope Script
         return $perf
     }
 }
