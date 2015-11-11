@@ -3896,15 +3896,18 @@ function Add-CrmSecurityRoleToTeam{
  .PARAMETER SecurityRoleId
  An Id (guid) of security role record
 
+ .PARAMETER SecurityRoleName
+ A name of security role record
+
  .EXAMPLE
  Add-CrmSecurityRoleToTeam -conn $conn -TeamId 00005a70-6317-e511-80da-c4346bc43d94 -SecurityRoleId 66005a70-6317-e511-80da-c4346bc43d94
 
- This example assigns a security role to a team by using Id.
+ This example assigns the security role to the team by using Id.
 
  .EXAMPLE
  Add-CrmSecurityRoleToTeam 00005a70-6317-e511-80da-c4346bc43d94 66005a70-6317-e511-80da-c4346bc43d94
  
- This example assigns a security role to a team by using Id by ommiting parameters names.
+ This example assigns the security role to the team by using Id by ommiting parameters names.
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
@@ -3912,8 +3915,12 @@ function Add-CrmSecurityRoleToTeam{
  PS C:\>$role = Get-CrmRecord role 66005a70-6317-e511-80da-c4346bc43d94 name
  PS C:\>Add-CrmSecurityRoleToTeam $team $role
 
- This example assigns a security role to a team by using record objects.
+ This example assigns the security role to the team by using record objects.
 
+ .EXAMPLE
+ Add-CrmSecurityRoleToUser -conn $conn -TeamId 00005a70-6317-e511-80da-c4346bc43d94 -SecurityRoleName "salesperson"
+ 
+ This example assigns the salesperson role to the team by using Id and role name.
 #>
 
     [CmdletBinding()]
@@ -3922,12 +3929,14 @@ function Add-CrmSecurityRoleToTeam{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
         [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord")]
         [PSObject]$TeamRecord,
-        [parameter(Mandatory=$true, Position=2, ParameterSetName="CrmRecord")]
+        [parameter(Mandatory=$false, Position=2, ParameterSetName="CrmRecord")]
         [PSObject]$SecurityRoleRecord,
         [parameter(Mandatory=$true, Position=1, ParameterSetName="Id")]
         [string]$TeamId,
-        [parameter(Mandatory=$true, Position=2, ParameterSetName="Id")]
-        [string]$SecurityRoleId
+        [parameter(Mandatory=$false, Position=2, ParameterSetName="Id")]
+        [string]$SecurityRoleId,
+        [parameter(Mandatory=$false, Position=2)]
+        [string]$SecurityRoleName
     )
 
     if($conn -eq $null)
@@ -3944,7 +3953,49 @@ function Add-CrmSecurityRoleToTeam{
         }
     }
 
-    if($TeamRecord -ne $null)
+    if($SecurityRoleRecord -eq $null -and $SecurityRoleId -eq "" -and $SecurityRoleName -eq "")
+    {
+        Write-Warning "You need to specify Security Role information"
+        return
+    }
+    
+    if($SecurityRoleName -ne "")
+    {
+        if($TeamRecord -eq $null -or $TeamRecord.businessunitid -eq $null)
+        {
+            $TeamRecord = Get-CrmRecord -conn $conn -EntityLogicalName team -Id $TeamId -Fields businessunitid
+        }
+
+        $fetch = @"
+        <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
+          <entity name="role">
+            <attribute name="businessunitid" />
+            <attribute name="roleid" />
+            <filter type="and">
+              <condition attribute="name" operator="eq" value="{0}" />
+              <condition attribute="businessunitid" operator="eq" value="{1}" />
+            </filter>
+          </entity>
+        </fetch>
+"@ -F $SecurityRoleName, $TeamRecord.businessunitid_Property.Value.Id
+        
+        $roles = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch)
+        if($roles.CrmRecords.Count -eq 0)
+        {
+            Write-Warning "Not Security Role found"
+            return
+        }
+        else
+        {
+            $role = $roles.CrmRecords[0]
+        }
+    }
+
+    if($SecurityRoleName -ne "")
+    {
+        Add-CrmRecordAssociation -conn $conn -CrmRecord1 $TeamRecord -CrmRecord2 $role -RelationshipName teamroles_association
+    }
+    elseif($TeamRecord -ne $null)
     {
         Add-CrmRecordAssociation -conn $conn -CrmRecord1 $TeamRecord -CrmRecord2 $SecurityRoleRecord -RelationshipName teamroles_association
     }
@@ -3982,16 +4033,19 @@ function Add-CrmSecurityRoleToUser{
 
  .PARAMETER SecurityRoleId
  An Id (guid) of security role record
+ 
+ .PARAMETER SecurityRoleName
+ A name of security role record
 
  .EXAMPLE
  Add-CrmSecurityRoleToUser -conn $conn -UserId 00005a70-6317-e511-80da-c4346bc43d94 -SecurityRoleId 66005a70-6317-e511-80da-c4346bc43d94
 
- This example assigns a security role to a user by using Id.
+ This example assigns the security role to the user by using Id.
 
  .EXAMPLE
  Add-CrmSecurityRoleToUser 00005a70-6317-e511-80da-c4346bc43d94 66005a70-6317-e511-80da-c4346bc43d94
  
- This example assigns a security role to a user by using Id by ommiting parameters names.
+ This example assigns the security role to the user by using Id by ommiting parameters names.
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
@@ -4001,8 +4055,12 @@ function Add-CrmSecurityRoleToUser{
 
  PS C:\>Add-CrmSecurityRoleToUser $user $role
 
- This example assigns a security role to a user by using record objects.
+ This example assigns the security role to the user by using record objects.
+
+ .EXAMPLE
+ Add-CrmSecurityRoleToUser -conn $conn -UserId 00005a70-6317-e511-80da-c4346bc43d94 -SecurityRoleName "salesperson"
  
+ This example assigns the salesperson role to the user by using Id and role name.
 #>
 
     [CmdletBinding()]
@@ -4011,12 +4069,14 @@ function Add-CrmSecurityRoleToUser{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
         [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord")]
         [PSObject]$UserRecord,
-        [parameter(Mandatory=$true, Position=2, ParameterSetName="CrmRecord")]
+        [parameter(Mandatory=$false, Position=2, ParameterSetName="CrmRecord")]
         [PSObject]$SecurityRoleRecord,
         [parameter(Mandatory=$true, Position=1, ParameterSetName="Id")]
         [string]$UserId,
-        [parameter(Mandatory=$true, Position=2, ParameterSetName="Id")]
-        [string]$SecurityRoleId
+        [parameter(Mandatory=$false, Position=2, ParameterSetName="Id")]
+        [string]$SecurityRoleId,
+        [parameter(Mandatory=$false, Position=2)]
+        [string]$SecurityRoleName
     )
 
     if($conn -eq $null)
@@ -4033,7 +4093,49 @@ function Add-CrmSecurityRoleToUser{
         }
     }
 
-    if($UserRecord -ne $null)
+    if($SecurityRoleRecord -eq $null -and $SecurityRoleId -eq "" -and $SecurityRoleName -eq "")
+    {
+        Write-Warning "You need to specify Security Role information"
+        return
+    }
+    
+    if($SecurityRoleName -ne "")
+    {
+        if($UserRecord -eq $null -or $UserRecord.businessunitid -eq $null)
+        {
+            $UserRecord = Get-CrmRecord -conn $conn -EntityLogicalName team -Id $UserId -Fields businessunitid
+        }
+
+        $fetch = @"
+        <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
+          <entity name="role">
+            <attribute name="businessunitid" />
+            <attribute name="roleid" />
+            <filter type="and">
+              <condition attribute="name" operator="eq" value="{0}" />
+              <condition attribute="businessunitid" operator="eq" value="{1}" />
+            </filter>
+          </entity>
+        </fetch>
+"@ -F $SecurityRoleName, $UserRecord.businessunitid_Property.Value.Id
+        
+        $roles = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch)
+        if($roles.CrmRecords.Count -eq 0)
+        {
+            Write-Warning "Not Security Role found"
+            return
+        }
+        else
+        {
+            $role = $roles.CrmRecords[0]
+        }
+    }
+
+    if($SecurityRoleName -ne "")
+    {
+        Add-CrmRecordAssociation -conn $conn -CrmRecord1 $UserRecord -CrmRecord2 $role -RelationshipName systemuserroles_association
+    }
+    elseif($UserRecord -ne $null)
     {
         Add-CrmRecordAssociation -conn $conn -CrmRecord1 $UserRecord -CrmRecord2 $SecurityRoleRecord -RelationshipName systemuserroles_association
     }
