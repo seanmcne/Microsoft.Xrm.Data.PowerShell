@@ -1161,7 +1161,7 @@ function Set-CrmRecordOwner{
     PARAM(
         [parameter(Mandatory=$false)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,        
-        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord")]
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord", ValueFromPipeline=$true)]
         [PSObject]$CrmRecord,
         [parameter(Mandatory=$true, Position=1, ParameterSetName="NameWithId")]
         [string]$EntityLogicalName,
@@ -1173,60 +1173,66 @@ function Set-CrmRecordOwner{
 		[switch]$AssignToTeam
     )
 
-    if($conn -eq $null)
+    begin
     {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
+        if($conn -eq $null)
         {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
+            $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
+            if($connobj.Value -eq $null)
+            {
+                Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
+                break;
+            }
+            else
+            {
+                $conn = $connobj.Value
+            }
         }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }  
+    }     
 
-    if($CrmRecord -ne $null)
-    {
-        $EntityLogicalName = $CrmRecord.logicalname
-        $Id = $CrmRecord.($EntityLogicalName + "id")
-    }
+	process
+	{
+		if($CrmRecord -ne $null)
+		{
+		    $EntityLogicalName = $CrmRecord.logicalname
+		    $Id = $CrmRecord.($EntityLogicalName + "id")
+		}
 
-    try
-    {
-		if($conn.LastCrmException -ne $null){
-			$errTrack = $conn.LastCrmException.getHashCode(); 
-			#Write-Verbose "Before Hashcode: $errTrack"
-		}
-		else{
-			$errTrack = $null;
-		}
-		if($AssignToTeam){
-			write-verbose "Assigning record with Id: $Id to Team with Id: $PrincipalId"
-			
-			$req = New-Object Microsoft.Crm.Sdk.Messages.AssignRequest
-			$req.target = New-CrmEntityReference -EntityLogicalName $EntityLogicalName -Id $Id; 
-			$req.Assignee = New-CrmEntityReference -EntityLogicalName "team" -Id $PrincipalId; 
-			$result = [Microsoft.Crm.Sdk.Messages.AssignResponse]$conn.ExecuteCrmOrganizationRequest($req, $null);
-		}
-		else{
-	        $result = $conn.AssignEntityToUser($PrincipalId, $EntityLogicalName, $Id, [Guid]::Empty)
-		}
-		#Checks to see if the hashcode of the last exception is present, and compares it to the current exception hashcode (if present)
-		if($conn.LastCrmException -ne $null -And $errTrack -ne $null){
-			#Write-Verbose "After Hashcode: $errTrack"
-			if($errTrack -ne $conn.LastCrmException.getHashCode() ){
-				write-error $conn.LastCrmException
-				throw $conn.LastCrmException; 
+		try
+		{
+			if($conn.LastCrmException -ne $null){
+				$errTrack = $conn.LastCrmException.getHashCode(); 
+				#Write-Verbose "Before Hashcode: $errTrack"
 			}
+			else{
+				$errTrack = $null;
+			}
+			if($AssignToTeam){
+				write-verbose "Assigning record with Id: $Id to Team with Id: $PrincipalId"
+				
+				$req = New-Object Microsoft.Crm.Sdk.Messages.AssignRequest
+				$req.target = New-CrmEntityReference -EntityLogicalName $EntityLogicalName -Id $Id; 
+				$req.Assignee = New-CrmEntityReference -EntityLogicalName "team" -Id $PrincipalId; 
+				$result = [Microsoft.Crm.Sdk.Messages.AssignResponse]$conn.ExecuteCrmOrganizationRequest($req, $null);
+			}
+			else{
+		        $result = $conn.AssignEntityToUser($PrincipalId, $EntityLogicalName, $Id, [Guid]::Empty)
+			}
+			#Checks to see if the hashcode of the last exception is present, and compares it to the current exception hashcode (if present)
+			if($conn.LastCrmException -ne $null -And $errTrack -ne $null){
+				#Write-Verbose "After Hashcode: $errTrack"
+				if($errTrack -ne $conn.LastCrmException.getHashCode() ){
+					write-error $conn.LastCrmException
+					throw $conn.LastCrmException; 
+				}
+			}
+			write-verbose "Completed..."
 		}
-		write-verbose "Completed..."
-    }
-    catch
-    {
-        return $conn.LastCrmException
-    }
+		catch
+		{
+		    return $conn.LastCrmException
+		}
+	}
 }
 
 #CloseActivity 
@@ -1781,7 +1787,7 @@ function Add-CrmActivityToCrmRecord{
     PARAM(
         [parameter(Mandatory=$false)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,        
-        [parameter(Mandatory=$true, Position=1, ValueFromPipeline=$true, ParameterSetName="CrmRecord")]
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord", ValueFromPipeline=$true)]
         [PSObject]$CrmRecord,
         [parameter(Mandatory=$true, Position=1, ParameterSetName="NameWithId")]
         [string]$EntityLogicalName,
@@ -1799,31 +1805,35 @@ function Add-CrmActivityToCrmRecord{
         [hashtable]$Fields
     )
 
-    
-    if($conn -eq $null)
+    begin
     {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
+        if($conn -eq $null)
         {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
+            $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
+            if($connobj.Value -eq $null)
+            {
+                Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
+                break;
+            }
+            else
+            {
+                $conn = $connobj.Value
+            }
         }
     }  
 
-    if($CrmRecord -ne $null)
-    {
+	process
+	{
+		if($CrmRecord -ne $null)
+		{
         $EntityLogicalName = $CrmRecord.logicalname
         $Id = $CrmRecord.($EntityLogicalName + "id")
     }
 
-    $newfields = New-Object 'System.Collections.Generic.Dictionary[[String], [Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper]]'
-    
-    if($Fields -ne $null)
-    {
+		$newfields = New-Object 'System.Collections.Generic.Dictionary[[String], [Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper]]'
+		
+		if($Fields -ne $null)
+		{
         foreach($field in $Fields.GetEnumerator())
         {  
             $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
@@ -1873,17 +1883,18 @@ function Add-CrmActivityToCrmRecord{
         }
     }
 
-    try
-    {
+		try
+		{
         $result = $conn.CreateNewActivityEntry($ActivityEntityType, $EntityLogicalName, $Id,
                 $Subject, $Description, $OnwerUserId, $newfields, [Guid]::Empty)
     }
-    catch
-    {
+		catch
+		{
         return $conn.LastCrmException
     }
 
-    return $result
+		return $result
+	}
 }
 
 #DeleteEntityAssociation
@@ -3823,7 +3834,7 @@ function Set-CrmRecordState{
     PARAM(
         [parameter(Mandatory=$false)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
-        [parameter(Mandatory=$true, Position=1, ValueFromPipeline=$true, ParameterSetName="CrmRecord")]
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord", ValueFromPipeline=$true)]
         [PSObject]$CrmRecord,
         [parameter(Mandatory=$true, Position=1, ParameterSetName="NameWithId")]
         [string]$EntityLogicalName,
@@ -3835,34 +3846,40 @@ function Set-CrmRecordState{
         [string]$StatusCode
     )
 
-    if($conn -eq $null)
+    begin
     {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
+        if($conn -eq $null)
         {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
+            $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
+            if($connobj.Value -eq $null)
+            {
+                Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
+                break;
+            }
+            else
+            {
+                $conn = $connobj.Value
+            }
         }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }    
+    }     
 
-    if($CrmRecord -ne $null)
-    {
-        $EntityLogicalName = $CrmRecord.logicalname
-        $Id = $CrmRecord.($EntityLogicalName + "id")
-    }
+	process
+	{
+		if($CrmRecord -ne $null)
+		{
+			$EntityLogicalName = $CrmRecord.logicalname
+		    $Id = $CrmRecord.($EntityLogicalName + "id")
+		}
 
-    try
-    {
-        $result = $conn.UpdateStateAndStatusForEntity($EntityLogicalName, $Id, $stateCode, $statusCode, [Guid]::Empty)
-    }
-    catch
-    {
-        return $conn.LastCrmException
-    }
+		try
+		{
+			$result = $conn.UpdateStateAndStatusForEntity($EntityLogicalName, $Id, $stateCode, $statusCode, [Guid]::Empty)
+		}
+		catch
+		{
+			return $conn.LastCrmException
+		}
+	}
 }
 
 ### Other Cmdlets added by Dynamics CRM PFE ###
