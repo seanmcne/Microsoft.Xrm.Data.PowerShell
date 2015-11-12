@@ -4695,6 +4695,73 @@ function Export-CrmSolutionTranslation{
     return $result
 }
 
+function Get-CrmAllLanguagePacks{
+
+<#
+ .SYNOPSIS
+ Executes RetrieveAvailableLanguagesRequest Organization Request.
+
+ .DESCRIPTION
+ The Get-CrmAllLanguagePacks cmdlet lets you retrieve all available LanguagePack.
+
+ .PARAMETER conn
+ A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
+
+ .EXAMPLE
+ PS C:\>Get-CrmAllLanguagePacks -conn $conn
+ 1041
+ 1033
+ 2052
+ ...
+
+ This example retrieves all available Language Pack.
+
+ .EXAMPLE
+ PS C:\>Get-CrmAllLanguagePacks
+ 1041
+ 1033
+ 2052
+ ...
+
+ This example etrieves all available Language Pack by ommiting parameters names.
+ When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+
+#>
+
+	[CmdletBinding()]
+    PARAM( 
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
+    )
+
+    if($conn -eq $null)
+    {
+        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
+        if($connobj.Value -eq $null)
+        {
+            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
+            break;
+        }
+        else
+        {
+            $conn = $connobj.Value
+        }
+    }  
+
+    $request = New-Object Microsoft.Crm.Sdk.Messages.RetrieveAvailableLanguagesRequest
+
+    try
+    {
+        $response = $conn.ExecuteCrmOrganizationRequest($request, $null)
+    }
+    catch
+    {
+        return $conn.LastCrmException
+    }    
+
+    return $response.LocaleIds
+}
+
 function Get-CrmEntityRecordCount{
 
 <#
@@ -4784,71 +4851,149 @@ function Get-CrmEntityRecordCount{
     return $count
 }
 
-function Get-CrmAllLanguagePacks{
+function Get-CrmFailedWorkflows{
 
 <#
  .SYNOPSIS
- Executes RetrieveAvailableLanguagesRequest Organization Request.
+ Retrieves alert notifications from CRM organization.
 
  .DESCRIPTION
- The Get-CrmAllLanguagePacks cmdlet lets you retrieve all available LanguagePack.
+ The Get-CrmFailedWorkflows cmdlet lets you retrieve failed workflows from a CRM organization.
 
  .PARAMETER conn
  A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
+  
+ .EXAMPLE
+ Key            Value
+ ---            -----
+ CrmRecords     {@{startedon_Property=[startedon, 9/14/2015 8:03:11 AM]; startedon=9/14/2015 3:03 AM;....
+ Count          2565
+ PagingCookie   <cookie page="1"><modifiedon last="2015-05-10T01:43:22-03:00" first="2015-05-10T01:4...
+ NextPage       False
+ FetchXml       <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false">...
+
+ This example retrieves failed workflow (asyncoperation) records.
 
  .EXAMPLE
- PS C:\>Get-CrmAllLanguagePacks -conn $conn
- 1041
- 1033
- 2052
- ...
+ Get-CrmFailedWorkflows
+ Key            Value
+ ---            -----
+ CrmRecords     {@{startedon_Property=[startedon, 9/14/2015 8:03:11 AM]; startedon=9/14/2015 3:03 AM;....
+ Count          2565
+ PagingCookie   <cookie page="1"><modifiedon last="2015-05-10T01:43:22-03:00" first="2015-05-10T01:4...
+ NextPage       False
+ FetchXml       <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false">...
 
- This example retrieves all available Language Pack.
-
- .EXAMPLE
- PS C:\>Get-CrmAllLanguagePacks
- 1041
- 1033
- 2052
- ...
-
- This example etrieves all available Language Pack by ommiting parameters names.
+ This example retrieves failed workflow records notifications by omitting parameter names.
  When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+
+ .EXAMPLE
+ Get-CrmFailedWorkflows | % {$_.CrmRecords} | select message,startedon
+startedon           message
+---------           -------
+9/14/2015 3:03 AM   Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
+9/13/2015 3:03 AM   Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
+9/12/2015 3:03 AM   Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
+9/11/2015 3:03 AM   Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
+9/10/2015 3:03 AM   Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
+9/9/2015 2:46 PM    Plugin Trace:...
+9/9/2015 3:03 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
+9/8/2015 3:03 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
+9/7/2015 3:02 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
+9/6/2015 3:03 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
+9/5/2015 3:02 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
+9/4/2015 7:30 AM    Plugin Trace:...
+9/4/2015 3:02 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
+9/3/2015 3:02 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
+9/2/2015 3:02 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
+9/1/2015 3:02 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
+8/31/2015 4:49 PM   Plugin Trace:...
+8/31/2015 4:33 PM   Plugin Trace:...
+8/31/2015 4:33 PM   Plugin Trace:...
+ ...
+ 
+ This example retrieves workflow errors and displays them with the startedon and message attributes.
 
 #>
 
-	[CmdletBinding()]
-    PARAM( 
+    [CmdletBinding()]
+    PARAM(
         [parameter(Mandatory=$false)]
-        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
-    )
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$false, Position=2)]
+        [int]$TopCount,
+        [parameter(Mandatory=$false, Position=3)]
+        [int]$PageNumber,
+        [parameter(Mandatory=$false, Position=4)]
+        [string]$PageCookie,
+        [parameter(Mandatory=$false, Position=5)]
+        [switch]$AllRows
 
+    )
+    
     if($conn -eq $null)
     {
         $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
         if($connobj.Value -eq $null)
         {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
+            Write-Warning 'Get-CrmTraceAlerts(): You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
             break;
         }
         else
         {
             $conn = $connobj.Value
         }
-    }  
-
-    $request = New-Object Microsoft.Crm.Sdk.Messages.RetrieveAvailableLanguagesRequest
-
-    try
-    {
-        $response = $conn.ExecuteCrmOrganizationRequest($request, $null)
     }
-    catch
-    {
-        return $conn.LastCrmException
-    }    
+    
+    $fetch = @"
+<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
+              <entity name="asyncoperation">
+                <attribute name="asyncoperationid" />
+                <attribute name="name" />
+                <attribute name="regardingobjectid" />
+                <attribute name="operationtype" />
+                <attribute name="statuscode" />
+                <attribute name="ownerid" />
+                <attribute name="startedon" />
+                <attribute name="statecode" />
+                <attribute name="workflowstagename" />
+                <attribute name="postponeuntil" />
+                <attribute name="owningextensionid" />
+                <attribute name="modifiedon" />
+                <attribute name="modifiedonbehalfby" />
+                <attribute name="modifiedby" />
+                <attribute name="messagename" />
+                <attribute name="message" />
+                <attribute name="friendlymessage" />
+                <attribute name="errorcode" />
+                <attribute name="createdon" />
+                <attribute name="createdonbehalfby" />
+                <attribute name="createdby" />
+                <attribute name="completedon" />
+                <order attribute="startedon" descending="true" />
+                <filter type="and">
+                  <condition attribute="recurrencestarttime" operator="null" />
+                  <condition attribute="message" operator="not-null" />
+                </filter>
+              </entity>
+            </fetch>
+"@
+    
+    if($AllRows){
+        $results = Get-CrmRecordsByFetch -conn $conn -Fetch $fetch -TopCount $TopCount -PageNumber $PageNumber -PageCookie $PagingCookie -AllRows 
+    }
+    else{
+        $results = Get-CrmRecordsByFetch -conn $conn -Fetch $fetch -TopCount $TopCount -PageNumber $PageNumber -PageCookie $PagingCookie 
+    }
 
-    return $response.LocaleIds
+    if($results.CrmRecords.Count -eq 0)
+    {
+        Write-Warning 'No failed worklfows found.'
+    }
+    else
+    {
+        return $results
+    }
 }
 
 function Get-CrmLicenseSummary{
@@ -5384,6 +5529,93 @@ function Get-CrmRecordsCount{
     return $results.Count
 }
 
+function Get-CrmSdkMessageProcessingStepsForPluginAssembly{
+
+<#
+ .SYNOPSIS
+ Retrieves all registered steps for Plugin.
+
+ .DESCRIPTION
+ The Get-CrmSdkMessageProcessingStepsForPluginAssembly cmdlet lets you retrieve all registered steps for Plugin.
+
+ .PARAMETER conn
+ A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
+
+ .PARAMETER PluginAssemblyName
+ A plugin assembly name.
+
+ .PARAMETER OnlyCustomizable
+ By specifying this swich returns only customizable steps. 
+  
+ .EXAMPLE
+ Get-CrmSdkMessageProcessingStepsForPluginAssembly -conn $conn -PluginAssemblyName YourPluginAssemblyName
+ 
+ This example retrieves all registered steps for the plugin assembly.
+
+ .EXAMPLE
+ Get-CrmSdkMessageProcessingStepsForPluginAssembly -conn $conn -PluginAssemblyName YourPluginAssemblyName -OnlyCustomizable
+ 
+ This example retrieves all registered customizable steps for the plugin assembly.
+
+ .EXAMPLE
+ Get-CrmSdkMessageProcessingStepsForPluginAssembly -PluginAssemblyName YourPluginAssemblyName
+ 
+ This example retrieves all registered steps for the plugin assembly by omitting parameter names.
+ When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.  
+#>
+    [CmdletBinding()]
+    PARAM(
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1)]
+        [string]$PluginAssemblyName,
+        [parameter(Mandatory=$false, Position=2)]
+        [switch]$OnlyCustomizable
+    )
+
+    if($conn -eq $null)
+    {
+        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
+        if($connobj.Value -eq $null)
+        {
+            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
+            break;
+        }
+        else
+        {
+            $conn = $connobj.Value
+        }
+    }
+        
+    if($OnlyCustomizable){ $isCustom = "<value>1</value>" } else { $isCustom = "<value>0</value><value>1</value>" }
+
+    $fetch = @"
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
+      <entity name="sdkmessageprocessingstep">
+        <all-attributes/>
+        <link-entity name="sdkmessagefilter" from="sdkmessagefilterid" to="sdkmessagefilterid" visible="false" link-type="outer" alias="a1">
+          <attribute name="secondaryobjecttypecode" />
+          <attribute name="primaryobjecttypecode" />
+        </link-entity>
+        <link-entity name="plugintype" from="plugintypeid" to="plugintypeid" alias="ab">
+          <filter type="and">
+            <condition attribute="assemblyname" operator="eq" value="{0}" />            
+          </filter>
+        </link-entity>
+        <filter type="and">
+            <condition attribute="iscustomizable" operator="in">
+                {1}
+            </condition> 
+        </filter>
+      </entity>
+    </fetch>
+"@ -F $PluginAssemblyName, $isCustom
+    
+    $results = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords
+    
+    return $results
+}
+
 function Get-CrmSiteMap{
 
 <#
@@ -5738,238 +5970,6 @@ function Get-CrmTimeZones{
     $results = Get-CrmRecordsByFetch -conn $conn -Fetch $fetch
 
     return $results.CrmRecords | select @{name="Timezone Name";expression={$_.userinterfacename}},@{name="TimeZone Code";expression={$_.timezonecode}}
-}
-
-function Get-CrmFailedWorkflows{
-
-<#
- .SYNOPSIS
- Retrieves alert notifications from CRM organization.
-
- .DESCRIPTION
- The Get-CrmFailedWorkflows cmdlet lets you retrieve failed workflows from a CRM organization.
-
- .PARAMETER conn
- A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
-  
- .EXAMPLE
- Key            Value
- ---            -----
- CrmRecords     {@{startedon_Property=[startedon, 9/14/2015 8:03:11 AM]; startedon=9/14/2015 3:03 AM;....
- Count          2565
- PagingCookie   <cookie page="1"><modifiedon last="2015-05-10T01:43:22-03:00" first="2015-05-10T01:4...
- NextPage       False
- FetchXml       <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false">...
-
- This example retrieves failed workflow (asyncoperation) records.
-
- .EXAMPLE
- Get-CrmFailedWorkflows
- Key            Value
- ---            -----
- CrmRecords     {@{startedon_Property=[startedon, 9/14/2015 8:03:11 AM]; startedon=9/14/2015 3:03 AM;....
- Count          2565
- PagingCookie   <cookie page="1"><modifiedon last="2015-05-10T01:43:22-03:00" first="2015-05-10T01:4...
- NextPage       False
- FetchXml       <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false">...
-
- This example retrieves failed workflow records notifications by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
- .EXAMPLE
- Get-CrmFailedWorkflows | % {$_.CrmRecords} | select message,startedon
-startedon           message
----------           -------
-9/14/2015 3:03 AM   Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
-9/13/2015 3:03 AM   Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
-9/12/2015 3:03 AM   Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
-9/11/2015 3:03 AM   Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
-9/10/2015 3:03 AM   Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
-9/9/2015 2:46 PM    Plugin Trace:...
-9/9/2015 3:03 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
-9/8/2015 3:03 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
-9/7/2015 3:02 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
-9/6/2015 3:03 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
-9/5/2015 3:02 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
-9/4/2015 7:30 AM    Plugin Trace:...
-9/4/2015 3:02 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
-9/3/2015 3:02 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
-9/2/2015 3:02 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
-9/1/2015 3:02 AM    Unhandled Exception: System.ServiceModel.FaultException`1[[Microsoft.Xrm.Sdk.OrganizationServiceFault...
-8/31/2015 4:49 PM   Plugin Trace:...
-8/31/2015 4:33 PM   Plugin Trace:...
-8/31/2015 4:33 PM   Plugin Trace:...
- ...
- 
- This example retrieves workflow errors and displays them with the startedon and message attributes.
-
-#>
-
-    [CmdletBinding()]
-    PARAM(
-        [parameter(Mandatory=$false)]
-        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
-        [parameter(Mandatory=$false, Position=2)]
-        [int]$TopCount,
-        [parameter(Mandatory=$false, Position=3)]
-        [int]$PageNumber,
-        [parameter(Mandatory=$false, Position=4)]
-        [string]$PageCookie,
-        [parameter(Mandatory=$false, Position=5)]
-        [switch]$AllRows
-
-    )
-    
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'Get-CrmTraceAlerts(): You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
-    
-    $fetch = @"
-<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
-              <entity name="asyncoperation">
-                <attribute name="asyncoperationid" />
-                <attribute name="name" />
-                <attribute name="regardingobjectid" />
-                <attribute name="operationtype" />
-                <attribute name="statuscode" />
-                <attribute name="ownerid" />
-                <attribute name="startedon" />
-                <attribute name="statecode" />
-                <attribute name="workflowstagename" />
-                <attribute name="postponeuntil" />
-                <attribute name="owningextensionid" />
-                <attribute name="modifiedon" />
-                <attribute name="modifiedonbehalfby" />
-                <attribute name="modifiedby" />
-                <attribute name="messagename" />
-                <attribute name="message" />
-                <attribute name="friendlymessage" />
-                <attribute name="errorcode" />
-                <attribute name="createdon" />
-                <attribute name="createdonbehalfby" />
-                <attribute name="createdby" />
-                <attribute name="completedon" />
-                <order attribute="startedon" descending="true" />
-                <filter type="and">
-                  <condition attribute="recurrencestarttime" operator="null" />
-                  <condition attribute="message" operator="not-null" />
-                </filter>
-              </entity>
-            </fetch>
-"@
-    
-    if($AllRows){
-        $results = Get-CrmRecordsByFetch -conn $conn -Fetch $fetch -TopCount $TopCount -PageNumber $PageNumber -PageCookie $PagingCookie -AllRows 
-    }
-    else{
-        $results = Get-CrmRecordsByFetch -conn $conn -Fetch $fetch -TopCount $TopCount -PageNumber $PageNumber -PageCookie $PagingCookie 
-    }
-
-    if($results.CrmRecords.Count -eq 0)
-    {
-        Write-Warning 'No failed worklfows found.'
-    }
-    else
-    {
-        return $results
-    }
-}
-
-function Get-CrmSdkMessageProcessingStepsForPluginAssembly{
-
-<#
- .SYNOPSIS
- Retrieves all registered steps for Plugin.
-
- .DESCRIPTION
- The Get-CrmSdkMessageProcessingStepsForPluginAssembly cmdlet lets you retrieve all registered steps for Plugin.
-
- .PARAMETER conn
- A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER PluginAssemblyName
- A plugin assembly name.
-
- .PARAMETER OnlyCustomizable
- By specifying this swich returns only customizable steps. 
-  
- .EXAMPLE
- Get-CrmSdkMessageProcessingStepsForPluginAssembly -conn $conn -PluginAssemblyName YourPluginAssemblyName
- 
- This example retrieves all registered steps for the plugin assembly.
-
- .EXAMPLE
- Get-CrmSdkMessageProcessingStepsForPluginAssembly -conn $conn -PluginAssemblyName YourPluginAssemblyName -OnlyCustomizable
- 
- This example retrieves all registered customizable steps for the plugin assembly.
-
- .EXAMPLE
- Get-CrmSdkMessageProcessingStepsForPluginAssembly -PluginAssemblyName YourPluginAssemblyName
- 
- This example retrieves all registered steps for the plugin assembly by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.  
-#>
-    [CmdletBinding()]
-    PARAM(
-        [parameter(Mandatory=$false)]
-        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
-        [parameter(Mandatory=$true, Position=1)]
-        [string]$PluginAssemblyName,
-        [parameter(Mandatory=$false, Position=2)]
-        [switch]$OnlyCustomizable
-    )
-
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
-        
-    if($OnlyCustomizable){ $isCustom = "<value>1</value>" } else { $isCustom = "<value>0</value><value>1</value>" }
-
-    $fetch = @"
-    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
-      <entity name="sdkmessageprocessingstep">
-        <all-attributes/>
-        <link-entity name="sdkmessagefilter" from="sdkmessagefilterid" to="sdkmessagefilterid" visible="false" link-type="outer" alias="a1">
-          <attribute name="secondaryobjecttypecode" />
-          <attribute name="primaryobjecttypecode" />
-        </link-entity>
-        <link-entity name="plugintype" from="plugintypeid" to="plugintypeid" alias="ab">
-          <filter type="and">
-            <condition attribute="assemblyname" operator="eq" value="{0}" />            
-          </filter>
-        </link-entity>
-        <filter type="and">
-            <condition attribute="iscustomizable" operator="in">
-                {1}
-            </condition> 
-        </filter>
-      </entity>
-    </fetch>
-"@ -F $PluginAssemblyName, $isCustom
-    
-    $results = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords
-    
-    return $results
 }
 
 function Get-CrmTraceAlerts{
@@ -7636,6 +7636,83 @@ function Set-CrmSystemSettings {
     Set-CrmRecord -conn $conn -EntityLogicalName organization -Id $recordid -Fields $updateFields
 }
 
+function Set-CrmUserBusinessUnit{
+
+<#
+ .SYNOPSIS
+ Moves Crm User to another Business Unit.
+
+ .DESCRIPTION
+ The Set-CrmUserBusinessUnit lets you move Crm User to another Business Unit. You can specify different CRM UserId to ReassignUserId to update ownership of records as well. 
+
+ .PARAMETER conn
+ A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
+
+ .PARAMETER UserId
+ An Id (guid) of CRM User which moves to another Business Unit.
+
+ .PARAMETER BusinessUnitId
+ An Id (guid) of Business Unit.
+
+ .PARAMETER ReassignUserId
+ An Id (guid) of CRM User to own records of Moving CRM User. You can specify same Id as UserId if you want to keep records ownership.
+
+ .EXAMPLE
+ Set-CrmUserBusinessUnit -conn $conn -UserId 3772fe6e-8a18-e511-80dc-c4346bc42d48 -BusinessUnitId 5a18974c-ae18-e511-80dd-c4346bc44d24 -ReassignUserId 3772fe6e-8a18-e511-80dc-c4346bc42d48
+
+ This example moves a CRM User to specified BusinessUnit, then keeps the records ownership.
+
+ .EXAMPLE
+ Set-CrmUserBusinessUnit 3772fe6e-8a18-e511-80dc-c4346bc42d48 5a18974c-ae18-e511-80dd-c4346bc44d24 f9d40920-7a43-4f51-9749-0549c4caf67d
+ 
+ This example moves a CRM User to specified BusinessUnit, then reassign the records ownership by ommiting parameters names.
+ When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+
+#>
+
+ [CmdletBinding()]
+    PARAM( 
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1)]
+        [guid]$UserId,
+        [parameter(Mandatory=$true, Position=2)]
+        [guid]$BusinessUnitId,
+        [parameter(Mandatory=$true, Position=3)]
+        [guid]$ReassignUserId
+    )
+
+    if($conn -eq $null)
+    {
+        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
+        if($connobj.Value -eq $null)
+        {
+            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
+            break;
+        }
+        else
+        {
+            $conn = $connobj.Value
+        }
+    }
+
+    $ReassignPrincipal = New-CrmEntityReference -EntityLogicalName systemuser -Id $ReassignUserId
+
+    $request = New-Object 'Microsoft.Crm.Sdk.Messages.SetBusinessSystemUserRequest'
+    $request.BusinessId = $BusinessUnitId
+    $request.UserId = $UserId
+    $request.ReassignPrincipal = $ReassignPrincipal
+
+    try
+    {
+        $response = $conn.ExecuteCrmOrganizationRequest($request, $null)
+    }
+    catch
+    {
+        return $conn.LastCrmException
+    }
+}
+
 function Set-CrmUserMailbox {
 
 <#
@@ -7861,83 +7938,6 @@ function Set-CrmUserManager{
     {
         return $conn.LastCrmException
     } 
-}
-
-function Set-CrmUserBusinessUnit{
-
-<#
- .SYNOPSIS
- Moves Crm User to another Business Unit.
-
- .DESCRIPTION
- The Set-CrmUserBusinessUnit lets you move Crm User to another Business Unit. You can specify different CRM UserId to ReassignUserId to update ownership of records as well. 
-
- .PARAMETER conn
- A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER UserId
- An Id (guid) of CRM User which moves to another Business Unit.
-
- .PARAMETER BusinessUnitId
- An Id (guid) of Business Unit.
-
- .PARAMETER ReassignUserId
- An Id (guid) of CRM User to own records of Moving CRM User. You can specify same Id as UserId if you want to keep records ownership.
-
- .EXAMPLE
- Set-CrmUserBusinessUnit -conn $conn -UserId 3772fe6e-8a18-e511-80dc-c4346bc42d48 -BusinessUnitId 5a18974c-ae18-e511-80dd-c4346bc44d24 -ReassignUserId 3772fe6e-8a18-e511-80dc-c4346bc42d48
-
- This example moves a CRM User to specified BusinessUnit, then keeps the records ownership.
-
- .EXAMPLE
- Set-CrmUserBusinessUnit 3772fe6e-8a18-e511-80dc-c4346bc42d48 5a18974c-ae18-e511-80dd-c4346bc44d24 f9d40920-7a43-4f51-9749-0549c4caf67d
- 
- This example moves a CRM User to specified BusinessUnit, then reassign the records ownership by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
-#>
-
- [CmdletBinding()]
-    PARAM( 
-        [parameter(Mandatory=$false)]
-        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
-        [parameter(Mandatory=$true, Position=1)]
-        [guid]$UserId,
-        [parameter(Mandatory=$true, Position=2)]
-        [guid]$BusinessUnitId,
-        [parameter(Mandatory=$true, Position=3)]
-        [guid]$ReassignUserId
-    )
-
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
-
-    $ReassignPrincipal = New-CrmEntityReference -EntityLogicalName systemuser -Id $ReassignUserId
-
-    $request = New-Object 'Microsoft.Crm.Sdk.Messages.SetBusinessSystemUserRequest'
-    $request.BusinessId = $BusinessUnitId
-    $request.UserId = $UserId
-    $request.ReassignPrincipal = $ReassignPrincipal
-
-    try
-    {
-        $response = $conn.ExecuteCrmOrganizationRequest($request, $null)
-    }
-    catch
-    {
-        return $conn.LastCrmException
-    }
 }
 
 function Set-CrmUserSettings{
