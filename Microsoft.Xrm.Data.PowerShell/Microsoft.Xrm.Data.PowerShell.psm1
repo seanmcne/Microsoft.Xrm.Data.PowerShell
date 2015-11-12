@@ -5885,6 +5885,93 @@ startedon           message
     }
 }
 
+function Get-CrmSdkMessageProcessingStepsForPluginAssembly{
+
+<#
+ .SYNOPSIS
+ Retrieves all registered steps for Plugin.
+
+ .DESCRIPTION
+ The Get-CrmSdkMessageProcessingStepsForPluginAssembly cmdlet lets you retrieve all registered steps for Plugin.
+
+ .PARAMETER conn
+ A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
+
+ .PARAMETER PluginAssemblyName
+ A plugin assembly name.
+
+ .PARAMETER OnlyCustomizable
+ By specifying this swich returns only customizable steps. 
+  
+ .EXAMPLE
+ Get-CrmSdkMessageProcessingStepsForPluginAssembly -conn $conn -PluginAssemblyName YourPluginAssemblyName
+ 
+ This example retrieves all registered steps for the plugin assembly.
+
+ .EXAMPLE
+ Get-CrmSdkMessageProcessingStepsForPluginAssembly -conn $conn -PluginAssemblyName YourPluginAssemblyName -OnlyCustomizable
+ 
+ This example retrieves all registered customizable steps for the plugin assembly.
+
+ .EXAMPLE
+ Get-CrmSdkMessageProcessingStepsForPluginAssembly -PluginAssemblyName YourPluginAssemblyName
+ 
+ This example retrieves all registered steps for the plugin assembly by omitting parameter names.
+ When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.  
+#>
+    [CmdletBinding()]
+    PARAM(
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1)]
+        [string]$PluginAssemblyName,
+        [parameter(Mandatory=$false, Position=2)]
+        [switch]$OnlyCustomizable
+    )
+
+    if($conn -eq $null)
+    {
+        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
+        if($connobj.Value -eq $null)
+        {
+            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
+            break;
+        }
+        else
+        {
+            $conn = $connobj.Value
+        }
+    }
+        
+    if($OnlyCustomizable){ $isCustom = "<value>1</value>" } else { $isCustom = "<value>0</value><value>1</value>" }
+
+    $fetch = @"
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
+      <entity name="sdkmessageprocessingstep">
+        <all-attributes/>
+        <link-entity name="sdkmessagefilter" from="sdkmessagefilterid" to="sdkmessagefilterid" visible="false" link-type="outer" alias="a1">
+          <attribute name="secondaryobjecttypecode" />
+          <attribute name="primaryobjecttypecode" />
+        </link-entity>
+        <link-entity name="plugintype" from="plugintypeid" to="plugintypeid" alias="ab">
+          <filter type="and">
+            <condition attribute="assemblyname" operator="eq" value="{0}" />            
+          </filter>
+        </link-entity>
+        <filter type="and">
+            <condition attribute="iscustomizable" operator="in">
+                {1}
+            </condition> 
+        </filter>
+      </entity>
+    </fetch>
+"@ -F $PluginAssemblyName, $isCustom
+    
+    $results = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords
+    
+    return $results
+}
+
 function Get-CrmTraceAlerts{
 
 <#
