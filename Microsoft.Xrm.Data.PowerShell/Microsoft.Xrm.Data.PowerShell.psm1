@@ -7052,6 +7052,53 @@ function Remove-CrmUserManager{
     } 
 }
 
+function Set-CrmConnectionCallerId{
+
+<#
+ .SYNOPSIS
+ Sets CRM Connection CallerId to impersonate.
+
+ .DESCRIPTION
+ The Set-CrmConnectionCallerId lets you set CRM Connection CallerId to impersonate.
+
+ .PARAMETER conn
+ A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
+
+ .PARAMETER CallerId
+ A guid of the User to impersonate.
+
+ .EXAMPLE
+ Set-CrmConnectionCallerId -conn $conn -CallerId 2eded89d-be89-e511-80f0-c4346bc4ef0c
+
+ This example sets CRM Connection CallerId to 2eded89d-be89-e511-80f0-c4346bc4ef0c.
+#>
+
+ [CmdletBinding()]
+    PARAM( 
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, position=1)][Alias("UserId")]
+        [guid]$CallerId
+    )
+
+    if($conn -eq $null)
+    {
+        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
+        if($connobj.Value -eq $null)
+        {
+            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
+            break;
+        }
+        else
+        {
+            $conn = $connobj.Value
+        }
+    }
+
+    # We may need to check if the CallerId exists and enabled.
+    $conn.OrganizationServiceProxy.CallerId = $CallerId
+}
+
 function Set-CrmConnectionTimeout{
 
 <#
