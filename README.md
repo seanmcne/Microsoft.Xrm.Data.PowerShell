@@ -5,6 +5,7 @@
 **Microsoft.Xrm.Data.Powershell.zip** contains one primary module, Microsoft.Xrm.Data.Powershell, but also relies on an included dll module Microsoft.Xrm.Tooling.CrmConnector.Powershell.  
 
 **Where do I find the latest relase?**
+
 Releases are found on the [Release Page](https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/releases)
 
 **Microsoft.Xrm.Data.Powershell** 
