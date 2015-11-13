@@ -5296,6 +5296,8 @@ function Get-CrmRecords{
     
     if($FilterAttribute -and $FilterOperator -and $FilterValue)
     {
+        # Escape XML charactors
+        $FilterValue = [System.Security.SecurityElement]::Escape($FilterValue)
         Write-Verbose "Using the supplied single filter of $FilterAttribute '$FilterOperator' $FilterValue"
         $fetch = 
 @"
@@ -5408,6 +5410,9 @@ function Get-CrmRecordsByViewName{
         }
     }
     
+    # Escape XML charactor
+    $ViewName = [System.Security.SecurityElement]::Escape($ViewName)
+
     if($IsUserView)
     {
         $fetch = @"
