@@ -8243,6 +8243,178 @@ function New-CrmEntityReference{
 }
 
 ### Performance Test cmdlets ###
+function Test-CrmViewPerformance{
+
+<#
+ .SYNOPSIS
+ Test CRM View performance.
+
+ .DESCRIPTION
+ The Test-CrmViewPerformance cmdlet lets you test CRM View performance.
+
+ .PARAMETER conn
+ A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
+
+ .PARAMETER View
+ A view record object to test performance.
+ 
+ .PARAMETER ViewId
+ A view id to test performance.
+
+ .PARAMETER ViewName
+ A view name to test performance.
+
+ .PARAMETER RunAsViewOwner
+ Indicate if using view owner's id to run the view to test performance.
+
+ .PARAMETER RunAs
+ Specify User Id to run the view to test performance.
+
+ .PARAMETER IsUserView
+ Indicate if the view is user owned view.
+
+ .EXAMPLE
+ Test-CrmViewPerformance -conn $conn -ViewName "Active Accounts"
+
+ This example test "Active Accounts" system view performance by using user of the connection.
+	
+ .EXAMPLE
+ Test-CrmViewPerformance -conn $conn -ViewId 00000000-0000-0000-00aa-000010001002
+
+ This example test view which has id of 00000000-0000-0000-00aa-000010001002 performance by using user of the connection.
+ 
+ .EXAMPLE
+ Test-CrmViewPerformance -conn $conn -ViewName "Active Accounts" 
+
+ This example test "Active Accounts" system view performance by using user of the connection.
+
+ .EXAMPLE
+ Test-CrmViewPerformance -conn $conn -ViewName "Active Accounts" -RunAs f9d40920-7a43-4f51-9749-0549c4caf67d 
+
+ This example test "Active Accounts" system view performance by using specified user.
+
+ .EXAMPLE
+ Test-CrmViewPerformance -conn $conn -ViewName "My Custom View" -RunAsViewOwner -IsUserView
+
+ This example test "My Custom View" user view performance by using view owner.	
+
+#>
+    [CmdletBinding()]
+    PARAM(
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord")][Alias("CrmRecord")]
+        [PSObject]$View,
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="Id")][Alias("Id")]
+        [guid]$ViewId,
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="Name")]
+        [string]$ViewName,
+        [parameter(Mandatory=$false)]
+        [switch]$RunAsViewOwner,
+        [parameter(Mandatory=$false)]
+        [guid]$RunAs,
+        [parameter(Mandatory=$false)]
+        [switch]$IsUserView       
+    )
+    
+    if($conn -eq $null)
+    {
+        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
+        if($connobj.Value -eq $null)
+        {
+            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
+            break;
+        }
+        else
+        {
+            $conn = $connobj.Value
+        }
+    }        
+ 
+    if($IsUserView)
+    { 
+        $logicalName = "userquery"
+        $fields = "name,fetchxml,layoutxml,returnedtypecode,ownerid"        
+    } 
+    else
+    {
+        $logicalName = "savedquery"
+        $fields = "name,fetchxml,layoutxml,returnedtypecode"
+    }
+    
+    try
+    {
+        if($ViewId -ne $null)
+        {        
+            $View = Get-CrmRecord -conn $conn -EntityLogicalName $logicalName -Id $viewId -Fields $fields
+        }
+        elseif($viewName -ne "")
+        {
+            $views = Get-CrmRecords -conn $conn -EntityLogicalName $logicalName -FilterAttribute name -FilterOperator eq -FilterValue $viewName -Fields $fields
+            if($views.CrmRecords.Count -eq 0) { return } else { $view = $views.CrmRecords[0]}
+        }
+        
+        # if the view has ownerid, then its User Defined View
+        if($View.ownerid -eq $null)
+        {
+            if($RunAs -ne $null)
+            {
+                Set-CrmConnectionCallerId -conn $conn -CallerId $RunAs                
+            }
+            else
+            {
+                Set-CrmConnectionCallerId -conn $conn -CallerId (Get-MyCrmUserId -conn $conn)
+            }
+        
+            # Get all records by using viewname
+            Test-XrmTimerStart
+            $records = Get-CrmRecordsByFetch $View.fetchxml -AllRows -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
+            $perf = Test-XrmTimerStop
+            $user = "System"
+            $totalCount = $records.Count           
+        }
+        else
+        {
+            if($RunAsViewOwner)
+            {
+                Set-CrmConnectionCallerId -conn $conn -CallerId $view.ownerid_property.Value.Id
+            }
+            elseif($RunAs -ne $null)
+            {
+                Set-CrmConnectionCallerId -conn $conn -CallerId $RunAs
+            }
+            else
+            {
+                Set-CrmConnectionCallerId -conn $conn -CallerId (Get-MyCrmUserId -conn $conn)
+            }
+            Test-XrmTimerStart
+            $records = Get-CrmRecordsByFetch $View.fetchxml $true -AllRows -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
+            $perf = Test-XrmTimerStop
+            $totalCount = $records.Count
+            $user = $View.ownerid
+            Write-Output "UserView:'$viewName' Columns:$columnCount TotalRecordReturned:$totalCount Owner:$user Takes:$perf"
+        }
+        
+		# Create result set
+        $psobj = New-Object -TypeName System.Management.Automation.PSObject
+              
+	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "ViewName" -Value $View.name 
+	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "FetchXml" -Value $View.fetchxml 
+	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "Entity" -Value $View.returnedtypecode
+	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "Columns" -Value ([xml]$view.layoutxml).grid.row.cell.Count
+	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "LayoutXml" -Value $view.layoutxml
+	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "TotalRecords" -Value $totalCount
+	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "Owner" -Value $user
+        Add-Member -InputObject $psobj -MemberType NoteProperty -Name "Performance" -Value $perf
+
+        return $psobj
+    }
+    catch
+    {
+        return
+    }
+}
+
 function Test-XrmTimerStart{
 
 <#
