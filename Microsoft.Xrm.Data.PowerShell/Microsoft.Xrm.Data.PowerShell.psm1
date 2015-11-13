@@ -3321,6 +3321,9 @@ function Import-CrmSolution{
  .PARAMETER PublishChanges
  Specify the parameter to publish all customizations (applicable only for unmanaged solution)
 
+ .PARAMETER MaxWaitTimeInSeconds
+ Specify the parameter to override the default maximum 900 seconds (15 minutes) to wait for an imported solution to complete.
+
  .EXAMPLE
  Import-CrmSolution -conn $conn -SolutionFilePath "C:\SampleSolution_1_0_0_0.zip"
 
@@ -3347,9 +3350,10 @@ function Import-CrmSolution{
         [parameter(Mandatory=$false, Position=4)]
         [switch]$SkipDependancyOnProductUpdateCheckOnInstall, 
         [parameter(Mandatory=$false, Position=5)]
-        [switch]$PublishChanges
+        [switch]$PublishChanges,
+		[parameter(Mandatory=$false, Position=6)]
+        [int64]$MaxWaitTimeInSeconds = 900
     )
-
     if($conn -eq $null)
     {
         $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
@@ -3363,82 +3367,82 @@ function Import-CrmSolution{
             $conn = $connobj.Value
         }
     }   
-
     $importId = [guid]::Empty
-
     try
     {
         $tmpDest = $conn.CrmConnectOrgUriActual
-        Write-Verbose "Importing solution file into: $tmpDest" 
-        Write-Verbose "Importing solution file: $SolutionFilePath"
+        Write-Host "Importing solution file $SolutionFilePath into: $tmpDest" 
         Write-Verbose "OverwriteCustomizations: $OverwriteUnManagedCustomizations"
         Write-Verbose "SkipDependancyCheck: $SkipDependancyOnProductUpdateCheckOnInstall"
-        Write-Verbose "Please wait while running .ImportSolutionToCrm()..."
+        Write-Verbose "Maximum seconds to poll for successful completion: $MaxWaitTimeInSeconds"
+        Write-Verbose "Calling .ImportSolutionToCrm() this process can take minutes..."
+
         $result = $conn.ImportSolutionToCrm($SolutionFilePath, [ref]$importId, $ActivatePlugIns,
                 $OverwriteUnManagedCustomizations, $SkipDependancyOnProductUpdateCheckOnInstall)
-              
-        Start-Sleep -Seconds 5;  #pause before checking the import status 
-        $import = Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields data,completedon,startedon,progress    
+		
+        $pollingStart = Get-Date; 
+        $isProcessing = $true; 
+		$secondsSpentPolling = 0; 
+        $pollingDelaySeconds = 5;
+
+        Write-Host "Import of file completed, waiting on completion of importId: $importId"
         
-        $xml = [xml]($import).data
-        $importresult = $xml.importexportxml.solutionManifests.solutionManifest.result
-        
-        $ProcPercent = Coalesce $import.progress 0
-        $ProcStart = $import.startedon
-        $ProcComplete = $import.completedon
+		try{
+			while($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds){
+				#delay
+				Start-Sleep -Seconds $pollingDelaySeconds;
+				#check the import job for success/fail/inProgress
+				$import = Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields data,completedon,startedon,progress
+				#Option to use Get-CrmRecords so we can force a no-lock to prevent hangs in the retrieve
+				#$import = (Get-CrmRecords -conn $conn -EntityLogicalName importjob -FilterAttribute importjobid -FilterOperator eq -FilterValue $importId -Fields data,completedon,startedon,progress).CrmRecords[0]
+				$importManifest = ([xml]($import).data).importexportxml.solutionManifests.solutionManifest;
+				$ProcPercent = Coalesce $import.progress "~"
 
-        $stillProcessing = if($ProcComplete -eq $null) {$true} else {$false}; 
+				#Check for import completion 
+				if($import.completedon -eq $null -and $importManifest.result -ne "success"){
+					$isProcessing = $true;
+					$secondsSpentPolling = ([Int]((Get-Date) - $pollingStart).TotalSeconds)
+					Write-Output "$($secondsSPentPolling.ToString("000")) seconds of max: $MaxWaitTimeInSeconds ... ImportJob%: $ProcPercent"; 
+				}
+				else{
+					Write-Verbose "Processing Completed at: $($import.completedon)" 
+					$isProcessing = $false; 
+					break;
+				}
+			}
+		} Catch {
+			Write-Error "ImportJob with ID: $importId has encountered an exception: $_ "; 
+		}
+		#User provided timeout and exit function with an error
+	    if($secondsSpentPolling -gt $MaxWaitTimeInSeconds){
+			throw "Import-CrmSolution halted due to exceeding the maximum timeout of $MaxWaitTimeInSeconds."
+		}
 
-        write-verbose "Import of file completed, importId: $importId - Progress: $ProcPercent Start: $ProcStart Complete: $ProcComplete"
-        
-        $delay = 3;
-        $loopCount = 0;  
-		$maxLoops = 80;
-        write-verbose "ImportJob start time is: $ProcStart - polling job for completion time."; 
-        while($stillProcessing -and $ProcComplete -eq $null -and $loopCount -lt $maxLoops){
-            $import = Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields data,completedon,startedon,progress
-            $importManifest = ([xml]($import).data).importexportxml.solutionManifests.solutionManifest
-	        $importresult = $importManifest.result;
-            $impResult = $importManifest.result.result
-
-            $ProcPercent = Coalesce $import.progress 0
-            $ProcStart = $import.startedon
-            $ProcComplete = $import.completedon
-
-            $stillProcessing = if($ProcComplete -eq $null) {$true} else {$false}; 
-
-            $loopCount = $loopCount+1;
-            $maxWait = $maxLoops * $delay; 
-
-            write-verbose "Waiting for completion, waiting for up to $maxWait seconds... Progress: $ProcPercent"; 
-            Start-Sleep -Seconds $delay;
-        }
-	    
-        write-verbose "Import completed at: $ProcComplete"; 
-
+		#detect a failure by a failure result OR the percent being less than 100%
         if($importresult.result -eq "failure" -or $ProcPercent -lt 100) #Must look at %age instead of this result as the result is usually wrong!
         {
-            $importresultresult = $importresult.result
-            $importresulterrortext = $importresult.errortext
-            Write-Verbose "Import result: $importresultresult"
-            Write-Verbose "Import result: $importresulterrortext - job with ID: $importId failed at $ProcPercent complete."
-            throw $importresulterrortext
+            Write-Verbose "Import result: $($importresult.result)"
+            Write-Verbose "Import result: $($importresult.errortext) - job with ID: $importId failed at $ProcPercent complete."
+            throw $importresult.errortext
         }
         else
         {
-            $managedsolution = $xml.importexportxml.solutionManifests.solutionManifest.Managed
+			#at this point we appear to have imported successfully 
+            $managedsolution = $importManifest.Managed
             if($managedsolution -ne 1)
             {
                 if($PublishChanges){
-                    Write-Verbose "Guid populated and user requested publish changes request..."
-                    Write-Verbose "Executing command: Publish-CrmAllCustomization, passing in the same connection"
-            
+                    Write-Verbose "PublishChanges set, executing: Publish-CrmAllCustomization using the same connection."
                     Publish-CrmAllCustomization -conn $conn
                 }
                 else{
-                    Write-Verbose "Import Complete don't forget to publish customizations."
+                    Write-Output "Import Complete, don't forget to publish customizations."
                 }
             }
+			else{
+				#managed
+                Write-Output "Import of managed solution complete."
+			}
         }
     }
     catch
