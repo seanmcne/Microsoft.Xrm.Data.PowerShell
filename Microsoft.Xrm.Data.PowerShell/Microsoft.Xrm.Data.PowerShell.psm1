@@ -160,13 +160,15 @@ function Connect-CrmOnlineDiscovery{
                     Write-Host $message 
                     $i++
                 }
-                $orgNumber = Read-Host "Select CRM Organization"
+                $orgNumber = Read-Host "`nSelect CRM Organization by index number"
     
                 Write-Verbose ($crmOrganizations[$orgNumber]).UniqueName
-	    }
+			}
             $global:conn = Get-CrmConnection -Credential $Credential -DeploymentRegion $crmOrganizations[$orgNumber].DiscoveryServerShortname -OnLineType $onlineType -OrganizationName ($crmOrganizations[$orgNumber]).UniqueName
 
-            Write-Verbose "You are now connected and may run any of the CRM Commands."
+			#yes, we know this isn't recommended BUT this cmdlet is only valid for user interaction in the console and shouldn't be used for non-interactive scenarios
+            Write-Host "`nYou are now connected to: $(($crmOrganizations[$orgNumber]).UniqueName)" -foregroundcolor yellow
+			Write-Host "For a list of commands run: Get-Command -Module Microsoft.Xrm.Data.Powershell" -foregroundcolor yellow
             return $global:conn    
         }
     }
