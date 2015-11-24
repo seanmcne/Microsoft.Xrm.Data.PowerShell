@@ -160,13 +160,15 @@ function Connect-CrmOnlineDiscovery{
                     Write-Host $message 
                     $i++
                 }
-                $orgNumber = Read-Host "Select CRM Organization"
+                $orgNumber = Read-Host "`nSelect CRM Organization by index number"
     
                 Write-Verbose ($crmOrganizations[$orgNumber]).UniqueName
-	    }
+			}
             $global:conn = Get-CrmConnection -Credential $Credential -DeploymentRegion $crmOrganizations[$orgNumber].DiscoveryServerShortname -OnLineType $onlineType -OrganizationName ($crmOrganizations[$orgNumber]).UniqueName
 
-            Write-Verbose "You are now connected and may run any of the CRM Commands."
+			#yes, we know this isn't recommended BUT this cmdlet is only valid for user interaction in the console and shouldn't be used for non-interactive scenarios
+            Write-Host "`nYou are now connected to: $(($crmOrganizations[$orgNumber]).UniqueName)" -foregroundcolor yellow
+			Write-Host "For a list of commands run: Get-Command -Module Microsoft.Xrm.Data.Powershell" -foregroundcolor yellow
             return $global:conn    
         }
     }
@@ -244,19 +246,7 @@ function New-CrmRecord{
         [hashtable]$Fields
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
 
     $newfields = New-Object 'System.Collections.Generic.Dictionary[[String], [Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper]]'
     
@@ -406,19 +396,7 @@ function Get-CrmRecord{
         [string[]]$Fields
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
 
     if($Fields -eq "*")
     {
@@ -571,19 +549,7 @@ function Set-CrmRecord{
         [hashtable]$Fields
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
     
     if($CrmRecord -ne $null)
     { 
@@ -1070,19 +1036,7 @@ function Move-CrmRecordToQueue{
         [bool]$SetWorkingByUser
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }  
+	$conn = VerifyCrmConnectionParam $conn;   
 
     if($CrmRecord -ne $null)
     {
@@ -1301,19 +1255,7 @@ function Set-CrmActivityRecordToCloseState{
         [string]$StatusCode
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }   
+	$conn = VerifyCrmConnectionParam $conn;    
 
     if($CrmRecord -ne $null)
     {
@@ -1395,19 +1337,7 @@ function Add-CrmNoteToCrmRecord{
         [string]$NoteText 
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }   
+	$conn = VerifyCrmConnectionParam $conn;    
 
     if($CrmRecord -ne $null)
     {
@@ -1527,19 +1457,7 @@ function Add-CrmRecordAssociation{
         [string]$RelationshipName
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
 
     if($CrmRecord1 -ne $null)
     {
@@ -1663,19 +1581,7 @@ function Add-CrmMultiRecordAssociation{
         [bool]$IsReflexiveRelationship
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }  
+	$conn = VerifyCrmConnectionParam $conn;   
 
     if($CrmRecord1 -ne $null)
     {
@@ -1987,33 +1893,7 @@ function Remove-CrmRecordAssociation{
         [string]$RelationshipName
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }    
-
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn;     
 
     if($CrmRecord1 -ne $null)
     {
@@ -2099,19 +1979,7 @@ function Invoke-CrmRecordWorkflow{
         [string]$WorkflowName
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
 
     if($CrmRecord -ne $null)
     {        
@@ -2166,19 +2034,7 @@ function Get-MyCrmUserId{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
 
     try
     {
@@ -2257,19 +2113,7 @@ function Get-CrmEntityAttributes{
         [string]$EntityLogicalName
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    } 
+	$conn = VerifyCrmConnectionParam $conn;  
        
     try
     {
@@ -2344,19 +2188,7 @@ function Get-CrmEntityAllMetadata{
         [string]$EntityFilters
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    } 
+	$conn = VerifyCrmConnectionParam $conn;  
     
     switch($EntityFilters.ToLower())
     {
@@ -2463,19 +2295,7 @@ function Get-CrmEntityAttributeMetadata{
         [string]$FieldLogicalName
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    } 
+	$conn = VerifyCrmConnectionParam $conn;  
     
     try
     {
@@ -2787,19 +2607,7 @@ function Get-CrmEntityDisplayName{
         [string]$EntityLogicalName
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    } 
+	$conn = VerifyCrmConnectionParam $conn;  
 
     try
     {
@@ -2852,19 +2660,7 @@ function Get-CrmEntityDisplayPluralName{
         [string]$EntityLogicalName
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    } 
+	$conn = VerifyCrmConnectionParam $conn;  
 
     try
     {
@@ -2936,19 +2732,7 @@ function Get-CrmEntityMetadata{
         [string]$EntityFilters
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    } 
+	$conn = VerifyCrmConnectionParam $conn;  
 
     switch($EntityFilters.ToLower())
     {
@@ -3029,19 +2813,7 @@ function Get-CrmEntityName{
         [int]$EntityTypeCode
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }  
+	$conn = VerifyCrmConnectionParam $conn;   
 
     try
     {
@@ -3094,19 +2866,7 @@ function Get-CrmEntityTypeCode{
         [string]$EntityLogicalName
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }  
+	$conn = VerifyCrmConnectionParam $conn;   
 
     try
     {
@@ -3194,19 +2954,7 @@ function Get-CrmGlobalOptionSet{
         [string]$OptionSetName
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }  
+	$conn = VerifyCrmConnectionParam $conn;   
 
     try
     {
@@ -3277,19 +3025,7 @@ function Get-CrmEntityOptionSet{
         [string]$FieldLogicalName
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
 
     try
     {
@@ -3499,19 +3235,7 @@ function Add-CrmSampleData{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    } 
+	$conn = VerifyCrmConnectionParam $conn;  
 
     try
     {
@@ -3559,19 +3283,7 @@ function Test-CrmSampleDataInstalled{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    } 
+	$conn = VerifyCrmConnectionParam $conn;  
 
     try
     {
@@ -3624,19 +3336,7 @@ function Publish-CrmEntity{
         [string]$EntityLogicalName
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }  
+	$conn = VerifyCrmConnectionParam $conn;   
 
     try
     {
@@ -3689,19 +3389,7 @@ function Remove-CrmEntityMetadataCache{
         [string]$EntityLogicalName
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }  
+	$conn = VerifyCrmConnectionParam $conn;   
 
     if($EntityLogicalName -eq "")
     {
@@ -3756,19 +3444,7 @@ function Remove-CrmSampleData{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    } 
+	$conn = VerifyCrmConnectionParam $conn;  
 
     try
     {
@@ -3959,19 +3635,7 @@ function Add-CrmSecurityRoleToTeam{
         [string]$SecurityRoleName
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
 
     if($SecurityRoleRecord -eq $null -and $SecurityRoleId -eq "" -and $SecurityRoleName -eq "")
     {
@@ -4099,19 +3763,7 @@ function Add-CrmSecurityRoleToUser{
         [string]$SecurityRoleName
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
 
     if($SecurityRoleRecord -eq $null -and $SecurityRoleId -eq "" -and $SecurityRoleName -eq "")
     {
@@ -4211,19 +3863,7 @@ function Approve-CrmEmailAddress{
         [string]$QueueId
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
 
     if($UserId -ne "")
     {
@@ -4271,19 +3911,7 @@ function Disable-CrmLanguagePack{
         [Int]$LCID
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }  
+	$conn = VerifyCrmConnectionParam $conn;   
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.DeprovisionLanguageRequest
     $request.Language = $LCID
@@ -4334,19 +3962,7 @@ function Enable-CrmLanguagePack{
         [Int]$LCID
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }  
+	$conn = VerifyCrmConnectionParam $conn;   
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.ProvisionLanguageRequest
     $request.Language = $LCID
@@ -4737,19 +4353,7 @@ function Get-CrmAllLanguagePacks{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }  
+	$conn = VerifyCrmConnectionParam $conn;   
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.RetrieveAvailableLanguagesRequest
 
@@ -4803,19 +4407,7 @@ function Get-CrmEntityRecordCount{
         [string]$EntityLogicalName
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
     
     $count = 0
     $query = New-Object -TypeName 'Microsoft.Xrm.Sdk.Query.QueryExpression'
@@ -5056,19 +4648,7 @@ function Get-CrmLicenseSummary{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
 
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -5131,19 +4711,7 @@ function Get-CrmOrgDbOrgSettings{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
     
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -5399,19 +4967,7 @@ function Get-CrmRecordsByViewName{
         [int]$TopCount
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
     
     # Escape XML charactor
     $ViewName = [System.Security.SecurityElement]::Escape($ViewName)
@@ -5581,19 +5137,7 @@ function Get-CrmSdkMessageProcessingStepsForPluginAssembly{
         [switch]$OnlyCustomizable
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
         
     if($OnlyCustomizable){ $isCustom = "<value>1</value>" } else { $isCustom = "<value>0</value><value>1</value>" }
 
@@ -5706,19 +5250,7 @@ function Get-CrmSiteMap{
         [string]$SubAreasOfArea
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
   
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -5821,19 +5353,7 @@ function Get-CrmSystemSettings{
         [switch]$ShowDisplayName
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
   
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -5951,19 +5471,7 @@ function Get-CrmTimeZones{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
     
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -6040,19 +5548,7 @@ function Get-CrmTraceAlerts{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
     
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -6148,19 +5644,7 @@ function Get-CrmUserMailbox{
         [switch]$ShowDisplayName
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
     
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -6296,19 +5780,7 @@ function Get-CrmUserPrivileges{
         [string]$UserId
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
     
     # Get User Rolls including Team
     $roles = Get-CrmUserSecurityRoles -conn $conn -UserId $UserId -IncludeTeamRoles
@@ -6452,19 +5924,7 @@ function Get-CrmUserSecurityRoles{
         [switch]$IncludeTeamRoles
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
     
     $roles = New-Object System.Collections.Generic.List[PSObject]
     
@@ -6578,19 +6038,7 @@ function Get-CrmUserSettings{
         [string[]]$Fields
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
   
     return Get-CrmRecord -conn $conn -EntityLogicalName usersettings -Id $UserId -Fields $Fields
 }
@@ -6726,20 +6174,7 @@ function Invoke-CrmWhoAmI{
         [parameter(Mandatory=$false)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
-
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }  
+	$conn = VerifyCrmConnectionParam $conn; 
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.WhoAmIRequest
     
@@ -6786,19 +6221,7 @@ function Publish-CrmAllCustomization{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }  
+	$conn = VerifyCrmConnectionParam $conn;   
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.PublishAllXmlRequest
     
@@ -6879,19 +6302,7 @@ function Remove-CrmSecurityRoleFromTeam{
         [string]$SecurityRoleId
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
 
     if($PrincipalRecord -ne $null)
     {
@@ -6968,19 +6379,7 @@ function Remove-CrmSecurityRoleFromUser{
         [string]$SecurityRoleId
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
 
     if($PrincipalRecord -ne $null)
     {
@@ -7028,19 +6427,7 @@ function Remove-CrmUserManager{
         [guid]$UserId
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
 
     $request = New-Object 'Microsoft.Crm.Sdk.Messages.RemoveParentRequest'
     $target = New-CrmEntityReference systemuser $UserId
@@ -7085,19 +6472,7 @@ function Set-CrmConnectionCallerId{
         [guid]$CallerId
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
 
     # We may need to check if the CallerId exists and enabled.
     $conn.OrganizationServiceProxy.CallerId = $CallerId
@@ -7143,19 +6518,7 @@ function Set-CrmConnectionTimeout{
         [switch]$SetDefault
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
 
     if($SetDefault)
     {
@@ -7657,19 +7020,7 @@ function Set-CrmSystemSettings {
 
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
     
     $updateFields = @{}
 
@@ -7783,19 +7134,7 @@ function Set-CrmUserBusinessUnit{
         [guid]$ReassignUserId
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
 
     $ReassignPrincipal = New-CrmEntityReference -EntityLogicalName systemuser -Id $ReassignUserId
 
@@ -7894,19 +7233,7 @@ function Set-CrmUserMailbox {
         [switch]$ApplyDefaultEmailSettings
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
     
     $updateFields = @{}
 
@@ -8012,19 +7339,7 @@ function Set-CrmUserManager{
         [bool]$KeepChildUsers
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
 
     $request = New-Object 'Microsoft.Crm.Sdk.Messages.SetParentSystemUserRequest'
     $request.ParentId = $ManagerId
@@ -8082,19 +7397,7 @@ function Set-CrmUserSettings{
         [PSObject]$CrmRecord
     )
 
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }
+	$conn = VerifyCrmConnectionParam $conn; 
     
     try
     {
@@ -8321,19 +7624,7 @@ function Test-CrmViewPerformance{
         [switch]$IsUserView       
     )
     
-    if($conn -eq $null)
-    {
-        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
-        if($connobj.Value -eq $null)
-        {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
-        }
-        else
-        {
-            $conn = $connobj.Value
-        }
-    }        
+	$conn = VerifyCrmConnectionParam $conn;         
  
     if($IsUserView)
     { 
@@ -8468,10 +7759,34 @@ function Test-XrmTimerStop{
     }
 }
 
+### Internal Helpers 
 function Coalesce {
 	foreach($i in $args){
 		if($i -ne $null){
 			return $i;
 		}
 	}
+}
+
+function VerifyCrmConnectionParam {
+	[CmdletBinding()]
+    PARAM( 
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
+    )
+
+    if($conn -eq $null)
+    {
+        $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
+        if($connobj.Value -eq $null)
+        {
+            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
+            break;
+        }
+        else
+        {
+            $conn = $connobj.Value
+        }
+    }
+	return $conn;
 }
