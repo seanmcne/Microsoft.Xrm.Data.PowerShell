@@ -3093,6 +3093,7 @@ function Import-CrmSolution{
 				}
 				else{
 					Write-Verbose "Processing Completed at: $($import.completedon)" 
+					$ProcPercent = 100.0;
 					$isProcessing = $false; 
 					break;
 				}
@@ -3101,7 +3102,6 @@ function Import-CrmSolution{
 			Write-Error "ImportJob with ID: $importId has encountered an exception: $_ "; 
 		} Finally{
             $ProcPercent = ([double](Coalesce $ProcPercent 0))
-            write-host ($ProcPercent -lt 100)
         }
 		
         #User provided timeout and exit function with an error
