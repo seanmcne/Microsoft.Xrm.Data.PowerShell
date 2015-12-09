@@ -3928,11 +3928,11 @@ function Approve-CrmEmailAddress{
 
     if($UserId -ne "")
     {
-        Set-CrmRecord systemuser $UserId @{"emailrouteraccessapproval"=(New-CrmOptionSetValue 1)}
+        Set-CrmRecord -conn $conn -EntityLogicalName systemuser -Id $UserId -Fields @{"emailrouteraccessapproval"=(New-CrmOptionSetValue 1)}
     }
     else
     {
-        Set-CrmRecord queue $QueueId @{"emailrouteraccessapproval"=(New-CrmOptionSetValue 1)}
+        Set-CrmRecord -conn $conn -EntityLogicalName queue -Id $QueueId -Fields @{"emailrouteraccessapproval"=(New-CrmOptionSetValue 1)}
     }
 }
 
