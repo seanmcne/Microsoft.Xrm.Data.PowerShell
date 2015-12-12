@@ -434,7 +434,7 @@ function New-CrmRecord{
         $result = $conn.CreateNewRecord($EntityLogicalName, $newfields, $null, $false, [Guid]::Empty)
         if(!$result)
         {
-            return $conn.LastCrmError
+            return $conn.LastCrmException
         }
     }
     catch
@@ -965,7 +965,7 @@ function Set-CrmRecord{
         $result = $conn.UpdateEntity($entityLogicalName, $primaryKeyField, $Id, $newfields, $null, $false, [Guid]::Empty)
         if(!$result)
         {
-            return $conn.LastCrmError
+            return $conn.LastCrmException
         }
     }
     catch
@@ -1072,7 +1072,7 @@ function Remove-CrmRecord{
             $result = $conn.DeleteEntity($EntityLogicalName, $Id, [Guid]::Empty)
             if(!$result)
             {
-                return $conn.LastCrmError
+                return $conn.LastCrmException
             }
         }
         catch
@@ -1166,6 +1166,10 @@ function Move-CrmRecordToQueue{
     try
     {
         $result = $conn.AddEntityToQueue($Id, $EntityLogicalName, $QueueName, $WorkingUserId, $SetWorkingByUser, [Guid]::Empty)
+		if(!$result)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -1241,7 +1245,7 @@ function Set-CrmRecordOwner{
         [guid]$Id,
         [parameter(Mandatory=$true, Position=3)][alias("UserId")]
         [guid]$PrincipalId,
-		[parameter(Mandatory=$true, Position=4)]
+		[parameter(Mandatory=$false, Position=4)]
 		[switch]$AssignToTeam
     )
 
@@ -1259,14 +1263,8 @@ function Set-CrmRecordOwner{
 		}
 
 		try
-		{
-			if($conn.LastCrmException -ne $null){
-				$errTrack = $conn.LastCrmException.getHashCode(); 
-				#Write-Verbose "Before Hashcode: $errTrack"
-			}
-			else{
-				$errTrack = $null;
-			}
+		{			
+			# As CrmClientService does not have method to assign to team, use Organization Request
 			if($AssignToTeam){
 				write-verbose "Assigning record with Id: $Id to Team with Id: $PrincipalId"
 				
@@ -1274,18 +1272,20 @@ function Set-CrmRecordOwner{
 				$req.target = New-CrmEntityReference -EntityLogicalName $EntityLogicalName -Id $Id; 
 				$req.Assignee = New-CrmEntityReference -EntityLogicalName "team" -Id $PrincipalId; 
 				$result = [Microsoft.Crm.Sdk.Messages.AssignResponse]$conn.ExecuteCrmOrganizationRequest($req, $null);
+				# If no result returend, then it had an issue.
+				if($result -eq $null)
+                {
+                    $result = $false
+                }
 			}
 			else{
 		        $result = $conn.AssignEntityToUser($PrincipalId, $EntityLogicalName, $Id, [Guid]::Empty)
-			}
-			#Checks to see if the hashcode of the last exception is present, and compares it to the current exception hashcode (if present)
-			if($conn.LastCrmException -ne $null -And $errTrack -ne $null){
-				#Write-Verbose "After Hashcode: $errTrack"
-				if($errTrack -ne $conn.LastCrmException.getHashCode() ){
-					write-error $conn.LastCrmException
-					throw $conn.LastCrmException; 
-				}
-			}
+			}			
+			if(!$result)
+            {
+                return $conn.LastCrmException
+            }
+
 			write-verbose "Completed..."
 		}
 		catch
@@ -1373,6 +1373,10 @@ function Set-CrmActivityRecordToCloseState{
     try
     {
         $result = $conn.CloseActivity($ActivityEntityType, $ActivityId, $StateCode, $StatusCode, [Guid]::Empty)
+		if(!$result)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -1465,6 +1469,10 @@ function Add-CrmNoteToCrmRecord{
     try
     {
         $result = $conn.CreateAnnotation($EntityLogicalName, $Id, $newfields, [Guid]::Empty)
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -1581,6 +1589,10 @@ function Add-CrmRecordAssociation{
     try
     {
         $result = $conn.CreateEntityAssociation($EntityLogicalName1, $Id1, $EntityLogicalName2, $Id2, $RelationshipName, [Guid]::Empty)
+		if(!$result)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -1718,6 +1730,10 @@ function Add-CrmMultiRecordAssociation{
     try
     {
         $result = $conn.CreateMultiEntityAssociation($EntityLogicalName1, $Id1, $EntityLogicalName2, $Id2s, $RelationshipName, [Guid]::Empty, $IsReflexiveRelationship)
+		if(!$result)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -1826,72 +1842,76 @@ function Add-CrmActivityToCrmRecord{
 	{
 		if($CrmRecord -ne $null)
 		{
-        $EntityLogicalName = $CrmRecord.logicalname
-        $Id = $CrmRecord.($EntityLogicalName + "id")
-    }
+			$EntityLogicalName = $CrmRecord.logicalname
+			$Id = $CrmRecord.($EntityLogicalName + "id")
+		}
 
 		$newfields = New-Object 'System.Collections.Generic.Dictionary[[String], [Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper]]'
 		
 		if($Fields -ne $null)
 		{
-        foreach($field in $Fields.GetEnumerator())
-        {  
-            $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
+			foreach($field in $Fields.GetEnumerator())
+			{  
+				$newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
         
-            switch($field.Value.GetType().Name)
-            {
-            "Boolean" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmBoolean
-                break              
-            }
-            "DateTime" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDateTime
-                break
-            }
-            "Decimal" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDecimal
-                break
-            }
-            "Single" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmFloat
-                break
-            }
-            "Money" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-                break
-            }
-            "Int32" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmNumber
-                break
-            }
-            "EntityReference" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-                break
-            }
-            "OptionSetValue" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-                break
-            }
-            "String" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::String
-                break
-            }
-        }
+				switch($field.Value.GetType().Name)
+				{
+				"Boolean" {
+				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmBoolean
+				    break              
+				}
+				"DateTime" {
+				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDateTime
+				    break
+				}
+				"Decimal" {
+				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDecimal
+				    break
+				}
+				"Single" {
+				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmFloat
+				    break
+				}
+				"Money" {
+				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
+				    break
+				}
+				"Int32" {
+				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmNumber
+				    break
+				}
+				"EntityReference" {
+				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
+				    break
+				}
+				"OptionSetValue" {
+				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
+				    break
+				}
+				"String" {
+				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::String
+				    break
+				}
+			}
         
             $newfield.Value = $field.Value
             $newfields.Add($field.Key, $newfield)
         }
-    }
+		}
 
 		try
 		{
-        $result = $conn.CreateNewActivityEntry($ActivityEntityType, $EntityLogicalName, $Id,
+			$result = $conn.CreateNewActivityEntry($ActivityEntityType, $EntityLogicalName, $Id,
                 $Subject, $Description, $OnwerUserId, $newfields, [Guid]::Empty)
-    }
+			if($result -eq $null)
+			{
+				return $conn.LastCrmException
+			}
+		}
 		catch
 		{
-        return $conn.LastCrmException
-    }
+			return $conn.LastCrmException
+		}
 
 		return $result
 	}
@@ -2005,6 +2025,10 @@ function Remove-CrmRecordAssociation{
     try
     {
         $result = $conn.DeleteEntityAssociation($EntityLogicalName1, $Id1, $EntityLogicalName2, $Id2, $RelationshipName, [Guid]::Empty)
+		if(!$result)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -2088,6 +2112,10 @@ function Invoke-CrmRecordWorkflow{
     try
     {
         $result = $conn.ExecuteWorkflowOnEntity($WorkflowName, $Id, [Guid]::Empty)
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -2134,6 +2162,10 @@ function Get-MyCrmUserId{
     try
     {
         $response = $conn.GetMyCrmUserId()
+		if($result -eq $null) 
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -2213,6 +2245,10 @@ function Get-CrmEntityAttributes{
     try
     {
         $results = $conn.GetAllAttributesForEntity($EntityLogicalName)
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -2316,6 +2352,10 @@ function Get-CrmEntityAllMetadata{
     try
     {
         $results = $conn.GetAllEntityMetadata($OnlyPublished, $filter)
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -2395,6 +2435,10 @@ function Get-CrmEntityAttributeMetadata{
     try
     {
         $result = $conn.GetEntityAttributeMetadataForAttribute($EntityLogicalName, $FieldLogicalName)
+		if($result -ne $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -2695,6 +2739,10 @@ function Get-CrmEntityDisplayName{
     try
     {
         $result = $conn.GetEntityDisplayName($EntityLogicalName)
+		if($result -eq $null)
+        {
+			return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -2748,6 +2796,10 @@ function Get-CrmEntityDisplayPluralName{
     try
     {
         $result = $conn.GetEntityDisplayNamePlural($EntityLogicalName)
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -2848,6 +2900,10 @@ function Get-CrmEntityMetadata{
     try
     {
         $results = $conn.GetEntityMetadata($EntityLogicalName, $filter)
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -2901,6 +2957,10 @@ function Get-CrmEntityName{
     try
     {
         $result = $conn.GetEntityName($EntityTypeCode)
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -2954,6 +3014,10 @@ function Get-CrmEntityTypeCode{
     try
     {
         $result = $conn.GetEntityTypeCode($EntityLogicalName)
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -3042,6 +3106,10 @@ function Get-CrmGlobalOptionSet{
     try
     {
         $results = $conn.GetGlobalOptionSetMetadata($OptionSetName)
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -3113,6 +3181,10 @@ function Get-CrmEntityOptionSet{
     try
     {
         $result = $conn.GetPickListElementFromMetadataEntity($EntityLogicalName, $FieldLogicalName)
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -3313,6 +3385,10 @@ function Add-CrmSampleData{
     try
     {
         $result = $conn.InstallSampleDataToCrm()
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -3414,6 +3490,10 @@ function Publish-CrmEntity{
     try
     {
         $result = $conn.PublishEntity($EntityLogicalName)
+		if(!$result)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -3471,7 +3551,11 @@ function Remove-CrmEntityMetadataCache{
     
     try
     {
-        $conn.ResetLocalMetadataCache($EntityLogicalName)
+        $result = $conn.ResetLocalMetadataCache($EntityLogicalName)
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -3614,6 +3698,10 @@ function Set-CrmRecordState{
 		try
 		{
 			$result = $conn.UpdateStateAndStatusForEntity($EntityLogicalName, $Id, $stateCode, $statusCode, [Guid]::Empty)
+			if(!$result)
+			{
+				return $conn.LastCrmException
+			}
 		}
 		catch
 		{
@@ -3979,7 +4067,11 @@ function Disable-CrmLanguagePack{
     
     try
     {
-        $response = $conn.ExecuteCrmOrganizationRequest($request, $null)
+        $result = $conn.ExecuteCrmOrganizationRequest($request, $null)
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -4030,7 +4122,11 @@ function Enable-CrmLanguagePack{
     
     try
     {
-        $response = $conn.ExecuteCrmOrganizationRequest($request, $null)
+        $result = $conn.ExecuteCrmOrganizationRequest($request, $null)
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -4459,6 +4555,10 @@ function Get-CrmEntityRecordCount{
         try
         {
             $result = $conn.ExecuteCrmOrganizationRequest($request)
+			if($result -eq $null)
+			{
+				return $conn.LastCrmException
+			}
         }
         catch
         {
@@ -6165,14 +6265,14 @@ function Invoke-CrmWhoAmI{
     
     try
     {
-        $response = $conn.ExecuteCrmOrganizationRequest($request, $null)
+        $result = $conn.ExecuteCrmOrganizationRequest($request, $null)
     }
     catch
     {
         return $conn.LastCrmException
     }    
 
-    return $response
+    return $result
 }
 
 function Publish-CrmAllCustomization{
@@ -6420,7 +6520,11 @@ function Remove-CrmUserManager{
     
     try
     {
-        $response = $conn.ExecuteCrmOrganizationRequest($request, $null)
+        $result = $conn.ExecuteCrmOrganizationRequest($request, $null)
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -7130,7 +7234,11 @@ function Set-CrmUserBusinessUnit{
 
     try
     {
-        $response = $conn.ExecuteCrmOrganizationRequest($request, $null)
+        $result = $conn.ExecuteCrmOrganizationRequest($request, $null)
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
@@ -7333,7 +7441,11 @@ function Set-CrmUserManager{
 
     try
     {
-        $response = $conn.ExecuteCrmOrganizationRequest($request, $null)
+        $result = $conn.ExecuteCrmOrganizationRequest($request, $null)
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }
     }
     catch
     {
