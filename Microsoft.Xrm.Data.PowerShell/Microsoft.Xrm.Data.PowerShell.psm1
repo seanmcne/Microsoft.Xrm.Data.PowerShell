@@ -2244,7 +2244,7 @@ function Get-CrmEntityAttributes{
        
     try
     {
-        $results = $conn.GetAllAttributesForEntity($EntityLogicalName)
+        $result = $conn.GetAllAttributesForEntity($EntityLogicalName)
 		if($result -eq $null)
         {
             return $conn.LastCrmException
@@ -2255,7 +2255,7 @@ function Get-CrmEntityAttributes{
         return $conn.LastCrmException
     }    
 
-    return $results
+    return $result
 }
 
 #GetAllEntityMetadata 
@@ -2351,7 +2351,7 @@ function Get-CrmEntityAllMetadata{
 
     try
     {
-        $results = $conn.GetAllEntityMetadata($OnlyPublished, $filter)
+        $result = $conn.GetAllEntityMetadata($OnlyPublished, $filter)
 		if($result -eq $null)
         {
             return $conn.LastCrmException
@@ -2362,7 +2362,7 @@ function Get-CrmEntityAllMetadata{
         return $conn.LastCrmException
     }    
 
-    return $results
+    return $result
 }
 
 #GetEntityAttributeMetadataForAttribute  
@@ -2899,7 +2899,7 @@ function Get-CrmEntityMetadata{
 
     try
     {
-        $results = $conn.GetEntityMetadata($EntityLogicalName, $filter)
+        $result = $conn.GetEntityMetadata($EntityLogicalName, $filter)
 		if($result -eq $null)
         {
             return $conn.LastCrmException
@@ -2910,7 +2910,7 @@ function Get-CrmEntityMetadata{
         return $conn.LastCrmException
     }    
 
-    return $results
+    return $result
 }
 
 #GetEntityName
@@ -3105,7 +3105,7 @@ function Get-CrmGlobalOptionSet{
 
     try
     {
-        $results = $conn.GetGlobalOptionSetMetadata($OptionSetName)
+        $result = $conn.GetGlobalOptionSetMetadata($OptionSetName)
 		if($result -eq $null)
         {
             return $conn.LastCrmException
@@ -3116,7 +3116,7 @@ function Get-CrmGlobalOptionSet{
         return $conn.LastCrmException
     }
 
-    return $results
+    return $result
 }
 
 #GetPickListElementFromMetadataEntity   
