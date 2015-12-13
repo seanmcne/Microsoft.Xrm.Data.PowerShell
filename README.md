@@ -1,12 +1,10 @@
 
 # Microsoft.Xrm.Data.PowerShell
 
+This is v2.xx branch is Dynamics CRM 2016 SDK base. This version is compatible with Azure Automation.
+
 ### Overview 
 **Microsoft.Xrm.Data.Powershell.zip** contains one primary module, Microsoft.Xrm.Data.Powershell, but also relies on an included dll module Microsoft.Xrm.Tooling.CrmConnector.Powershell.  
-
-**Version 1.xx** is Dynamics CRM 2015 SDK base.
-
-**Version 2.xx** is Dynamics CRM 2016 SDK base and it is compatibile with Azure Automation. For more information about v2.xx, go to [v2.0 branch](https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/tree/v2)
 
 Releases are found on the [Release Page](https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/releases)
 
@@ -45,14 +43,9 @@ Import-Module Microsoft.Xrm.Data.Powershell
 *The module requires PowerShell v4.0.
 
 ###How module works
-Microsoft.Xrm.Data.Powershell module exposes many functions, but you can use Connect-CrmOnlineDiscovery and/or Connect-CrmOnpremDiscovery to connect to any CRM Online/OnPrem organization. By executing the function, it creates $conn global variable. Any other functions which needs to connect to the CRM Organization takes connection parameter. You can explicitly specify the connection by using -conn parameter, but if you omit the connection, functions retrieve connection from global variable.
+Microsoft.Xrm.Data.Powershell module exposes many functions, but you can use Connect-CrmOnlineDiscovery, Connect-CrmOnPremDiscovery to connect to any CRM organization by using Discovery Service. Use Connect-CrmOnline function for Azure Automation. By executing these function, it creates $conn global variable. Any other functions which needs to connect to the CRM Organization takes connection parameter. You can explicitly specify the connection by using -conn parameter, but if you omit the connection, functions retrieve connection from global variable.
 
 Alternatively, you can create multiple connection objects and pass them into each function under the –conn parameter.
-
-```PowerShell
-$global:conn = Get-CrmConnection -InteractiveMode
-```
-See more detail about [Get-CrmConnection](https://technet.microsoft.com/en-us/library/dn756303.aspx) function.<br/>
 
 ###Example
 This example shows how to create connection and do CRUD operation as well as manipulate System Settings.
@@ -61,8 +54,13 @@ This example shows how to create connection and do CRUD operation as well as man
 # Online
 Connect-CrmOnlineDiscovery -InteractiveMode
 # OnPrem
-Connect-CrmOnpremDiscovery -InteractiveMode
+Connect-CrmOnPremDiscovery -InteractiveMode
+# Azure Automation
+Connect-CrmOnline -Credential $cred -ServerUri "https://<org>.crm.dynamics.com"
 ```
+
+For Azure Automation, write all scripts inside inlinescript block.
+
 <p>2. Run following command to test CRUD.</p>
 ```PowerShell
 # Create an account and store record Guid to a variable 
