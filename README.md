@@ -6,7 +6,7 @@
 
 **Version 1.xx** is Dynamics CRM 2015 SDK base.
 
-**Version 2.xx** is Dynamics CRM 2016 SDK base and it is compatibile with Azure Automation.
+**Version 2.xx** is Dynamics CRM 2016 SDK base and it is compatibile with Azure Automation. For more information about v2.xx, go to [v2.0 branch](https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/tree/v2)
 
 Releases are found on the [Release Page](https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/releases)
 
