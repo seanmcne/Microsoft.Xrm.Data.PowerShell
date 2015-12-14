@@ -3257,8 +3257,7 @@ function Import-CrmSolution{
     )
     
 	$conn = VerifyCrmConnectionParam $conn; 
-	   
-    $importId = [guid]::Empty
+	$importId = [guid]::Empty
     try
     {
         $tmpDest = $conn.CrmConnectOrgUriActual
@@ -3283,11 +3282,11 @@ function Import-CrmSolution{
 				#delay
 				Start-Sleep -Seconds $pollingDelaySeconds;
 				#check the import job for success/fail/inProgress
-				$import = Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields data,completedon,startedon,progress
+				$import = Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields solutionname,data,completedon,startedon,progress
 				#Option to use Get-CrmRecords so we can force a no-lock to prevent hangs in the retrieve
 				#$import = (Get-CrmRecords -conn $conn -EntityLogicalName importjob -FilterAttribute importjobid -FilterOperator eq -FilterValue $importId -Fields data,completedon,startedon,progress).CrmRecords[0]
 				$importManifest = ([xml]($import).data).importexportxml.solutionManifests.solutionManifest;
-				$ProcPercent = Coalesce $import.progress "~"
+				$ProcPercent = [double](Coalesce $import.progress "0")
 
 				#Check for import completion 
 				if($import.completedon -eq $null -and $importManifest.result -ne "success"){
@@ -3297,24 +3296,55 @@ function Import-CrmSolution{
 				}
 				else{
 					Write-Verbose "Processing Completed at: $($import.completedon)" 
+					$ProcPercent = 100.0;
 					$isProcessing = $false; 
 					break;
 				}
 			}
 		} Catch {
 			Write-Error "ImportJob with ID: $importId has encountered an exception: $_ "; 
-		}
-		#User provided timeout and exit function with an error
+		} Finally{
+            $ProcPercent = ([double](Coalesce $ProcPercent 0))
+        }
+		
+        #User provided timeout and exit function with an error
 	    if($secondsSpentPolling -gt $MaxWaitTimeInSeconds){
 			throw "Import-CrmSolution halted due to exceeding the maximum timeout of $MaxWaitTimeInSeconds."
 		}
 
 		#detect a failure by a failure result OR the percent being less than 100%
-        if($importresult.result -eq "failure" -or $ProcPercent -lt 100) #Must look at %age instead of this result as the result is usually wrong!
+        if($importresult.result -eq "failure") #Must look at %age instead of this result as the result is usually wrong!
         {
-            Write-Verbose "Import result: $($importresult.result)"
-            Write-Verbose "Import result: $($importresult.errortext) - job with ID: $importId failed at $ProcPercent complete."
+            Write-Verbose "Import result: $($importManifest.result) - job with ID: $importId failed at $ProcPercent complete."
             throw $importresult.errortext
+        }
+        elseif($ProcPercent -lt 100){
+            try{
+                #lets try to dump the failure data as a best effort: 
+                ([xml]$import.data).importexportxml.entities.entity|foreach {
+                    if($_.result.result -ne $null -and $_.result.result -eq 'failure'){
+                        write-output "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext)"
+                        write-error "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext)"
+                    }
+                }
+                #webresource problems
+                ([xml]$import.data).importexportxml.webResources.webResource|foreach {
+                    if($_.result.result -ne $null -and $_.result.result -eq 'failure'){
+                        write-output "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext)"
+                        write-error "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext)"
+                    }
+                }
+                #optionset problems
+                ([xml]$import.data).importexportxml.optionSets.optionset|foreach {
+                    if($_.result.result -ne $null -and $_.result.result -eq 'failure'){
+                        write-output "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext)"
+                        write-error "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext)"
+                    }
+                }
+            }catch{}
+
+            $erroText = "Import result: Job with ID: $importId failed at $ProcPercent percent complete."
+            throw $erroText; 
         }
         else
         {
