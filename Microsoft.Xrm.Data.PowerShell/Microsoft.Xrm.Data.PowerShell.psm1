@@ -2161,7 +2161,7 @@ function Get-MyCrmUserId{
 
     try
     {
-        $response = $conn.GetMyCrmUserId()
+        $result = $conn.GetMyCrmUserId()
 		if($result -eq $null) 
         {
             return $conn.LastCrmException
@@ -2172,7 +2172,7 @@ function Get-MyCrmUserId{
         return $conn.LastCrmException
     }    
 
-    return $response
+    return $result
 }
 
 #GetAllAttributesForEntity
