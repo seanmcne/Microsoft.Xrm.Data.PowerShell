@@ -252,11 +252,11 @@ function Connect-CrmOnPremDiscovery{
 
     [CmdletBinding()]
     PARAM(
-        [parameter(Mandatory=$false)]
+        [parameter(Mandatory=$false, ParameterSetName="ServerUrl")]
         [PSCredential]$Credential, 
-		[Parameter(Mandatory=$True)]
+		[Parameter(Mandatory=$True, ParameterSetName="ServerUrl")]
         [Uri]$ServerUrl,
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false, ParameterSetName="InteractiveMode")]
         [switch]$InteractiveMode
     )
     
