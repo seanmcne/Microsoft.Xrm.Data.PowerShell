@@ -120,7 +120,8 @@ function Connect-CrmOnlineDiscovery{
         [Parameter(Mandatory=$false)]
         [switch]$InteractiveMode
     )
-        
+    
+    #Need to change when XrmTooling is updated to remove -OrganizationName parameter
     if($InteractiveMode)
     {
         $global:conn = Get-CrmConnection -InteractiveMode
@@ -145,11 +146,11 @@ function Connect-CrmOnlineDiscovery{
         if($crmOrganizations.Count -gt 0)
         {    
 
-	        if($crmOrganizations.Count -eq 1)
+	    if($crmOrganizations.Count -eq 1)
             {
                 $orgNumber = 0
             }
-	        else
+	    else
             {
 				$crmOrganizations = $crmOrganizations | sort-object FriendlyName;
                 foreach($crmOrganization in $crmOrganizations)
@@ -173,26 +174,23 @@ function Connect-CrmOnlineDiscovery{
     }
 }
 
-function Connect-CrmOnline{
-
+function Connect-CrmOnPremDiscovery{
 <#
  .SYNOPSIS
- Connects to CRM Online organization without using Discovery Service.
+ Retrieves all CRM Online Onprem orgs you belong to, let you select which organization to login, then returns connection information.
 
  .DESCRIPTION
- The Connect-CrmOnline cmdlet lets you connect to CRM Online organization without using Discovery Service.
+ The Connect-CrmOnPremDiscovery cmdlet lets you retrieves all CRM OnPrem Organization you belong to, let you select which organization to login, then returns connection information.
  
- You can use Get-Credential to create Credential information.
+ You can use Get-Credential to create Credential information, or you can simply invoke Connect-CrmOnlineDiscovery which prompts you to enter username/password.
 
  .PARAMETER Credential
  A PS-Credential. You can invoke Get-Credential.
 
- .PARAMETER ServerUrl
- A Url of your Dynamics CRM Online organization.
-
  .EXAMPLE
- Connect-CrmOnline -Credential (Get-Credential) -Url "https://contoso.crm.dynamics.com"
-  
+ Connect-CrmOnPremDiscovery
+ Supply values for the following parameters:
+ 
  IsReady                        : True
  IsBatchOperationsAvailable     : True
  OrganizationServiceProxy       : Microsoft.Xrm.Tooling.Connector.CrmWebSvc+ManagedTokenOrganizationServiceProxy
@@ -206,157 +204,48 @@ function Connect-CrmOnline{
                                   [OrganizationDataService, 
                                   https://contoso.api.crm.dynamics.com/XRMServices/2011/OrganizationData.svc]}
  ConnectionLockObject           : System.Object
- ConnectedOrgVersion            : 7.1.1.4309
+ ConnectedOrgVersion            : 7.1.0.1086
 
-#>
-
-    [CmdletBinding()]
-    PARAM(
-        [parameter(Mandatory=$true)]
-        [PSCredential]$Credential, 
-        [Parameter(Mandatory=$true)]
-        [ValidatePattern('https://([\w-]+).crm([0-9]*).dynamics.com')]
-        [string]$ServerUrl
-    )
-   
-    $userName = $Credential.UserName
-    $password = $Credential.GetNetworkCredential().Password
-    $connectionString = "AuthType=Office365;Username=$userName; Password=$password;Url=$ServerUrl"
-
-    try
-    {
-        $global:conn =  New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $connectionString
-        return $global:conn
-    }
-    catch
-    {
-        throw $_
-    }    
-}
-
-function Connect-CrmOnPremDiscovery{
-<#
- .SYNOPSIS
- Retrieves all CRM OnPrem orgs you belong to, let you select which organization to login, then returns connection information.
-
- .DESCRIPTION
- The Connect-CrmOnPremDiscovery cmdlet lets you retrieve all CRM OnPrem Organization you belong to, let you select which organization to login, then returns connection information.
- 
- You can use Get-Credential to create Credential information, or you can simply invoke Connect-CrmOnlineDiscovery which prompts you to enter username/password.
-
- .PARAMETER Credential
- A PS-Credential. You can invoke Get-Credential.
-
- .PARAMETER ServerUrl
- A Url of OnPrem Dynamics CRM Server.
-
- .PARAMETER OrganizationName
- An Organization Unique Name
-
- .PARAMETER HomeRealmUrl
- To sepcify HomeRealm when you use Claim Authentication with Multiple STS.
-
- .EXAMPLE
- Connect-CrmOnPremDiscovery
- Supply values for the following parameters:
- ServerUrl: http://crm2015:5555
- cmdlet Get-Credential at command pipeline position 1
- Supply values for the following parameters  
-
- [0] CRM (http://crm2015:5555/CRM)
- [1] CRM2 (http://crm2015:5555/CRM2)
-
- Select CRM Organization by index number: 0
- 
- IsReady                        : True
- IsBatchOperationsAvailable     : True
- Authority                      : 
- OAuthUserId                    : 
- ActiveAuthenticationType       : AD
- OrganizationServiceProxy       : Microsoft.Xrm.Sdk.Client.OrganizationServiceProxy
- OrganizationWebProxyClient     : 
- LastCrmError                   : OrganizationWebProxyClient is null
- LastCrmException               : 
- CrmConnectOrgUriActual         : http://crm2015:5555/CRM/XRMServices/2011/Organization.svc
- ConnectedOrgFriendlyName       : CRM
- ConnectedOrgUniqueName         : CRM
- ConnectedOrgPublishedEndpoints : {[WebApplication, http://crm2015:5555/CRM], [OrganizationService, http://crm2015:5555/CRM/XRMServices/2011/Organization.svc], 
-                                  [OrganizationDataService, http://crm2015:5555/CRM/XRMServices/2011/OrganizationData.svc]}
- ConnectionLockObject           : System.Object
- ConnectedOrgVersion            : 7.0.0.3543
-
- This example asks you to enter ServerUrl and prompts for username/password, displays all CRM organization, and returns connection.
+ This example prompts you to enter username/password, displays all CRM organization, and returns connection.
 
  .EXAMPLE
  PS C:\>$cred = Get-Credential
- PS C:\>Connect-CrmOnPremDiscovery -Credential $cred -ServerUrl http://crm2015:5555
- 
- [0] CRM (http://crm2015:5555/CRM)
- [1] CRM2 (http://crm2015:5555/CRM2)
-
- Select CRM Organization by index number: 0
-
- IsReady                        : True
- IsBatchOperationsAvailable     : True
- Authority                      : 
- OAuthUserId                    : 
- ActiveAuthenticationType       : AD
- OrganizationServiceProxy       : Microsoft.Xrm.Sdk.Client.OrganizationServiceProxy
- OrganizationWebProxyClient     : 
- LastCrmError                   : OrganizationWebProxyClient is null
- LastCrmException               : 
- CrmConnectOrgUriActual         : http://crm2015:5555/CRM/XRMServices/2011/Organization.svc
- ConnectedOrgFriendlyName       : CRM
- ConnectedOrgUniqueName         : CRM
- ConnectedOrgPublishedEndpoints : {[WebApplication, http://crm2015:5555/CRM], [OrganizationService, http://crm2015:5555/CRM/XRMServices/2011/Organization.svc], 
-                                  [OrganizationDataService, http://crm2015:5555/CRM/XRMServices/2011/OrganizationData.svc]}
- ConnectionLockObject           : System.Object
- ConnectedOrgVersion            : 7.0.0.3543
-
- This example passes credential and ServerUrl. Displays all CRM organization, and returns connection.
- 
-  .EXAMPLE
- PS C:\>$cred = Get-Credential
- PS C:\>Connect-CrmOnPremDiscovery -Credential $cred -ServerUrl http://crm2015:5555 -OrganizationName CRM
+ PS C:\>Connect-CrmOnPremDiscovery $cred
  
  IsReady                        : True
  IsBatchOperationsAvailable     : True
- Authority                      : 
- OAuthUserId                    : 
- ActiveAuthenticationType       : AD
- OrganizationServiceProxy       : Microsoft.Xrm.Sdk.Client.OrganizationServiceProxy
- OrganizationWebProxyClient     : 
- LastCrmError                   : OrganizationWebProxyClient is null
+ OrganizationServiceProxy       : Microsoft.Xrm.Tooling.Connector.CrmWebSvc+ManagedTokenOrganizationServiceProxy
+ LastCrmError                   : 
  LastCrmException               : 
- CrmConnectOrgUriActual         : http://crm2015:5555/CRM/XRMServices/2011/Organization.svc
- ConnectedOrgFriendlyName       : CRM
- ConnectedOrgUniqueName         : CRM
- ConnectedOrgPublishedEndpoints : {[WebApplication, http://crm2015:5555/CRM], [OrganizationService, http://crm2015:5555/CRM/XRMServices/2011/Organization.svc], 
-                                  [OrganizationDataService, http://crm2015:5555/CRM/XRMServices/2011/OrganizationData.svc]}
+ CrmConnectOrgUriActual         : https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc
+ ConnectedOrgFriendlyName       : contoso
+ ConnectedOrgUniqueName         : contoso
+ ConnectedOrgPublishedEndpoints : {[WebApplication, https://contoso.crm.dynamics.com/], [OrganizationService, 
+                                  https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc], 
+                                  [OrganizationDataService, 
+                                  https://contoso.api.crm.dynamics.com/XRMServices/2011/OrganizationData.svc]}
  ConnectionLockObject           : System.Object
- ConnectedOrgVersion            : 7.0.0.3543
+ ConnectedOrgVersion            : 7.1.0.1086
 
- This example passes credential, ServerUrl and Organization Unique Name. It does not prompt you at all and returns connection.
+ This example displays all CRM organization, and returns connection.
  
  .EXAMPLE
  PS C:\>Connect-CrmOnPremDiscovery -InteractiveMode
  
  IsReady                        : True
  IsBatchOperationsAvailable     : True
- Authority                      : 
- OAuthUserId                    : 
- ActiveAuthenticationType       : AD
- OrganizationServiceProxy       : Microsoft.Xrm.Sdk.Client.OrganizationServiceProxy
- OrganizationWebProxyClient     : 
- LastCrmError                   : OrganizationWebProxyClient is null
+ OrganizationServiceProxy       : Microsoft.Xrm.Tooling.Connector.CrmWebSvc+ManagedTokenOrganizationServiceProxy
+ LastCrmError                   : 
  LastCrmException               : 
- CrmConnectOrgUriActual         : http://crm2015:5555/CRM/XRMServices/2011/Organization.svc
- ConnectedOrgFriendlyName       : CRM
- ConnectedOrgUniqueName         : CRM
- ConnectedOrgPublishedEndpoints : {[WebApplication, http://crm2015:5555/CRM], [OrganizationService, http://crm2015:5555/CRM/XRMServices/2011/Organization.svc], 
-                                  [OrganizationDataService, http://crm2015:5555/CRM/XRMServices/2011/OrganizationData.svc]}
+ CrmConnectOrgUriActual         : https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc
+ ConnectedOrgFriendlyName       : contoso
+ ConnectedOrgUniqueName         : contoso
+ ConnectedOrgPublishedEndpoints : {[WebApplication, https://contoso.crm.dynamics.com/], [OrganizationService, 
+                                  https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc], 
+                                  [OrganizationDataService, 
+                                  https://contoso.api.crm.dynamics.com/XRMServices/2011/OrganizationData.svc]}
  ConnectionLockObject           : System.Object
- ConnectedOrgVersion            : 7.0.0.3543
+ ConnectedOrgVersion            : 7.1.0.1086
 
  This example shows how to use -InteractiveMode switch. By specifying the switch, you can login via GUI tool.
 #>
@@ -365,17 +254,13 @@ function Connect-CrmOnPremDiscovery{
     PARAM(
         [parameter(Mandatory=$false)]
         [PSCredential]$Credential, 
-		[Parameter(Mandatory=$true)]
-        [ValidatePattern('http(s)?://[\w-]+(/[\w- ./?%&=]*)?')]
+		[Parameter(Mandatory=$True)]
         [Uri]$ServerUrl,
-        [Parameter(Mandatory=$false)]
-        [string]$OrganizationName,
-        [Parameter(Mandatory=$false)]
-        [string]$HomeRealmUrl,
         [Parameter(Mandatory=$false)]
         [switch]$InteractiveMode
     )
     
+    #Need to change when XrmTooling is updated to remove -OrganizationName parameter
     if($InteractiveMode)
     {
         $global:conn = Get-CrmConnection -InteractiveMode
@@ -388,59 +273,35 @@ function Connect-CrmOnPremDiscovery{
         {
             $Credential = Get-Credential
         }
-
-        # If Organization Name is pased, use it, otherwise retrieve all organizations the user belongs to.
-        if($OrganizationName -ne '')
-        {
-            $organizationName = $OrganizationName
-        }
-        else
-        {
-		    $crmOrganizations = Get-CrmOrganizations -Credential $Credential -ServerUrl $ServerUrl -Verbose 
-        
-            if($crmOrganizations.Count -gt 0)
-            {    
-		    	if($crmOrganizations.Count -eq 1)
-                {
-                    $orgNumber = 0
-                }
-		    	else
-                {
-                    $i = 0
-		    		$crmOrganizations = $crmOrganizations | sort-object FriendlyName;
-                    foreach($crmOrganization in $crmOrganizations)
-                    {   
-		    			$friendlyName = $crmOrganization.FriendlyName
-                        $message = "[$i] $friendlyName (" + $crmOrganization.WebApplicationUrl + ")"
-                        Write-Host $message 
-                        $i++
-                    }
-                    $orgNumber = Read-Host "`nSelect CRM Organization by index number"                                    
-		    	}            
-                
-                # Store the OrganizationName
-                Write-Verbose ($crmOrganizations[$orgNumber]).UniqueName    
-                $organizationName = ($crmOrganizations[$orgNumber]).UniqueName
-            }
-            else
+		$crmOrganizations = Get-CrmOrganizations -Credential $Credential -ServerUrl $ServerUrl -Verbose 
+        $i = 0
+          
+        if($crmOrganizations.Count -gt 0)
+        {    
+			if($crmOrganizations.Count -eq 1)
             {
-                Write-Warning "User belongs to no organization."
-                return
+                $orgNumber = 0
             }
-        }          
+			else
+            {
+				$crmOrganizations = $crmOrganizations | sort-object FriendlyName;
+                foreach($crmOrganization in $crmOrganizations)
+                {   
+					$friendlyName = $crmOrganization.FriendlyName
+                    $message = "[$i] $friendlyName (" + $crmOrganization.WebApplicationUrl + ")"
+                    Write-Host $message 
+                    $i++
+                }
+                $orgNumber = Read-Host "`nSelect CRM Organization by index number"
+                Write-Verbose ($crmOrganizations[$orgNumber]).UniqueName
+			}
+            $global:conn = Get-CrmConnection -Credential $Credential -ServerUrl $ServerUrl -OrganizationName ($crmOrganizations[$orgNumber]).UniqueName
 
-        if($HomeRealmUrl -eq '')
-        {
-            $global:conn = Get-CrmConnection -Credential $Credential -ServerUrl $ServerUrl -OrganizationName $organizationName
+			#yes, we know this isn't recommended BUT this cmdlet is only valid for user interaction in the console and shouldn't be used for non-interactive scenarios
+            Write-Host "`nYou are now connected to: $(($crmOrganizations[$orgNumber]).UniqueName)" -foregroundcolor yellow
+			Write-Host "For a list of commands run: Get-Command -Module Microsoft.Xrm.Data.Powershell" -foregroundcolor yellow
+            return $global:conn    
         }
-        else
-        {
-            $global:conn = Get-CrmConnection -Credential $Credential -ServerUrl $ServerUrl -OrganizationName $organizationName -HomeRealmUrl $HomeRealmUrl
-        }
-		#yes, we know this isn't recommended BUT this cmdlet is only valid for user interaction in the console and shouldn't be used for non-interactive scenarios
-        Write-Host "`nYou are now connected to: $organizationName" -foregroundcolor yellow
-		Write-Host "For a list of commands run: Get-Command -Module Microsoft.Xrm.Data.Powershell" -foregroundcolor yellow
-        return $global:conn    
     }
 }
 
