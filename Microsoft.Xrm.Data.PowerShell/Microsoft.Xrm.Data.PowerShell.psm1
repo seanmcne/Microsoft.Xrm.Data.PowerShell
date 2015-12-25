@@ -363,16 +363,16 @@ function Connect-CrmOnPremDiscovery{
 
     [CmdletBinding()]
     PARAM(
-        [parameter(Mandatory=$false)]
+        [parameter(Mandatory=$false, ParameterSetName="ServerUrl")]
         [PSCredential]$Credential, 
-		[Parameter(Mandatory=$true)]
+		[Parameter(Mandatory=$true, ParameterSetName="ServerUrl")]
         [ValidatePattern('http(s)?://[\w-]+(/[\w- ./?%&=]*)?')]
         [Uri]$ServerUrl,
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false, ParameterSetName="ServerUrl")]
         [string]$OrganizationName,
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false, ParameterSetName="ServerUrl")]
         [string]$HomeRealmUrl,
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false, ParameterSetName="InteractiveMode")]
         [switch]$InteractiveMode
     )
     
