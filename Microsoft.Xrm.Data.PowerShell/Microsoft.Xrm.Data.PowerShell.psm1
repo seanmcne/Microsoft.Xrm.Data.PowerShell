@@ -7753,6 +7753,7 @@ function Test-CrmViewPerformance{
     
 	$conn = VerifyCrmConnectionParam $conn;         
  
+	# Define query related values
     if($IsUserView)
     { 
         $logicalName = "userquery"
@@ -7773,7 +7774,14 @@ function Test-CrmViewPerformance{
         elseif($viewName -ne "")
         {
             $views = Get-CrmRecords -conn $conn -EntityLogicalName $logicalName -FilterAttribute name -FilterOperator eq -FilterValue $viewName -Fields $fields
-            if($views.CrmRecords.Count -eq 0) { return } else { $view = $views.CrmRecords[0]}
+            if($views.CrmRecords.Count -eq 0)
+			{ 
+				return 
+			} 
+			else 
+			{ 
+				$view = $views.CrmRecords[0]
+			}
         }
         
         # if the view has ownerid, then its User Defined View
@@ -7790,9 +7798,9 @@ function Test-CrmViewPerformance{
         
             # Get all records by using viewname
             Test-XrmTimerStart
-            $records = Get-CrmRecordsByFetch $View.fetchxml -AllRows -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
+            $records = Get-CrmRecordsByFetch -conn $conn -Fetch $View.fetchxml -AllRows -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
             $perf = Test-XrmTimerStop
-            $user = "System"
+            $owner = "System"
             $totalCount = $records.Count           
         }
         else
@@ -7809,24 +7817,25 @@ function Test-CrmViewPerformance{
             {
                 Set-CrmConnectionCallerId -conn $conn -CallerId (Get-MyCrmUserId -conn $conn)
             }
+
+			# Get all records by using viewname
             Test-XrmTimerStart
-            $records = Get-CrmRecordsByFetch $View.fetchxml $true -AllRows -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
+            $records = Get-CrmRecordsByFetch -conn $conn -Fetch $View.fetchxml -AllRows -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
             $perf = Test-XrmTimerStop
+            $owner = $View.ownerid
             $totalCount = $records.Count
-            $user = $View.ownerid
-            Write-Output "UserView:'$viewName' Columns:$columnCount TotalRecordReturned:$totalCount Owner:$user Takes:$perf"
         }
         
 		# Create result set
         $psobj = New-Object -TypeName System.Management.Automation.PSObject
               
 	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "ViewName" -Value $View.name 
-	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "FetchXml" -Value $View.fetchxml 
 	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "Entity" -Value $View.returnedtypecode
+	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "FetchXml" -Value $View.fetchxml 
 	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "Columns" -Value ([xml]$view.layoutxml).grid.row.cell.Count
 	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "LayoutXml" -Value $view.layoutxml
 	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "TotalRecords" -Value $totalCount
-	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "Owner" -Value $user
+	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "Owner" -Value $owner
         Add-Member -InputObject $psobj -MemberType NoteProperty -Name "Performance" -Value $perf
 
         return $psobj
