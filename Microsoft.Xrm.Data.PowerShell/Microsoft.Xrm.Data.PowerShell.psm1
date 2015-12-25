@@ -7777,7 +7777,7 @@ function Test-CrmViewPerformance{
         }
         
         # if the view has ownerid, then its User Defined View
-        if($View.ownerid -eq $null)
+        if($View.ownerid -ne $null)
         {
             if($RunAs -ne $null)
             {
