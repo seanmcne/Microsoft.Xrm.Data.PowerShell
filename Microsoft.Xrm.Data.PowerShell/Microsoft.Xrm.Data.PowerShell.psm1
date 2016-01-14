@@ -7522,7 +7522,7 @@ function Set-CrmUserMailbox {
 
     foreach($parameter in $MyInvocation.BoundParameters.GetEnumerator())
     {   
-        if($parameter.Key -in ("UserId", "applydefaultemailsettings"))
+        if($parameter.Key -in ("UserId", "ApplyDefaultEmailSettings", "conn"))
         {
             continue
         }
@@ -7541,7 +7541,7 @@ function Set-CrmUserMailbox {
     }
 
     $fetch = @"
-    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no>
+<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
   <entity name="mailbox">
     <attribute name="mailboxid" />
     <filter type="and">
@@ -7550,7 +7550,7 @@ function Set-CrmUserMailbox {
   </entity>
 </fetch>
 "@
-    $Id = (`-conn $conn -Fetch $fetch).CrmRecords[0].MailboxId
+    $Id = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords[0].MailboxId
 
     Set-CrmRecord -conn $conn -EntityLogicalName mailbox -Id $Id -Fields $updateFields
 }
