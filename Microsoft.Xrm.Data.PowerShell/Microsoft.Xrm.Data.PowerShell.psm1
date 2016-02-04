@@ -7329,15 +7329,15 @@ function Set-CrmSystemSettings {
         $emailSettings = [xml]$systemSettings.defaultemailsettings
         if($defaultEmailSettings.ContainsKey("IncomingEmailDeliveryMethod"))
         {
-            $emailSettings.SelectSingleNode("/EmailSettings/IncomingEmailDeliveryMethod").InnerText = $defaultEmailSettings["IncomingEmailDeliveryMethod"]
+            $emailSettings.EmailSettings.IncomingEmailDeliveryMethod = [string]$defaultEmailSettings["IncomingEmailDeliveryMethod"]
         }
         if($defaultEmailSettings.ContainsKey("OutgoingEmailDeliveryMethod"))
         {
-            $emailSettings.SelectSingleNode("/EmailSettings/OutgoingEmailDeliveryMethod").InnerText = $defaultEmailSettings["OutgoingEmailDeliveryMethod"]
+            $emailSettings.EmailSettings.OutgoingEmailDeliveryMethod = [string]$defaultEmailSettings["OutgoingEmailDeliveryMethod"]
         }
         if($defaultEmailSettings.ContainsKey("ACTDeliveryMethod"))
         {
-            $emailSettings.SelectSingleNode("/EmailSettings/ACTDeliveryMethod").InnerText = $defaultEmailSettings["ACTDeliveryMethod"]
+            $emailSettings.EmailSettings.ACTDeliveryMethod = [string]$defaultEmailSettings["ACTDeliveryMethod"]
         }
 
         $updateFields.Add("defaultemailsettings",$emailSettings.OuterXml);
