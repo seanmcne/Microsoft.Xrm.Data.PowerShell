@@ -3260,6 +3260,12 @@ function Import-CrmSolution{
 	$importId = [guid]::Empty
     try
     {
+        
+        if (!(Test-Path $SolutionFilePath)) 
+        {
+            throw [System.IO.FileNotFoundException] "$SolutionFilePath not found."
+        }
+
         $tmpDest = $conn.CrmConnectOrgUriActual
         Write-Host "Importing solution file $SolutionFilePath into: $tmpDest" 
         Write-Verbose "OverwriteCustomizations: $OverwriteUnManagedCustomizations"
