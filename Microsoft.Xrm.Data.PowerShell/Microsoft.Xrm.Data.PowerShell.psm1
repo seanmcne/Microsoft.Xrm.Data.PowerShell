@@ -3260,6 +3260,12 @@ function Import-CrmSolution{
 	$importId = [guid]::Empty
     try
     {
+        
+        if (!(Test-Path $SolutionFilePath)) 
+        {
+            throw [System.IO.FileNotFoundException] "$SolutionFilePath not found."
+        }
+
         $tmpDest = $conn.CrmConnectOrgUriActual
         Write-Host "Importing solution file $SolutionFilePath into: $tmpDest" 
         Write-Verbose "OverwriteCustomizations: $OverwriteUnManagedCustomizations"
@@ -7190,15 +7196,15 @@ function Set-CrmSystemSettings {
         $emailSettings = [xml]$systemSettings.defaultemailsettings
         if($defaultEmailSettings.ContainsKey("IncomingEmailDeliveryMethod"))
         {
-            $emailSettings.SelectSingleNode("/EmailSettings/IncomingEmailDeliveryMethod").InnerText = $defaultEmailSettings["IncomingEmailDeliveryMethod"].Value
+            $emailSettings.EmailSettings.IncomingEmailDeliveryMethod = [string]$defaultEmailSettings["IncomingEmailDeliveryMethod"]
         }
         if($defaultEmailSettings.ContainsKey("OutgoingEmailDeliveryMethod"))
         {
-            $emailSettings.SelectSingleNode("/EmailSettings/OutgoingEmailDeliveryMethod").InnerText = $defaultEmailSettings["OutgoingEmailDeliveryMethod"].Value
+            $emailSettings.EmailSettings.OutgoingEmailDeliveryMethod = [string]$defaultEmailSettings["OutgoingEmailDeliveryMethod"]
         }
         if($defaultEmailSettings.ContainsKey("ACTDeliveryMethod"))
         {
-            $emailSettings.SelectSingleNode("/EmailSettings/ACTDeliveryMethod").InnerText = $defaultEmailSettings["ACTDeliveryMethod"].Value
+            $emailSettings.EmailSettings.ACTDeliveryMethod = [string]$defaultEmailSettings["ACTDeliveryMethod"]
         }
 
         $updateFields.Add("defaultemailsettings",$emailSettings.OuterXml);
