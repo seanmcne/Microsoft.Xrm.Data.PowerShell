@@ -4324,7 +4324,7 @@ function Export-CrmSolution{
         $exportRequest.ExportMarketingSettings                =$ExportMarketingSettings
         $exportRequest.ExportOutlookSynchronizationSettings   =$ExportOutlookSynchronizationSettings
         $exportRequest.ExportRelationshipRoles                =$ExportRelationshipRoles
-		if($conn.ConnectedOrgVersion.Major -ne 6)
+		if($conn.ConnectedOrgVersion.Major -gt 6)
 		{
 			$exportRequest.ExportSales                            =$ExportSales
 		}
