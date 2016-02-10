@@ -7894,6 +7894,101 @@ function Test-XrmTimerStop{
     }
 }
 
+
+function Export-CrmEntityRibbonXml {
+<#
+ .SYNOPSIS
+ Retrieves the ribbon diff XML for an Entity and saves it to a file on the file system.
+
+ .DESCRIPTION
+ The Export-CrmEntityRibbonXml cmdlet lets you retrieve ribbon diff XML for an Entity. 
+
+ .PARAMETER conn
+ A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
+
+ .PARAMETER EntityLogicalName
+ A logicalname for Entity. e.g.- account, contact, lead, etc..
+
+ .PARAMETER Path
+ The path to the desired output location. This should be a full file path, e.g.-c:\temp\contactribbon.xml
+
+ .EXAMPLE
+ Export-CrmEntityRibbonXml -conn $conn -EntityLogicalName Account -Path d:\temp\accountribbon.xml
+ 
+ This example gets the Ribbon XML for the account entity and outputs it to the specified file path.
+#>
+ 
+    [CmdletBinding()]
+    PARAM( 
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1)]
+        [string]$EntityLogicalName,
+        [parameter(Mandatory=$true, Position=1)]
+        [string]$Path
+    )
+    $ribbonXml = Get-CrmEntityRibbonXml -conn $conn -EntityLogicalName $EntityLogicalName
+    if ($ribbonXml -ne $null)
+    {
+        $ribbonXml.Save($Path)
+    }
+}
+
+function Get-CrmEntityRibbonXml {
+
+<#
+ .SYNOPSIS
+ Retrieves the ribbon diff XML for an Entity.
+
+ .DESCRIPTION
+ The Get-CrmEntityAttributeMetadata cmdlet lets you retrieve an attribute metadata for an Entity. 
+ The return is an XML document.
+
+ .PARAMETER conn
+ A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
+
+ .PARAMETER EntityLogicalName
+ A logicalname for Entity. e.g.- account, contact, lead, etc..
+ 
+ .EXAMPLE
+ Get-CrmEntityRibbonXml -conn $conn -EntityLogicalName account
+ 
+ This example gets the Ribbon XML for the account entity and returns and XML document.
+#>
+
+ [CmdletBinding()]
+    PARAM( 
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1)]
+        [string]$EntityLogicalName
+    )
+
+	$conn = VerifyCrmConnectionParam $conn;  
+
+    $request = New-Object Microsoft.Crm.Sdk.Messages.RetrieveEntityRibbonRequest
+    $request.EntityName = $EntityLogicalName
+    try
+    {
+        $ribbonResponse = ($conn.ExecuteCrmOrganizationRequest($request, $null))
+        $ribbonXmlCompressed = $ribbonResponse.CompressedEntityXml
+        if ($ribbonXmlCompressed -ne $null)
+        {
+            $ribbonXml = UnzipCrmRibbon -Data $ribbonXmlCompressed
+            if ($ribbonXml -ne $null)
+            {
+                return $ribbonXml
+            }
+        }
+        #Should only get here if there was nothing returned.
+        return $conn.LastCrmException
+    }
+    catch
+    {
+	    return $conn.LastCrmException
+    }
+}
+
 ### Internal Helpers 
 function Coalesce {
 	foreach($i in $args){
@@ -7924,4 +8019,41 @@ function VerifyCrmConnectionParam {
         }
     }
 	return $conn;
+}
+
+function UnzipCrmRibbon {
+    PARAM( 
+        [parameter(Mandatory=$true)]
+        [Byte[]]$Data
+    )
+
+    $memStream = New-Object System.IO.MemoryStream
+
+    $memStream.Write($Data, 0, $Data.Length)
+    $package = [System.IO.Packaging.ZipPackage]::Open($memStream, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read)
+    $part = $package.GetPart([System.Uri]::new('/RibbonXml.xml', [System.UriKind]::Relative))
+
+    try
+    {
+        $strm = $part.GetStream()
+        $reader = [System.Xml.XmlReader]::Create($strm)
+
+        $xmlDoc = New-Object System.Xml.XmlDocument
+        $xmlDoc.Load($reader)
+
+        return $xmlDoc
+    }
+    finally
+    {
+        if ($strm -ne $null)
+        {
+            $strm.Dispose()
+            $strm = $null
+        }
+        if ($reader -ne $null)
+        {
+            $reader.Dispose()
+            $reader = $null
+        }
+    }
 }
