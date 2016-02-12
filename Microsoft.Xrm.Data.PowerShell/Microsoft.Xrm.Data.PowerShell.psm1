@@ -7924,9 +7924,10 @@ function Export-CrmEntityRibbonXml {
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
         [parameter(Mandatory=$true, Position=1)]
         [string]$EntityLogicalName,
-        [parameter(Mandatory=$true, Position=1)]
+        [parameter(Mandatory=$true, Position=2)]
         [string]$Path
     )
+	$conn = VerifyCrmConnectionParam $conn;  
     $ribbonXml = Get-CrmEntityRibbonXml -conn $conn -EntityLogicalName $EntityLogicalName
     if ($ribbonXml -ne $null)
     {
