@@ -7968,6 +7968,7 @@ function Get-CrmEntityRibbonXml {
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.RetrieveEntityRibbonRequest
     $request.EntityName = $EntityLogicalName
+	$request.RibbonLocationFilter = [Microsoft.Crm.Sdk.Messages.RibbonLocationFilters]::All
     try
     {
         $ribbonResponse = ($conn.ExecuteCrmOrganizationRequest($request, $null))
