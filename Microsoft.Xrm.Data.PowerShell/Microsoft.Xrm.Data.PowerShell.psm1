@@ -7927,9 +7927,10 @@ function Export-CrmEntityRibbonXml {
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
         [parameter(Mandatory=$true, Position=1)]
         [string]$EntityLogicalName,
-        [parameter(Mandatory=$true, Position=1)]
+        [parameter(Mandatory=$true, Position=2)]
         [string]$Path
     )
+	$conn = VerifyCrmConnectionParam $conn;  
     $ribbonXml = Get-CrmEntityRibbonXml -conn $conn -EntityLogicalName $EntityLogicalName
     if ($ribbonXml -ne $null)
     {
@@ -7971,6 +7972,7 @@ function Get-CrmEntityRibbonXml {
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.RetrieveEntityRibbonRequest
     $request.EntityName = $EntityLogicalName
+	$request.RibbonLocationFilter = [Microsoft.Crm.Sdk.Messages.RibbonLocationFilters]::All
     try
     {
         $ribbonResponse = ($conn.ExecuteCrmOrganizationRequest($request, $null))
