@@ -1,8 +1,6 @@
 
 # Microsoft.Xrm.Data.PowerShell
 
-This is v2.xx branch is Dynamics CRM 2016 SDK base. This version is compatible with Azure Automation.
-
 ### Overview 
 **Microsoft.Xrm.Data.Powershell.zip** contains one primary module, Microsoft.Xrm.Data.Powershell, but also relies on an included dll module Microsoft.Xrm.Tooling.CrmConnector.Powershell.  
 
@@ -19,7 +17,7 @@ This module comes from Dynamics CRM SDK and it exposes two functions, Get-CrmOrg
 [Use PowerShell cmdlets for XRM tooling to connect to CRM](https://technet.microsoft.com/en-us/library/dn689040.aspx)
 
 ###How to setup modules
-<p>1. Download Microsoft.Xrm.Data.Powershell.zip.</p> 
+<p>1.Go to Releases(https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/releases) and Download Microsoft.Xrm.Data.Powershell.zip.
 <p>2. Right click the downloaded zip file and click "Properties". </p> 
 <p>3. Check "Unblock" checkbox and click "OK", or simply click "Unblock" button depending on OS versions. </p> 
 ![Image of Unblock](https://i1.gallery.technet.s-msft.com/powershell-functions-for-16c5be31/image/file/142582/1/unblock.png)
@@ -59,7 +57,7 @@ Connect-CrmOnPremDiscovery -InteractiveMode
 Connect-CrmOnline -Credential $cred -ServerUri "https://<org>.crm.dynamics.com"
 ```
 
-For Azure Automation, write all scripts inside inlinescript block.
+For Azure Automation, write all scripts inside inlinescript block as Runbook or use PowerShell type.
 
 <p>2. Run following command to test CRUD.</p>
 ```PowerShell
