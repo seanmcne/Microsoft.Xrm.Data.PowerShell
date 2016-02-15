@@ -151,7 +151,7 @@ function Connect-CrmOnlineDiscovery{
             }
 	        else
             {
-				$crmOrganizations = $crmOrganizations | sort-object FriendlyName;
+				$crmOrganizations = $crmOrganizations | sort-object FriendlyName
                 foreach($crmOrganization in $crmOrganizations)
                 {   $friendlyName = $crmOrganization.FriendlyName
 
@@ -407,7 +407,7 @@ function Connect-CrmOnPremDiscovery{
 		    	else
                 {
                     $i = 0
-		    		$crmOrganizations = $crmOrganizations | sort-object FriendlyName;
+		    		$crmOrganizations = $crmOrganizations | sort-object FriendlyName
                     foreach($crmOrganization in $crmOrganizations)
                     {   
 		    			$friendlyName = $crmOrganization.FriendlyName
@@ -516,7 +516,7 @@ function New-CrmRecord{
         [hashtable]$Fields
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     $newfields = New-Object 'System.Collections.Generic.Dictionary[[String], [Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper]]'
     
@@ -666,7 +666,7 @@ function Get-CrmRecord{
         [string[]]$Fields
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     if($Fields -eq "*")
     {
@@ -674,7 +674,7 @@ function Get-CrmRecord{
     }
     else
     {
-        [Collections.Generic.List[String]]$x = $Fields;
+        [Collections.Generic.List[String]]$x = $Fields
     }
 
     try
@@ -819,7 +819,7 @@ function Set-CrmRecord{
         [hashtable]$Fields
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
     
     if($CrmRecord -ne $null)
     { 
@@ -1196,7 +1196,7 @@ function Remove-CrmRecord{
 
     begin
     {
-        $conn = VerifyCrmConnectionParam $conn; 
+        $conn = VerifyCrmConnectionParam $conn
     }
     process
     {
@@ -1294,7 +1294,7 @@ function Move-CrmRecordToQueue{
         [bool]$SetWorkingByUser
     )
 
-	$conn = VerifyCrmConnectionParam $conn;   
+	$conn = VerifyCrmConnectionParam $conn  
 
     if($CrmRecord -ne $null)
     {
@@ -1390,7 +1390,7 @@ function Set-CrmRecordOwner{
 
     begin
     {
-        $conn = VerifyCrmConnectionParam $conn; 
+        $conn = VerifyCrmConnectionParam $conn
     }     
 
 	process
@@ -1408,9 +1408,9 @@ function Set-CrmRecordOwner{
 				write-verbose "Assigning record with Id: $Id to Team with Id: $PrincipalId"
 				
 				$req = New-Object Microsoft.Crm.Sdk.Messages.AssignRequest
-				$req.target = New-CrmEntityReference -EntityLogicalName $EntityLogicalName -Id $Id; 
-				$req.Assignee = New-CrmEntityReference -EntityLogicalName "team" -Id $PrincipalId; 
-				$result = [Microsoft.Crm.Sdk.Messages.AssignResponse]$conn.ExecuteCrmOrganizationRequest($req, $null);
+				$req.target = New-CrmEntityReference -EntityLogicalName $EntityLogicalName -Id $Id
+				$req.Assignee = New-CrmEntityReference -EntityLogicalName "team" -Id $PrincipalId
+				$result = [Microsoft.Crm.Sdk.Messages.AssignResponse]$conn.ExecuteCrmOrganizationRequest($req, $null)
 				# If no result returend, then it had an issue.
 				if($result -eq $null)
                 {
@@ -1501,7 +1501,7 @@ function Set-CrmActivityRecordToCloseState{
         [string]$StatusCode
     )
 
-	$conn = VerifyCrmConnectionParam $conn;    
+	$conn = VerifyCrmConnectionParam $conn   
 
     if($CrmRecord -ne $null)
     {
@@ -1587,7 +1587,7 @@ function Add-CrmNoteToCrmRecord{
         [string]$NoteText 
     )
 
-	$conn = VerifyCrmConnectionParam $conn;    
+	$conn = VerifyCrmConnectionParam $conn   
 
     if($CrmRecord -ne $null)
     {
@@ -1711,7 +1711,7 @@ function Add-CrmRecordAssociation{
         [string]$RelationshipName
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     if($CrmRecord1 -ne $null)
     {
@@ -1839,7 +1839,7 @@ function Add-CrmMultiRecordAssociation{
         [bool]$IsReflexiveRelationship
     )
 
-	$conn = VerifyCrmConnectionParam $conn;   
+	$conn = VerifyCrmConnectionParam $conn  
 
     if($CrmRecord1 -ne $null)
     {
@@ -1862,7 +1862,7 @@ function Add-CrmMultiRecordAssociation{
          else
         {
             Write-Warning 'CrmRecords2 does not include any records.'
-            break;
+            break
         }
     }   
 
@@ -1974,7 +1974,7 @@ function Add-CrmActivityToCrmRecord{
 
     begin
     {
-        $conn = VerifyCrmConnectionParam $conn; 
+        $conn = VerifyCrmConnectionParam $conn
     }  
 
 	process
@@ -2147,7 +2147,7 @@ function Remove-CrmRecordAssociation{
         [string]$RelationshipName
     )
 
-	$conn = VerifyCrmConnectionParam $conn;     
+	$conn = VerifyCrmConnectionParam $conn    
 
     if($CrmRecord1 -ne $null)
     {
@@ -2237,7 +2237,7 @@ function Invoke-CrmRecordWorkflow{
         [string]$WorkflowName
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     if($CrmRecord -ne $null)
     {        
@@ -2296,7 +2296,7 @@ function Get-MyCrmUserId{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     try
     {
@@ -2379,7 +2379,7 @@ function Get-CrmEntityAttributes{
         [string]$EntityLogicalName
     )
 
-	$conn = VerifyCrmConnectionParam $conn;  
+	$conn = VerifyCrmConnectionParam $conn 
        
     try
     {
@@ -2458,7 +2458,7 @@ function Get-CrmEntityAllMetadata{
         [string]$EntityFilters
     )
 
-	$conn = VerifyCrmConnectionParam $conn;  
+	$conn = VerifyCrmConnectionParam $conn 
     
     switch($EntityFilters.ToLower())
     {
@@ -2569,7 +2569,7 @@ function Get-CrmEntityAttributeMetadata{
         [string]$FieldLogicalName
     )
 
-	$conn = VerifyCrmConnectionParam $conn;  
+	$conn = VerifyCrmConnectionParam $conn 
     
     try
     {
@@ -2736,7 +2736,7 @@ function Get-CrmRecordsByFetch{
 
     )
     
-    $conn = VerifyCrmConnectionParam $conn; 
+    $conn = VerifyCrmConnectionParam $conn
     
     #default page number to 1 if not supplied
     if($PageNumber -eq 0)
@@ -2773,7 +2773,7 @@ function Get-CrmRecordsByFetch{
             $resultSet.Add("NextPage",$false)
             
             #EXIT
-            return $resultSet; 
+            return $resultSet
         }
         #if we have records
         elseif($records.Count -gt 0)
@@ -2873,7 +2873,7 @@ function Get-CrmEntityDisplayName{
         [string]$EntityLogicalName
     )
 
-	$conn = VerifyCrmConnectionParam $conn;  
+	$conn = VerifyCrmConnectionParam $conn 
 
     try
     {
@@ -2930,7 +2930,7 @@ function Get-CrmEntityDisplayPluralName{
         [string]$EntityLogicalName
     )
 
-	$conn = VerifyCrmConnectionParam $conn;  
+	$conn = VerifyCrmConnectionParam $conn 
 
     try
     {
@@ -3006,7 +3006,7 @@ function Get-CrmEntityMetadata{
         [string]$EntityFilters
     )
 
-	$conn = VerifyCrmConnectionParam $conn;  
+	$conn = VerifyCrmConnectionParam $conn 
 
     switch($EntityFilters.ToLower())
     {
@@ -3091,7 +3091,7 @@ function Get-CrmEntityName{
         [int]$EntityTypeCode
     )
 
-	$conn = VerifyCrmConnectionParam $conn;   
+	$conn = VerifyCrmConnectionParam $conn  
 
     try
     {
@@ -3148,7 +3148,7 @@ function Get-CrmEntityTypeCode{
         [string]$EntityLogicalName
     )
 
-	$conn = VerifyCrmConnectionParam $conn;   
+	$conn = VerifyCrmConnectionParam $conn  
 
     try
     {
@@ -3240,7 +3240,7 @@ function Get-CrmGlobalOptionSet{
         [string]$OptionSetName
     )
 
-	$conn = VerifyCrmConnectionParam $conn;   
+	$conn = VerifyCrmConnectionParam $conn  
 
     try
     {
@@ -3315,7 +3315,7 @@ function Get-CrmEntityOptionSet{
         [string]$FieldLogicalName
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     try
     {
@@ -3395,7 +3395,7 @@ function Import-CrmSolution{
         [int64]$MaxWaitTimeInSeconds = 900
     )
     
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 	$importId = [guid]::Empty
     try
     {
@@ -3414,39 +3414,39 @@ function Import-CrmSolution{
         $result = $conn.ImportSolutionToCrm($SolutionFilePath, [ref]$importId, $ActivatePlugIns,
                 $OverwriteUnManagedCustomizations, $SkipDependancyOnProductUpdateCheckOnInstall)
 		
-        $pollingStart = Get-Date; 
-        $isProcessing = $true; 
-		$secondsSpentPolling = 0; 
-        $pollingDelaySeconds = 5;
+        $pollingStart = Get-Date
+        $isProcessing = $true
+		$secondsSpentPolling = 0
+        $pollingDelaySeconds = 5
 
         Write-Host "Import of file completed, waiting on completion of importId: $importId"
         
 		try{
 			while($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds){
 				#delay
-				Start-Sleep -Seconds $pollingDelaySeconds;
+				Start-Sleep -Seconds $pollingDelaySeconds
 				#check the import job for success/fail/inProgress
 				$import = Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields solutionname,data,completedon,startedon,progress
 				#Option to use Get-CrmRecords so we can force a no-lock to prevent hangs in the retrieve
 				#$import = (Get-CrmRecords -conn $conn -EntityLogicalName importjob -FilterAttribute importjobid -FilterOperator eq -FilterValue $importId -Fields data,completedon,startedon,progress).CrmRecords[0]
-				$importManifest = ([xml]($import).data).importexportxml.solutionManifests.solutionManifest;
+				$importManifest = ([xml]($import).data).importexportxml.solutionManifests.solutionManifest
 				$ProcPercent = [double](Coalesce $import.progress "0")
 
 				#Check for import completion 
 				if($import.completedon -eq $null -and $importManifest.result -ne "success"){
-					$isProcessing = $true;
+					$isProcessing = $true
 					$secondsSpentPolling = ([Int]((Get-Date) - $pollingStart).TotalSeconds)
-					Write-Output "$($secondsSPentPolling.ToString("000")) seconds of max: $MaxWaitTimeInSeconds ... ImportJob%: $ProcPercent"; 
+					Write-Output "$($secondsSPentPolling.ToString("000")) seconds of max: $MaxWaitTimeInSeconds ... ImportJob%: $ProcPercent"
 				}
 				else{
 					Write-Verbose "Processing Completed at: $($import.completedon)" 
-					$ProcPercent = 100.0;
-					$isProcessing = $false; 
-					break;
+					$ProcPercent = 100.0
+					$isProcessing = $false
+					break
 				}
 			}
 		} Catch {
-			Write-Error "ImportJob with ID: $importId has encountered an exception: $_ "; 
+			Write-Error "ImportJob with ID: $importId has encountered an exception: $_ "
 		} Finally{
             $ProcPercent = ([double](Coalesce $ProcPercent 0))
         }
@@ -3488,7 +3488,7 @@ function Import-CrmSolution{
             }catch{}
 
             $erroText = "Import result: Job with ID: $importId failed at $ProcPercent percent complete."
-            throw $erroText; 
+            throw $erroText
         }
         else
         {
@@ -3554,7 +3554,7 @@ function Add-CrmSampleData{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn;  
+	$conn = VerifyCrmConnectionParam $conn 
 
     try
     {
@@ -3606,7 +3606,7 @@ function Test-CrmSampleDataInstalled{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn;  
+	$conn = VerifyCrmConnectionParam $conn 
 
     try
     {
@@ -3659,7 +3659,7 @@ function Publish-CrmEntity{
         [string]$EntityLogicalName
     )
 
-	$conn = VerifyCrmConnectionParam $conn;   
+	$conn = VerifyCrmConnectionParam $conn  
 
     try
     {
@@ -3716,7 +3716,7 @@ function Remove-CrmEntityMetadataCache{
         [string]$EntityLogicalName
     )
 
-	$conn = VerifyCrmConnectionParam $conn;   
+	$conn = VerifyCrmConnectionParam $conn  
 
     if($EntityLogicalName -eq "")
     {
@@ -3775,7 +3775,7 @@ function Remove-CrmSampleData{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn;  
+	$conn = VerifyCrmConnectionParam $conn 
 
     try
     {
@@ -3858,7 +3858,7 @@ function Set-CrmRecordState{
 
     begin
     {
-        $conn = VerifyCrmConnectionParam $conn; 
+        $conn = VerifyCrmConnectionParam $conn
     }     
 
 	process
@@ -3958,7 +3958,7 @@ function Add-CrmSecurityRoleToTeam{
         [string]$SecurityRoleName
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     if($SecurityRoleRecord -eq $null -and $SecurityRoleId -eq "" -and $SecurityRoleName -eq "")
     {
@@ -4086,7 +4086,7 @@ function Add-CrmSecurityRoleToUser{
         [string]$SecurityRoleName
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     if($SecurityRoleRecord -eq $null -and $SecurityRoleId -eq "" -and $SecurityRoleName -eq "")
     {
@@ -4186,7 +4186,7 @@ function Approve-CrmEmailAddress{
         [string]$QueueId
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     if($UserId -ne "")
     {
@@ -4234,7 +4234,7 @@ function Disable-CrmLanguagePack{
         [Int]$LCID
     )
 
-	$conn = VerifyCrmConnectionParam $conn;   
+	$conn = VerifyCrmConnectionParam $conn  
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.DeprovisionLanguageRequest
     $request.Language = $LCID
@@ -4289,7 +4289,7 @@ function Enable-CrmLanguagePack{
         [Int]$LCID
     )
 
-	$conn = VerifyCrmConnectionParam $conn;   
+	$conn = VerifyCrmConnectionParam $conn
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.ProvisionLanguageRequest
     $request.Language = $LCID
@@ -4306,6 +4306,141 @@ function Enable-CrmLanguagePack{
     {
         return $conn.LastCrmException
     }    
+}
+
+function Export-CrmApplicationRibbonXml {
+<#
+ .SYNOPSIS
+ Retrieves the ribbon definition XML for application and saves it to a file on the file system.
+
+ .DESCRIPTION
+ The Export-CrmEntityRibbonXml cmdlet lets you retrieve ribbon definition XML for an Entity. 
+
+ .PARAMETER conn
+ A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
+	
+ .PARAMETER RibbonFilePath
+ The path to the desired output location. This should be a full file path, e.g.-c:\temp
+
+ .EXAMPLE
+ Export-CrmEntityRibbonXml -conn $conn -EntityLogicalName Account -Path d:\temp\accountribbon.xml
+ 
+ This example gets the Ribbon XML for the account entity and outputs it to the specified file path.
+#>
+ 
+    [CmdletBinding()]
+    PARAM( 
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$false, Position=1)][alias("Path")]		
+        [string]$RibbonFilePath
+    )
+
+	$conn = VerifyCrmConnectionParam $conn
+	
+	$exportPath = if($RibbonFilePath -ne ""){Get-Item $RibbonFilePath} else {Get-Location}
+	$exportFileName = "applicationRibbon.xml"
+	$path = Join-Path $exportPath $exportFileName
+	# Instantiate RetrieveEntityRibbonRequest
+	$request = New-Object Microsoft.Crm.Sdk.Messages.RetrieveApplicationRibbonRequest
+    
+	try
+    {
+        $response = $conn.ExecuteCrmOrganizationRequest($request, $null)
+        if ($response.CompressedApplicationRibbonXml -ne $null)
+        {
+			$ribbonXml = UnzipCrmRibbon -Data $response.CompressedApplicationRibbonXml
+			
+			Write-Verbose 'Saving ribbon file to path: $path'
+
+			$ribbonXml.Save($path)
+
+			Write-Verbose "Successfully wrote file"
+			
+			$result = New-Object PSObject
+			Add-Member -InputObject $result -MemberType NoteProperty -Name "RetrieveApplicationRibbonRequest" -Value $response
+			Add-Member -InputObject $result -MemberType NoteProperty -Name "RibbonFilePath" -Value $path
+			return $result
+        }
+
+        #Should only get here if there was nothing returned.
+        return $conn.LastCrmException
+    }
+    catch
+    {
+	    return $conn.LastCrmException
+    }
+}
+
+function Export-CrmEntityRibbonXml {
+<#
+ .SYNOPSIS
+ Retrieves the ribbon definition XML for an Entity and saves it to a file on the file system.
+
+ .DESCRIPTION
+ The Export-CrmEntityRibbonXml cmdlet lets you retrieve ribbon definition XML for an Entity. 
+
+ .PARAMETER conn
+ A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
+
+ .PARAMETER EntityLogicalName
+ A logicalname for Entity. e.g.- account, contact, lead, etc..
+
+ .PARAMETER RibbonFilePath
+ The path to the desired output location. This should be a full file path, e.g.-c:\temp
+
+ .EXAMPLE
+ Export-CrmEntityRibbonXml -conn $conn -EntityLogicalName account -RibbonFilePath c:\temp
+ 
+ This example export the Ribbon XML for the account entity to c:\temp\accountRibbon.xml.
+#>
+ 
+    [CmdletBinding()]
+    PARAM( 
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1)]
+        [string]$EntityLogicalName,
+        [parameter(Mandatory=$false, Position=2)][alias("Path")]		
+        [string]$RibbonFilePath
+    )
+
+	$conn = VerifyCrmConnectionParam $conn
+	
+	$exportPath = if($RibbonFilePath -ne ""){Get-Item $RibbonFilePath} else {Get-Location}
+	$exportFileName = $EntityLogicalName + "Ribbon.xml"
+	$path = Join-Path $exportPath $exportFileName
+	# Instantiate RetrieveEntityRibbonRequest
+	$request = New-Object Microsoft.Crm.Sdk.Messages.RetrieveEntityRibbonRequest
+    $request.EntityName = $EntityLogicalName
+	$request.RibbonLocationFilter = [Microsoft.Crm.Sdk.Messages.RibbonLocationFilters]::All
+    
+	try
+    {
+        $response = $conn.ExecuteCrmOrganizationRequest($request, $null)
+        if ($response.CompressedEntityXml -ne $null)
+        {
+			$ribbonXml = UnzipCrmRibbon -Data $response.CompressedEntityXml
+			
+			Write-Verbose 'Saving ribbon file to path: $path'
+
+			$ribbonXml.Save($path)
+
+			Write-Verbose "Successfully wrote file"
+			
+			$result = New-Object PSObject
+			Add-Member -InputObject $result -MemberType NoteProperty -Name "RetrieveEntityRibbonResponse" -Value $response
+			Add-Member -InputObject $result -MemberType NoteProperty -Name "RibbonFilePath" -Value $path
+			return $result
+        }
+
+        #Should only get here if there was nothing returned.
+        return $conn.LastCrmException
+    }
+    catch
+    {
+	    return $conn.LastCrmException
+    }
 }
 
 function Export-CrmSolution{
@@ -4363,7 +4498,7 @@ function Export-CrmSolution{
  Specify the parameter to export ISV config.
 
  .PARAMETER ExportSales
- Specify the parameter to export sales settings.
+ Specify the parameter to export sales settings. Only available CRM 2015+
 
  .EXAMPLE
  Export-CrmSolution -conn $conn -SolutionName "MySolution"
@@ -4426,7 +4561,7 @@ function Export-CrmSolution{
         [switch]$ExportSales
     )    
 
-    $conn = VerifyCrmConnectionParam $conn; 
+    $conn = VerifyCrmConnectionParam $conn
 
     try
     {
@@ -4434,14 +4569,14 @@ function Export-CrmSolution{
         #if we can't find just one solution matching then ERROR
         if($solutionRecords.CrmRecords.Count -ne 1)
         {
-            $friendlyName = $conn.ConnectedOrgFriendlyName.ToString(); 
+            $friendlyName = $conn.ConnectedOrgFriendlyName.ToString()
             Write-Error "Solution with name `"$SolutionName`" in CRM Instance: `"$friendlyName`" not found!"
-            break; 
+            break
         }
         #else PROCEED 
-		$crmSolutionRecord = $solutionRecords.CrmRecords[0]; 
-        $version = $crmSolutionRecord.version;
-		$solutionUniqueName = $crmSolutionRecord.uniquename;
+		$crmSolutionRecord = $solutionRecords.CrmRecords[0]
+        $version = $crmSolutionRecord.version
+		$solutionUniqueName = $crmSolutionRecord.uniquename
 
         write-verbose "Solution found with version# $version"
         $exportPath = if($SolutionFilePath -ne ""){Get-Item $SolutionFilePath} else {Get-Location}
@@ -4450,7 +4585,7 @@ function Export-CrmSolution{
         {
             $version = $version.Replace('.','_')
             $managedFileName = if($Managed) {"_managed_"} else {"_unmanaged_"}
-            $solutionZipFileName = "$solutionUniqueName$managedFileName$version.zip"; 
+            $solutionZipFileName = "$solutionUniqueName$managedFileName$version.zip"
         }
         #now we should have the final path
         $path = Join-Path $exportPath $solutionZipFileName
@@ -4458,7 +4593,7 @@ function Export-CrmSolution{
         Write-Verbose "Solution path: $path"
 
         #create the export request then set all the properties
-        $exportRequest = New-Object Microsoft.Crm.Sdk.Messages.ExportSolutionRequest; 
+        $exportRequest = New-Object Microsoft.Crm.Sdk.Messages.ExportSolutionRequest
         $exportRequest.ExportAutoNumberingSettings            =$ExportAutoNumberingSettings 
         $exportRequest.ExportCalendarSettings                 =$ExportCalendarSettings
         $exportRequest.ExportCustomizationSettings            =$ExportCustomizationSettings
@@ -4468,18 +4603,22 @@ function Export-CrmSolution{
         $exportRequest.ExportMarketingSettings                =$ExportMarketingSettings
         $exportRequest.ExportOutlookSynchronizationSettings   =$ExportOutlookSynchronizationSettings
         $exportRequest.ExportRelationshipRoles                =$ExportRelationshipRoles
-        $exportRequest.ExportSales                            =$ExportSales
         $exportRequest.Managed                                =$Managed
         $exportRequest.SolutionName                           =$solutionUniqueName
         $exportRequest.TargetVersion                          =$TargetVersion 
 
+		if($conn.ConnectedOrgVersion.Major -ge 7)
+		{
+			$exportRequest.ExportSales                            =$ExportSales
+		}
+
         Write-Verbose 'ExportSolutionRequests may take several minutes to complete execution.'
         
-        $response = [Microsoft.Crm.Sdk.Messages.ExportSolutionResponse]($conn.ExecuteCrmOrganizationRequest($exportRequest)); 
+        $response = [Microsoft.Crm.Sdk.Messages.ExportSolutionResponse]($conn.ExecuteCrmOrganizationRequest($exportRequest))
 
 		Write-Verbose 'Using solution file to path: $path'
 
-        [System.IO.File]::WriteAllBytes($path,$response.ExportSolutionFile);
+        [System.IO.File]::WriteAllBytes($path,$response.ExportSolutionFile)
 
         Write-Verbose "Successfully wrote file"
         $result = New-Object psObject
@@ -4487,7 +4626,7 @@ function Export-CrmSolution{
         Add-Member -InputObject $result -MemberType NoteProperty -Name "ExportSolutionResponse" -Value $response
         Add-Member -InputObject $result -MemberType NoteProperty -Name "SolutionPath" -Value $path
 
-        return $result; 
+        return $result
     }
     catch
     {
@@ -4557,7 +4696,7 @@ function Export-CrmSolutionTranslation{
         [string]$TranslationZipFileName
     )    
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     try
     {
@@ -4566,10 +4705,10 @@ function Export-CrmSolutionTranslation{
         #if we can't find just one solution matching then ERROR
         if($solutionRecords.CrmRecords.Count -ne 1)
         {
-            $friendlyName = $conn.ConnectedOrgFriendlyName.ToString(); 
+            $friendlyName = $conn.ConnectedOrgFriendlyName.ToString()
 
             Write-Error "Solution with name `"$SolutionName`" in CRM Instance: `"$friendlyName`" not found!"
-            break; 
+            break
         }
         #else PROCEED 
 
@@ -4583,7 +4722,7 @@ function Export-CrmSolutionTranslation{
         if($TranslationZipFileName.Length -eq 0)
         {
             $version = $version.Replace('.','_')
-            $translationZipFileName = "CrmTranslations_$SolutionName`_$version.zip"; 
+            $translationZipFileName = "CrmTranslations_$SolutionName`_$version.zip"
         }
 
         #now we should have the final path
@@ -4592,14 +4731,14 @@ function Export-CrmSolutionTranslation{
         Write-Verbose "Solution path: $path"
 
         #create the export translation request then set all the properties
-        $exportRequest = New-Object Microsoft.Crm.Sdk.Messages.ExportTranslationRequest; 
+        $exportRequest = New-Object Microsoft.Crm.Sdk.Messages.ExportTranslationRequest
         $exportRequest.SolutionName = $SolutionName
 
         Write-Verbose 'ExportTranslationRequest may take several minutes to complete execution.'
         
-        $response = [Microsoft.Crm.Sdk.Messages.ExportTranslationResponse]($conn.ExecuteCrmOrganizationRequest($exportRequest)); 
+        $response = [Microsoft.Crm.Sdk.Messages.ExportTranslationResponse]($conn.ExecuteCrmOrganizationRequest($exportRequest))
 
-        [System.IO.File]::WriteAllBytes($path,$response.ExportTranslationFile);
+        [System.IO.File]::WriteAllBytes($path,$response.ExportTranslationFile)
 
         Write-Verbose "Successfully wrote file: $path"
         $result = New-Object psObject
@@ -4607,7 +4746,7 @@ function Export-CrmSolutionTranslation{
         Add-Member -InputObject $result -MemberType NoteProperty -Name "ExportTranslationResponse" -Value $response
         Add-Member -InputObject $result -MemberType NoteProperty -Name "SolutionTranslationPath" -Value $path
 
-        return $result; 
+        return $result
     }
     catch
     {
@@ -4657,7 +4796,7 @@ function Get-CrmAllLanguagePacks{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn;   
+	$conn = VerifyCrmConnectionParam $conn  
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.RetrieveAvailableLanguagesRequest
 
@@ -4711,7 +4850,7 @@ function Get-CrmEntityRecordCount{
         [string]$EntityLogicalName
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
     
     $count = 0
     $query = New-Object -TypeName 'Microsoft.Xrm.Sdk.Query.QueryExpression'
@@ -4747,7 +4886,7 @@ function Get-CrmEntityRecordCount{
         }
         else
         {
-            break;
+            break
         } 
     }
     
@@ -4833,7 +4972,7 @@ startedon           message
         [switch]$AllRows
     )
     
-    $conn = VerifyCrmConnectionParam $conn; 
+    $conn = VerifyCrmConnectionParam $conn
     
     $fetch = @"
 <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -4943,7 +5082,7 @@ function Get-CrmLicenseSummary{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -5006,7 +5145,7 @@ function Get-CrmOrgDbOrgSettings{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
     
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -5064,7 +5203,7 @@ function Get-CrmRecords{
  By default the first 5000 rows are returned, this switch will bring back all results regardless of how many
 
  .EXAMPLE
- Get-CrmRecords -conn $conn -EntityLogicalName account -AttributeName name -Operator "eq" -Value "Adventure Works (sample)" -Fields name,accountnumber
+ Get-CrmRecords -conn $conn -EntityLogicalName account -FilterAttribute name -FilterOperator "eq" -FilterValue "Adventure Works (sample)" -Fields name,accountnumber
  Key                  Value
  ---                  -----
  CrmRecords           {@{name_Property=[name, Adventure Works (sample)]; name=A...
@@ -5107,7 +5246,7 @@ function Get-CrmRecords{
         [parameter(Mandatory=$false, Position=7)]
         [int]$TopCount
     )
-    $conn = VerifyCrmConnectionParam $conn; 
+    $conn = VerifyCrmConnectionParam $conn
 
     if($FilterOperator)
     {
@@ -5115,7 +5254,7 @@ function Get-CrmRecords{
     }
     if( !($EntityLogicalName -cmatch "^[a-z]*$") )
     {
-        $EntityLogicalName = $EntityLogicalName.ToLower(); 
+        $EntityLogicalName = $EntityLogicalName.ToLower()
         Write-Verbose "EntityLogicalName contains uppercase which isn't possible in CRM, overwritting with ToLower() new value: $EntityLogicalName"
     }
 
@@ -5136,7 +5275,7 @@ function Get-CrmRecords{
     else
     {
         #lookup the primary attribute 
-        $primaryAttribute = $conn.GetEntityMetadata($EntityLogicalName.ToLower()).PrimaryIdAttribute;
+        $primaryAttribute = $conn.GetEntityMetadata($EntityLogicalName.ToLower()).PrimaryIdAttribute
         $fetchAttributes = "<attribute name='{0}' />" -F $primaryAttribute
     }
 
@@ -5145,7 +5284,7 @@ function Get-CrmRecords{
     {
         #TODO: convert this to a parameter set to avoid this extra logic
         Write-Error "One of the `$FilterAttribute `$FilterOperator `$FilterValue parameters is empty, to query all records exclude all filter parameters."
-        return; 
+        return
     }
     
     if($FilterAttribute -and $FilterOperator -and $FilterValue)
@@ -5250,7 +5389,7 @@ function Get-CrmRecordsByViewName{
         [int]$TopCount
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
     
     # Escape XML charactor
     $ViewName = [System.Security.SecurityElement]::Escape($ViewName)
@@ -5338,7 +5477,7 @@ function Get-CrmRecordsCount{
         [parameter(Mandatory=$true, Position=1)][alias("EntityName")]
         [string]$EntityLogicalName
     )
-	$conn = VerifyCrmConnectionParam $conn;         
+	$conn = VerifyCrmConnectionParam $conn        
     $fetch = 
 @"
 <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -5407,7 +5546,7 @@ function Get-CrmSdkMessageProcessingStepsForPluginAssembly{
         [switch]$OnlyCustomizable
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
         
     if($OnlyCustomizable){ $isCustom = "<value>1</value>" } else { $isCustom = "<value>0</value><value>1</value>" }
 
@@ -5520,7 +5659,7 @@ function Get-CrmSiteMap{
         [string]$SubAreasOfArea
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
   
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -5623,7 +5762,7 @@ function Get-CrmSystemSettings{
         [switch]$ShowDisplayName
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
   
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -5741,7 +5880,7 @@ function Get-CrmTimeZones{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
     
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -5818,7 +5957,7 @@ function Get-CrmTraceAlerts{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
     
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -5914,7 +6053,7 @@ function Get-CrmUserMailbox{
         [switch]$ShowDisplayName
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
     
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -6050,7 +6189,7 @@ function Get-CrmUserPrivileges{
         [string]$UserId
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
     
     # Get User Rolls including Team
     $roles = Get-CrmUserSecurityRoles -conn $conn -UserId $UserId -IncludeTeamRoles
@@ -6194,7 +6333,7 @@ function Get-CrmUserSecurityRoles{
         [switch]$IncludeTeamRoles
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
     
     $roles = New-Object System.Collections.Generic.List[PSObject]
     
@@ -6308,7 +6447,7 @@ function Get-CrmUserSettings{
         [string[]]$Fields
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
   
     return Get-CrmRecord -conn $conn -EntityLogicalName usersettings -Id $UserId -Fields $Fields
 }
@@ -6358,20 +6497,20 @@ function Import-CrmSolutionTranslation{
         [switch]$PublishChanges
     )    
 
-    $conn = VerifyCrmConnectionParam $conn; 
+    $conn = VerifyCrmConnectionParam $conn
 	   
     try
     {
         $importId = [guid]::NewGuid()
-        $translationFile = [System.IO.File]::ReadAllBytes($TranslationFileName);
+        $translationFile = [System.IO.File]::ReadAllBytes($TranslationFileName)
 
         #create the import translation request then set all the properties
-        $importRequest = New-Object Microsoft.Crm.Sdk.Messages.ImportTranslationRequest ; 
+        $importRequest = New-Object Microsoft.Crm.Sdk.Messages.ImportTranslationRequest
         $importRequest.TranslationFile = $translationFile
         $importRequest.ImportJobId = $importId
         
         Write-Verbose 'ImportTranslationRequest may take several minutes to complete execution.'
-        $response = [Microsoft.Crm.Sdk.Messages.ImportTranslationResponse]($conn.ExecuteCrmOrganizationRequest($importRequest)); 
+        $response = [Microsoft.Crm.Sdk.Messages.ImportTranslationResponse]($conn.ExecuteCrmOrganizationRequest($importRequest))
                 
         Write-Verbose "Confirming the result"
         $xml = [xml](Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields data).data
@@ -6433,7 +6572,7 @@ function Invoke-CrmWhoAmI{
         [parameter(Mandatory=$false)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.WhoAmIRequest
     
@@ -6480,7 +6619,7 @@ function Publish-CrmAllCustomization{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn;   
+	$conn = VerifyCrmConnectionParam $conn  
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.PublishAllXmlRequest
     
@@ -6561,7 +6700,7 @@ function Remove-CrmSecurityRoleFromTeam{
         [string]$SecurityRoleId
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     if($PrincipalRecord -ne $null)
     {
@@ -6638,7 +6777,7 @@ function Remove-CrmSecurityRoleFromUser{
         [string]$SecurityRoleId
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     if($PrincipalRecord -ne $null)
     {
@@ -6686,7 +6825,7 @@ function Remove-CrmUserManager{
         [guid]$UserId
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     $request = New-Object 'Microsoft.Crm.Sdk.Messages.RemoveParentRequest'
     $target = New-CrmEntityReference systemuser $UserId
@@ -6735,7 +6874,7 @@ function Set-CrmConnectionCallerId{
         [guid]$CallerId
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     # We may need to check if the CallerId exists and enabled.
     $conn.OrganizationServiceProxy.CallerId = $CallerId
@@ -6781,7 +6920,7 @@ function Set-CrmConnectionTimeout{
         [switch]$SetDefault
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     if($SetDefault)
     {
@@ -7283,7 +7422,7 @@ function Set-CrmSystemSettings {
 
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
     
     $updateFields = @{}
 
@@ -7334,18 +7473,18 @@ function Set-CrmSystemSettings {
         $emailSettings = [xml]$systemSettings.defaultemailsettings
         if($defaultEmailSettings.ContainsKey("IncomingEmailDeliveryMethod"))
         {
-            $emailSettings.SelectSingleNode("/EmailSettings/IncomingEmailDeliveryMethod").InnerText = $defaultEmailSettings["IncomingEmailDeliveryMethod"]
+            $emailSettings.EmailSettings.IncomingEmailDeliveryMethod = [string]$defaultEmailSettings["IncomingEmailDeliveryMethod"]
         }
         if($defaultEmailSettings.ContainsKey("OutgoingEmailDeliveryMethod"))
         {
-            $emailSettings.SelectSingleNode("/EmailSettings/OutgoingEmailDeliveryMethod").InnerText = $defaultEmailSettings["OutgoingEmailDeliveryMethod"]
+            $emailSettings.EmailSettings.OutgoingEmailDeliveryMethod = [string]$defaultEmailSettings["OutgoingEmailDeliveryMethod"]
         }
         if($defaultEmailSettings.ContainsKey("ACTDeliveryMethod"))
         {
-            $emailSettings.SelectSingleNode("/EmailSettings/ACTDeliveryMethod").InnerText = $defaultEmailSettings["ACTDeliveryMethod"]
+            $emailSettings.EmailSettings.ACTDeliveryMethod = [string]$defaultEmailSettings["ACTDeliveryMethod"]
         }
 
-        $updateFields.Add("defaultemailsettings",$emailSettings.OuterXml);
+        $updateFields.Add("defaultemailsettings",$emailSettings.OuterXml)
     }
 
     Set-CrmRecord -conn $conn -EntityLogicalName organization -Id $recordid -Fields $updateFields
@@ -7397,7 +7536,7 @@ function Set-CrmUserBusinessUnit{
         [guid]$ReassignUserId
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     $ReassignPrincipal = New-CrmEntityReference -EntityLogicalName systemuser -Id $ReassignUserId
 
@@ -7500,7 +7639,7 @@ function Set-CrmUserMailbox {
         [switch]$ApplyDefaultEmailSettings
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
     
     $updateFields = @{}
 
@@ -7606,7 +7745,7 @@ function Set-CrmUserManager{
         [bool]$KeepChildUsers
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
 
     $request = New-Object 'Microsoft.Crm.Sdk.Messages.SetParentSystemUserRequest'
     $request.ParentId = $ManagerId
@@ -7668,7 +7807,7 @@ function Set-CrmUserSettings{
         [PSObject]$CrmRecord
     )
 
-	$conn = VerifyCrmConnectionParam $conn; 
+	$conn = VerifyCrmConnectionParam $conn
     
     try
     {
@@ -7895,7 +8034,7 @@ function Test-CrmViewPerformance{
         [switch]$IsUserView       
     )
     
-	$conn = VerifyCrmConnectionParam $conn;         
+	$conn = VerifyCrmConnectionParam $conn        
  
     if($IsUserView)
     { 
@@ -8042,7 +8181,7 @@ function Test-XrmTimerStop{
 function Coalesce {
 	foreach($i in $args){
 		if($i -ne $null){
-			return $i;
+			return $i
 		}
 	}
 }
@@ -8060,12 +8199,51 @@ function VerifyCrmConnectionParam {
         if($connobj.Value -eq $null)
         {
             Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break;
+            break
         }
         else
         {
             $conn = $connobj.Value
         }
     }
-	return $conn;
+	return $conn
+}
+
+## Taken from CRM SDK sample code
+## https://msdn.microsoft.com/en-us/library/microsoft.crm.sdk.messages.retrieveentityribbonresponse.compressedentityxml.aspx
+function UnzipCrmRibbon {
+    PARAM( 
+        [parameter(Mandatory=$true)]
+        [Byte[]]$Data
+    )
+
+    $memStream = New-Object System.IO.MemoryStream
+
+    $memStream.Write($Data, 0, $Data.Length)
+    $package = [System.IO.Packaging.ZipPackage]::Open($memStream, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read)
+    $part = $package.GetPart([System.Uri]::new('/RibbonXml.xml', [System.UriKind]::Relative))
+
+    try
+    {
+        $strm = $part.GetStream()
+        $reader = [System.Xml.XmlReader]::Create($strm)
+
+        $xmlDoc = New-Object System.Xml.XmlDocument
+        $xmlDoc.Load($reader)
+
+        return $xmlDoc
+    }
+    finally
+    {
+        if ($strm -ne $null)
+        {
+            $strm.Dispose()
+            $strm = $null
+        }
+        if ($reader -ne $null)
+        {
+            $reader.Dispose()
+            $reader = $null
+        }
+    }
 }
