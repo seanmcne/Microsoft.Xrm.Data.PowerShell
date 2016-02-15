@@ -554,6 +554,10 @@ function New-CrmRecord{
                 $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
                 break
             }
+			"Guid" {
+                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
+                break
+            }
             "OptionSetValue" {
                 $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
                 break
@@ -7817,6 +7821,127 @@ function Set-CrmUserSettings{
     {
         throw
     }    
+}
+
+function Upsert-CrmRecord{
+
+<#
+ .SYNOPSIS
+ Creates or Updates CRM record by specifying field name/value set.
+
+ .DESCRIPTION
+ The Upsert-CrmRecord cmdlet lets you create new CRM record if no ID match, otherwise update existing one. 
+ Use @{"field logical name"="value"} syntax to specify Fields, and make sure you specify correct type of value for the field.
+ This is a good example how to use OrganizationService requests which is not exposed to CrmServiceClient yet.
+
+ You can use Get-CrmEntityAttributeMetadata cmdlet and check AttributeType to see the field type. In addition, for CRM specific types, you can use New-CrmMoney, New-CrmOptionSetValue or New-CrmEntityReference cmdlets.
+
+ .PARAMETER conn
+ A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
+
+ .PARAMETER EntityLogicalName
+ A logicalname for an Entity to create. i.e.)accout, contact, lead, etc..
+
+ .PARAMETER Id
+ An Id of the record
+
+ .PARAMETER Fields
+ A List of field name/value pair. Use @{"field logical name"="value"} syntax to create Fields, and make sure you specify correct type of value for the field. 
+ You can use Get-CrmEntityAttributeMetadata cmdlet and check AttributeType to see the field type. In addition, for CRM specific types, you can use New-CrmMoney, New-CrmOptionSetValue or New-CrmEntityReference cmdlets.
+
+ .EXAMPLE
+ Upsert-CrmRecord -conn $conn -EntityLogicalName account -Id 57bd1c45-2b17-e511-80dc-c4346bc4fc6c -Fields @{"name"="account name";"industrycode"=New-CrmOptionSetValue -Value 1}
+ 
+ This example updates record with id of 57bd1c45-2b17-e511-80dc-c4346bc4fc6c. If no matching record exists, then create an record by 
+ assigning the id as it's id.
+
+ .EXAMPLE
+ Upsert-CrmRecord account 57bd1c45-2b17-e511-80dc-c4346bc4fc6c @{"name"="account name";"industrycode"=New-CrmOptionSetValue -Value 1}
+ 
+ This example updates record with id of 57bd1c45-2b17-e511-80dc-c4346bc4fc6c. If no matching record exists, then create an record by 
+ assigning the id as it's id by omming parameter names. When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+  
+#>
+
+    [CmdletBinding()]
+    PARAM(
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1)]
+        [string]$EntityLogicalName,
+		[parameter(Mandatory=$true, Position=2)]
+        [guid]$Id,
+        [parameter(Mandatory=$true, Position=3)]
+        [hashtable]$Fields
+    )
+
+	$conn = VerifyCrmConnectionParam $conn
+		
+	# Check CRM Organization version. Upsert is supported CRM 2015 Update 1 or later
+	if($conn.ConnectedOrgVersion -gt (New-Object Version -ArgumentList 8.5))
+	{
+		# Instantiate Entity object
+		$entity = New-Object Microsoft.Xrm.Sdk.Entity -ArgumentList $EntityLogicalName
+		$entity.Id = $Id
+					
+		# Set attributes
+		foreach($field in $Fields.GetEnumerator())
+		{
+			$entity[$field.Name] = $field.Value
+		}
+
+		try
+		{
+			# Instantiate UpsertRequest and set Target
+			$request = New-Object Microsoft.Xrm.Sdk.Messages.UpsertRequest
+			$request.Target = $entity
+			$result = $conn.ExecuteCrmOrganizationRequest($request, $null)
+		}
+		catch
+		{
+		    return $conn.LastCrmException        
+		}	
+		
+		# If something went wrong, then return error.
+		if($result -eq $null)
+        {
+            return $conn.LastCrmException
+        }	
+	}
+	else
+	{
+		# Get Primary Id attribute for the entity
+		$primaryIdAttribute = (Get-CrmEntityMetadata -conn $conn -EntityLogicalName account).PrimaryIdAttribute
+			
+		# Get record by using Id first
+		$record = Get-CrmRecord -conn $conn -EntityLogicalName $EntityLogicalName -Id $Id -Fields $primaryIdAttribute -WarningAction SilentlyContinue
+
+		# If record exists, then do update, otherwise create new record
+		if($record.logicalname -ne $null)
+		{
+			$result = Set-CrmRecord -conn $conn -EntityLogicalName $EntityLogicalName -Fields $Fields -Id $Id
+			if($result -eq $null)
+			{
+			    return $conn.LastCrmException
+			}	
+		}
+		else
+		{
+			# Add the Id field if not included
+			if(!$Fields.Contains($primaryIdAttribute))
+			{
+				$Fields.Add($primaryIdAttribute, $Id)
+			}
+			$result = New-CrmRecord -conn $conn -EntityLogicalName $EntityLogicalName -Fields $Fields
+			
+			if(!$result)
+			{
+			    return $conn.LastCrmException
+			}
+		}
+	}
+  
+    return $result
 }
 
 ### Get CRM Types object ###
