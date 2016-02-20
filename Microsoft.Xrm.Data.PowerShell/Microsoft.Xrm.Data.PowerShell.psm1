@@ -691,9 +691,8 @@ function Get-CrmRecord{
     }    
     
     if($record -eq $null)
-    {
-        $error = "Record Id: " + $Id + "Does Not Exist" 
-        return $error
+    {        
+        return $conn.LastCrmException
     }
         
     $psobj = New-Object -TypeName System.Management.Automation.PSObject
