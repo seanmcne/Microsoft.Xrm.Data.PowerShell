@@ -7822,14 +7822,14 @@ function Set-CrmUserSettings{
     }    
 }
 
-function Upsert-CrmRecord{
+function Merge-CrmRecord{
 
 <#
  .SYNOPSIS
  Creates or Updates CRM record by specifying field name/value set.
 
  .DESCRIPTION
- The Upsert-CrmRecord cmdlet lets you create new CRM record if no ID match, otherwise update existing one. 
+ The Merge-CrmRecord cmdlet lets you create new CRM record if no ID match, otherwise update existing one. 
  Use @{"field logical name"="value"} syntax to specify Fields, and make sure you specify correct type of value for the field.
  This is a good example how to use OrganizationService requests which is not exposed to CrmServiceClient yet.
 
@@ -7849,13 +7849,13 @@ function Upsert-CrmRecord{
  You can use Get-CrmEntityAttributeMetadata cmdlet and check AttributeType to see the field type. In addition, for CRM specific types, you can use New-CrmMoney, New-CrmOptionSetValue or New-CrmEntityReference cmdlets.
 
  .EXAMPLE
- Upsert-CrmRecord -conn $conn -EntityLogicalName account -Id 57bd1c45-2b17-e511-80dc-c4346bc4fc6c -Fields @{"name"="account name";"industrycode"=New-CrmOptionSetValue -Value 1}
+ Merge-CrmRecord -conn $conn -EntityLogicalName account -Id 57bd1c45-2b17-e511-80dc-c4346bc4fc6c -Fields @{"name"="account name";"industrycode"=New-CrmOptionSetValue -Value 1}
  
  This example updates record with id of 57bd1c45-2b17-e511-80dc-c4346bc4fc6c. If no matching record exists, then create an record by 
  assigning the id as it's id.
 
  .EXAMPLE
- Upsert-CrmRecord account 57bd1c45-2b17-e511-80dc-c4346bc4fc6c @{"name"="account name";"industrycode"=New-CrmOptionSetValue -Value 1}
+ Merge-CrmRecord account 57bd1c45-2b17-e511-80dc-c4346bc4fc6c @{"name"="account name";"industrycode"=New-CrmOptionSetValue -Value 1}
  
  This example updates record with id of 57bd1c45-2b17-e511-80dc-c4346bc4fc6c. If no matching record exists, then create an record by 
  assigning the id as it's id by omming parameter names. When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
