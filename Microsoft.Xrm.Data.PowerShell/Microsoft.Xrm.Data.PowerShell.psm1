@@ -123,7 +123,7 @@ function Connect-CrmOnlineDiscovery{
         
     if($InteractiveMode)
     {
-        $global:conn = Get-CrmConnection -InteractiveMode
+        $global:conn = Get-CrmConnection -InteractiveMode -Verbose
         
         Write-Verbose "You are now connected and may run any of the CRM Commands."
         return $global:conn 
@@ -163,7 +163,7 @@ function Connect-CrmOnlineDiscovery{
     
                 Write-Verbose ($crmOrganizations[$orgNumber]).UniqueName
 			}
-            $global:conn = Get-CrmConnection -Credential $Credential -DeploymentRegion $crmOrganizations[$orgNumber].DiscoveryServerShortname -OnLineType $onlineType -OrganizationName ($crmOrganizations[$orgNumber]).UniqueName
+            $global:conn = Get-CrmConnection -Credential $Credential -DeploymentRegion $crmOrganizations[$orgNumber].DiscoveryServerShortname -OnLineType $onlineType -OrganizationName ($crmOrganizations[$orgNumber]).UniqueName -Verbose
 
 			#yes, we know this isn't recommended BUT this cmdlet is only valid for user interaction in the console and shouldn't be used for non-interactive scenarios
             Write-Host "`nYou are now connected to: $(($crmOrganizations[$orgNumber]).UniqueName)" -foregroundcolor yellow
@@ -378,7 +378,7 @@ function Connect-CrmOnPremDiscovery{
     
     if($InteractiveMode)
     {
-        $global:conn = Get-CrmConnection -InteractiveMode
+        $global:conn = Get-CrmConnection -InteractiveMode -Verbose
         Write-Verbose "You are now connected and may run any of the CRM Commands."
         return $global:conn 
     }
@@ -431,11 +431,11 @@ function Connect-CrmOnPremDiscovery{
 
         if($HomeRealmUrl -eq '')
         {
-            $global:conn = Get-CrmConnection -Credential $Credential -ServerUrl $ServerUrl -OrganizationName $organizationName
+            $global:conn = Get-CrmConnection -Credential $Credential -ServerUrl $ServerUrl -OrganizationName $organizationName -Verbose
         }
         else
         {
-            $global:conn = Get-CrmConnection -Credential $Credential -ServerUrl $ServerUrl -OrganizationName $organizationName -HomeRealmUrl $HomeRealmUrl
+            $global:conn = Get-CrmConnection -Credential $Credential -ServerUrl $ServerUrl -OrganizationName $organizationName -HomeRealmUrl $HomeRealmUrl -Verbose
         }
 		#yes, we know this isn't recommended BUT this cmdlet is only valid for user interaction in the console and shouldn't be used for non-interactive scenarios
         Write-Host "`nYou are now connected to: $organizationName" -foregroundcolor yellow
