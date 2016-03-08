@@ -5254,9 +5254,9 @@ function Get-CrmRecords{
     )
     $conn = VerifyCrmConnectionParam $conn
 
-    if($FilterOperator)
+    if($FilterOperator -and $FilterOperator.StartsWith("-"))
     {
-        $FilterOperator = $FilterOperator.Replace("-","")
+        $FilterOperator = $FilterOperator.Remove(0, 1)
     }
     if( !($EntityLogicalName -cmatch "^[a-z]*$") )
     {
