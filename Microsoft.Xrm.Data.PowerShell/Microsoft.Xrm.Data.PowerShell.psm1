@@ -575,14 +575,14 @@ function New-CrmRecord{
     try
     {        
         $result = $conn.CreateNewRecord($EntityLogicalName, $newfields, $null, $false, [Guid]::Empty)
-        if(!$result)
+        if(!$result -or $result -eq [System.Guid]::Empty)
         {
-            return $conn.LastCrmException
+            throw $conn.LastCrmException
         }
     }
     catch
     {
-        return $conn.LastCrmException        
+        throw $conn.LastCrmException        
     }
 
     return $result
