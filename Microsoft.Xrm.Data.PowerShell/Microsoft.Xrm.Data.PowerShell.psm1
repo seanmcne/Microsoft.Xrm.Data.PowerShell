@@ -719,6 +719,9 @@ function Get-CrmRecord{
     return $psobj
 }
 
+#Alias for Set-CrmRecord
+New-Alias -Name Update-CrmRecord -Value Set-CrmRecord
+
 #UpdateEntity 
 function Set-CrmRecord{
 
