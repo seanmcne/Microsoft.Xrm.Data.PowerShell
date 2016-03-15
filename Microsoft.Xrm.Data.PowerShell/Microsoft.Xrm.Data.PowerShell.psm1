@@ -33,8 +33,8 @@
     [gc]::Collect()
 #>
 
-# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
 function Connect-CrmOnlineDiscovery{
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -97,8 +97,8 @@ function Connect-CrmOnlineDiscovery{
     }
 }
 
-# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
 function Connect-CrmOnline{
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$true)]
@@ -123,8 +123,8 @@ function Connect-CrmOnline{
     }    
 }
 
-# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
 function Connect-CrmOnPremDiscovery{
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false, ParameterSetName="ServerUrl")]
@@ -208,8 +208,8 @@ function Connect-CrmOnPremDiscovery{
     }
 }
 
-# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
 function New-CrmRecord{
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -292,8 +292,8 @@ function New-CrmRecord{
     return $result
 }
 
-# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
 function Get-CrmRecord{
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -360,8 +360,8 @@ New-Alias -Name Update-CrmRecord -Value Set-CrmRecord
 
 #UpdateEntity 
 
-# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
 function Set-CrmRecord{
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -673,8 +673,8 @@ function Set-CrmRecord{
 
 #DeleteEntity 
 
-# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
 function Remove-CrmRecord{
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -717,8 +717,8 @@ function Remove-CrmRecord{
 ### Other Cmdlets from Xrm Tooling ###
 #AddEntityToQueue 
 
-# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
 function Move-CrmRecordToQueue{
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -759,8 +759,8 @@ function Move-CrmRecordToQueue{
 
 #AssignEntityToUser
 
-# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
 function Set-CrmRecordOwner{
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -822,8 +822,8 @@ function Set-CrmRecordOwner{
 
 #CloseActivity 
 
-# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
 function Set-CrmActivityRecordToCloseState{
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -860,10 +860,9 @@ function Set-CrmActivityRecordToCloseState{
 }
 
 #CreateAnnotation 
-New-Alias -Name Add-CrmNoteToCrmRecord -Value Add-CrmNote
 
+function Add-CrmNoteToCrmRecord{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
-function Add-CrmNote{
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -910,77 +909,9 @@ function Add-CrmNote{
 }
 
 #CreateEntityAssociation
+
 function Add-CrmRecordAssociation{
-
-<#
- .SYNOPSIS
- Associates two records for N:N relationship.
-
- .DESCRIPTION
- The Add-CrmRecordAssociation cmdlet lets you associate two records for N:N relationship by specifying relatioship logical name. 
-
- There are two ways to specify records.
- 
- 1. Pass EntityLogicalName and record's Id for both records.
- 2. Get a record object by using Get-CrmRecord/Get-CrmRecords cmdlets, and pass it for both records.
-
- You can specify relationship logical name for the association.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER CrmRecord1
- A first record object which is obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use EntityLogicalName/Id.
-
- .PARAMETER CrmRecord2
- A second record object which is obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use EntityLogicalName/Id.
-
- .PARAMETER EntityLogicalName1
- A logicalname for first Entity. i.e.)accout, contact, lead, etc..
-
- .PARAMETER Id1
- An Id (guid) of first record
-
- .PARAMETER EntityLogicalName2
- A logicalname for second Entity. i.e.)accout, contact, lead, etc..
-
- .PARAMETER Id2
- An Id (guid) of second record
-
- .PARAMETER RelationshipName
- A N:N relationship logical name.
-
- .EXAMPLE
- Add-CrmRecordAssociation -conn $conn -EntityLogicalName1 account -Id1 00005a70-6317-e511-80da-c4346bc43d94 -EntityLogicalName2 contact -Id2 66005a70-6317-e511-80da-c4346bc43d94 -RelationshipName new_accounts_contacts
-
- This example associates an account and a contact records through new_accounts_contacts custom N:N relationship.
-
- .EXAMPLE
- Add-CrmRecordAssociation account 00005a70-6317-e511-80da-c4346bc43d94 contact 66005a70-6317-e511-80da-c4346bc43d94 new_accounts_contacts
- 
- This example associates an account and a contact records through new_accounts_contacts custom N:N relationship by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
- .EXAMPLE
- PS C:\>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
-
- PS C:\>$contact = Get-CrmRecord contact 66005a70-6317-e511-80da-c4346bc43d94 fullname
-
- PS C:\>Add-CrmRecordAssociation -conn $conn -CrmRecord1 $account -CrmRecord2 $contact -RelationshipName new_accounts_contacts
-
- This example retrieves and stores an account and a contact records to variables, then pass them to Add-CrmRecordAssociation cmdlets.
-
- .EXAMPLE
- PS C:\>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
-
- PS C:\>$contact = Get-CrmRecord contact 66005a70-6317-e511-80da-c4346bc43d94 fullname
-
- PS C:\>Add-CrmRecordAssociation $account $contact new_accounts_contacts
-
- This example retrieves and stores an account and a contact records to variables, then pass them to Add-CrmRecordAssociation cmdlets.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -1000,21 +931,17 @@ function Add-CrmRecordAssociation{
         [parameter(Mandatory=$true, Position=5)]
         [string]$RelationshipName
     )
-
 	$conn = VerifyCrmConnectionParam $conn
-
     if($CrmRecord1 -ne $null)
     {
         $EntityLogicalName1 = $CrmRecord1.logicalname
         $Id1 = $CrmRecord1.($EntityLogicalName1 + "id")
     }
-
     if($CrmRecord2 -ne $null)
     {
         $EntityLogicalName2 = $CrmRecord2.logicalname
         $Id2 = $CrmRecord2.($EntityLogicalName2 + "id")
     }
-
     try
     {
         $result = $conn.CreateEntityAssociation($EntityLogicalName1, $Id1, $EntityLogicalName2, $Id2, $RelationshipName, [Guid]::Empty)
@@ -1031,82 +958,7 @@ function Add-CrmRecordAssociation{
 
 #CreateMultiEntityAssociation
 function Add-CrmMultiRecordAssociation{
-
-<#
- .SYNOPSIS
- Associates multiple records to single record for N:N relationship.
-
- .DESCRIPTION
- The Add-CrmMultiRecordAssociation cmdlet lets you associate multiple records to single record for N:N relationship by specifying relatioship logical name. 
- Use @('<object>','<object>') syntax to specify multiple ids or records.
- if the relationship is self-referencing, specify $True for -IsReflexiveRelationship Parameter.
-
- There are two ways to specify records.
- 
- 1. Pass EntityLogicalName and record's Id for both records.
- 2. Get record object(s) by using Get-CrmRecord/Get-CrmRecords cmdlets, and pass them.
-
- You can specify relationship logical name for the association.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER CrmRecord1
- A first record object which is obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use EntityLogicalName/Id.
-
- .PARAMETER CrmRecord2s
- An array of records object which are obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use EntityLogicalName/Id.
-
- .PARAMETER EntityLogicalName1
- A logicalname for first Entity. i.e.)accout, contact, lead, etc..
-
- .PARAMETER Id1
- An Id (guid) of first record
-
- .PARAMETER EntityLogicalName2
- A logicalname for second Entity. i.e.)accout, contact, lead, etc..
-
- .PARAMETER Id2s
- An array of Ids (guid) of second records. Specify by using @('66005a70-6317-e511-80da-c4346bc43d94','62005a70-6317-e511-80da-c4346bc43d94') synctax.
-
- .PARAMETER RelationshipName
- A N:N relationship logical name.
-
- .PARAMETER IsReflexiveRelationship
- Specify $True if the N:N relationship is self-referencing.
-
- .EXAMPLE
- Add-CrmMultiRecordAssociation -conn $conn -EntityLogicalName1 account -Id1 00005a70-6317-e511-80da-c4346bc43d94 -EntityLogicalName2 contact -Id2s @('66005a70-6317-e511-80da-c4346bc43d94','62005a70-6317-e511-80da-c4346bc43d94') -RelationshipName new_accounts_contacts
- This example associates an account and two contact records through new_accounts_contacts custom N:N relationship.
-
- .EXAMPLE
- Add-CrmMultiRecordAssociation account 00005a70-6317-e511-80da-c4346bc43d94 contact @('66005a70-6317-e511-80da-c4346bc43d94','62005a70-6317-e511-80da-c4346bc43d94') new_accounts_contacts
- 
- This example associates an account and two contact records through new_accounts_contacts custom N:N relationship by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
- .EXAMPLE
- PS C:\>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
-
- PS C:\>$fetch = @"
-<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
-  <entity name="contact">
-    <attribute name="fullname" />
-    <filter type="and">
-      <condition attribute="lastname" operator="like" value="%sample%" />
-    </filter>
-  </entity>
-</fetch>
-"@
-
- PS C:\>$contacts = Get-CrmRecordsByFetch $fetch
-
- PS C:\>Add-CrmMultiRecordAssociation $account $contacts.CrmRecords new_accounts_contacts
-
- This example retrieves contacts by using FetchXML and stores to a variable, then retrieves and store an account record to another variable.
- Then passes those variables Add-CrmMultiRecordAssociation.
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -1172,74 +1024,7 @@ function Add-CrmMultiRecordAssociation{
 
 #CreateNewActivityEntry 
 function Add-CrmActivityToCrmRecord{
-
-<#
- .SYNOPSIS
- Create a new activity to a record.
-
- .DESCRIPTION
- The Add-CrmActivityToCrmRecord cmdlet lets you add an activity to a record. You use ActivityEntityType to specify Activity Type and Subject/Description to set values. 
- You can use Fields optional Parameter to specify additional Field values. Use @{"field logical name"="value"} syntax to create Fields , and make sure you specify correct type of value for the field. 
- You can use Get-CrmEntityAttributeMetadata cmdlet and check AttributeType to see the field type. In addition, for CRM specific types, you can use New-CrmMoney, New-CrmOptionSetValue or New-CrmEntityReference cmdlets.
-
- There are two ways to specify a target record.
- 
- 1. Pass EntityLogicalName and record's Id.
- 2. Get a record object by using Get-CrmRecord/Get-CrmRecords cmdlets, and pass it.
-
- You can specify note subject and body by using -Subject and -NoteText parameters
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER CrmRecord
- A record object which is obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use EntityLogicalName/Id.
-
- .PARAMETER EntityLogicalName
- A logicalname of the target record. i.e.)accout, contact, lead, etc..
-
- .PARAMETER Id
- An Id (guid) of the record
-
- .PARAMETER ActivityEntityType
- A logicalname for an Activity Entity to add. i.e.)phonecall, email, task, etc..
-
- .PARAMETER Subject
- Subject of the activity record.
-
- .PARAMETER Description
- Description of the activity record.
-
- .PARAMETER Fields
- A List of field name/value pair. Use @{"field logical name"="value"} syntax to create Fields, and make sure you specify correct type of value for the field. 
- You can use Get-CrmEntityAttributeMetadata cmdlet and check AttributeType to see the field type. In addition, for CRM specific types, you can use New-CrmMoney, New-CrmOptionSetValue or New-CrmEntityReference cmdlets.
-
- .EXAMPLE
- Add-CrmActivityToCrmRecord -conn $conn -EntityLogicalName account -Id feff5970-6317-e511-80da-c4346bc43d94 -ActivityEntityType task -Subject "sample task" -Description "sample task description" -OnwerUserId f9d40920-7a43-4f51-9749-0549c4caf67d
-
- This example adds a task an account record.
-
- .EXAMPLE
- Add-CrmActivityToCrmRecord account feff5970-6317-e511-80da-c4346bc43d94 task "sample task" "sample task description" f9d40920-7a43-4f51-9749-0549c4caf67d
- 
- This example adds a task to an account record by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
- .EXAMPLE
- Add-CrmActivityToCrmRecord account feff5970-6317-e511-80da-c4346bc43d94 task "sample task" "sample task description" f9d40920-7a43-4f51-9749-0549c4caf67d @{"scheduledend"=(Get-Date).AddDays(3);"prioritycode"=New-CrmOptionSetValue 2}
-
- This example adds a task to an account record with Due Date and Priority fields.
-
- .EXAMPLE
- PS C:\>$account = Get-CrmRecord account feff5970-6317-e511-80da-c4346bc43d94 name
-
- PS C:\>user = Get-MyCrmUserId
-
- PS C:\>Add-CrmActivityToCrmRecord $account task "sample task" "sample task description" $user
- 
- This example retrieves and stores an account, and login user Id (guid) to variables. Then passes them to Add-CrmActivityToCrmRecord.
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -1261,12 +1046,10 @@ function Add-CrmActivityToCrmRecord{
         [parameter(Mandatory=$false, Position=7)]
         [hashtable]$Fields
     )
-
     begin
     {
         $conn = VerifyCrmConnectionParam $conn
     }  
-
 	process
 	{
 		if($CrmRecord -ne $null)
@@ -1274,9 +1057,7 @@ function Add-CrmActivityToCrmRecord{
 			$EntityLogicalName = $CrmRecord.logicalname
 			$Id = $CrmRecord.($EntityLogicalName + "id")
 		}
-
 		$newfields = New-Object 'System.Collections.Generic.Dictionary[[String], [Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper]]'
-		
 		if($Fields -ne $null)
 		{
 			foreach($field in $Fields.GetEnumerator())
@@ -1348,75 +1129,7 @@ function Add-CrmActivityToCrmRecord{
 
 #DeleteEntityAssociation
 function Remove-CrmRecordAssociation{
-
-<#
- .SYNOPSIS
- Associates two records for N:N relationship.
-
- .DESCRIPTION
- The Remove-CrmRecordAssociation cmdlet lets you disassociate two records for N:N relationship by specifying relatioship logical name. 
-
- There are two ways to specify records.
- 
- 1. Pass EntityLogicalName and record's Id for both records.
- 2. Get a record object by using Get-CrmRecord/Get-CrmRecords cmdlets, and pass it for both records.
-
- You can specify relationship logical name for the disassociation.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER CrmRecord1
- A first record object which is obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use EntityLogicalName/Id.
-
- .PARAMETER CrmRecord2
- A second record object which is obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use EntityLogicalName/Id.
-
- .PARAMETER EntityLogicalName1
- A logicalname for first Entity. i.e.)accout, contact, lead, etc..
-
- .PARAMETER Id1
- An Id (guid) of first record
-
- .PARAMETER EntityLogicalName2
- A logicalname for second Entity. i.e.)accout, contact, lead, etc..
-
- .PARAMETER Id2
- An Id (guid) of second record
-
- .PARAMETER RelationshipName
- A N:N relationship logical name.
-
- .EXAMPLE
- Remove-CrmRecordAssociation -conn $conn -EntityLogicalName1 account -Id1 00005a70-6317-e511-80da-c4346bc43d94 -EntityLogicalName2 contact -Id2 66005a70-6317-e511-80da-c4346bc43d94 -RelationshipName new_accounts_contacts
-
- This example associates an account and a contact records through new_accounts_contacts custom N:N relationship.
-
- .EXAMPLE
- Remove-CrmRecordAssociation account 00005a70-6317-e511-80da-c4346bc43d94 contact 66005a70-6317-e511-80da-c4346bc43d94 new_accounts_contacts
- 
- This example associates an account and a contact records through new_accounts_contacts custom N:N relationship by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
- .EXAMPLE
- PS C:\>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
-
- PS C:\>$contact = Get-CrmRecord contact 66005a70-6317-e511-80da-c4346bc43d94 fullname
-
- PS C:\>Remove-CrmRecordAssociation -conn $conn -CrmRecord1 $account -CrmRecord2 $contact -RelationshipName new_accounts_contacts
-
- This example retrieves and stores an account and a contact records to variables, then pass them to Remove-CrmRecordAssociation cmdlets.
-
- .EXAMPLE
- PS C:\>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
-
- PS C:\>$contact = Get-CrmRecord contact 66005a70-6317-e511-80da-c4346bc43d94 fullname
-
- PS C:\>Remove-CrmRecordAssociation $account $contact new_accounts_contacts
-
- This example retrieves and stores an account and a contact records to variables, then pass them to Remove-CrmRecordAssociation cmdlets.
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -1436,21 +1149,17 @@ function Remove-CrmRecordAssociation{
         [parameter(Mandatory=$true, Position=5)]
         [string]$RelationshipName
     )
-
 	$conn = VerifyCrmConnectionParam $conn    
-
     if($CrmRecord1 -ne $null)
     {
         $EntityLogicalName1 = $CrmRecord1.logicalname
         $Id1 = $CrmRecord1.($EntityLogicalName1 + "id")
     }
-
     if($CrmRecord2 -ne $null)
     {
         $EntityLogicalName2 = $CrmRecord2.logicalname
         $Id2 = $CrmRecord2.($EntityLogicalName2 + "id")
     }
-
     try
     {
         $result = $conn.DeleteEntityAssociation($EntityLogicalName1, $Id1, $EntityLogicalName2, $Id2, $RelationshipName, [Guid]::Empty)
@@ -1467,53 +1176,7 @@ function Remove-CrmRecordAssociation{
 
 #ExecuteWorkflowOnEntity  
 function Invoke-CrmRecordWorkflow{
-
-<#
- .SYNOPSIS
- Runs an on-demand workflow for a record.
-
- .DESCRIPTION
- The Invoke-CrmRecordWorkflow cmdlet lets you run an on-demand workflow for a record. 
-
- There are two ways to specify records.
- 
- 1. Pass record's Id.
- 2. Get a record object by using Get-CrmRecord/Get-CrmRecords cmdlets, and pass it.
-
- You can specify on-demand workflow by using its name.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER CrmRecord
- A record object which is obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use Id.
-
- .PARAMETER Id
- An Id (guid) of first record.
-
- .PARAMETER WorkflowName
- An on-demand workflow name.
-
- .EXAMPLE
- Invoke-CrmRecordWorkflow -conn $conn -Id faff5970-6317-e511-80da-c4346bc43d94 -WorkflowName "Sample Workflow for Account"
-
- This example runs an on-demand workflow named "Sample Workflow for Accoutn" for an account.
-
- .EXAMPLE
- Invoke-CrmRecordWorkflow faff5970-6317-e511-80da-c4346bc43d94 "Sample Workflow for Account"
- 
- This example runs an on-demand workflow named "Sample Workflow for Accoutn" for an account by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
- .EXAMPLE
- PS C:\>$account = Get-CrmRecord account 00005a70-6317-e511-80da-c4346bc43d94 name
-
- PS C:\>Invoke-CrmRecordWorkflow $account "Sample Workflow for Account"
-
- This example runs an on-demand workflow named "Sample Workflow for Accoutn" for an account by ommiting parameter names.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -1526,9 +1189,7 @@ function Invoke-CrmRecordWorkflow{
         [parameter(Mandatory=$true, Position=2)]
         [string]$WorkflowName
     )
-
 	$conn = VerifyCrmConnectionParam $conn
-
     if($CrmRecord -ne $null)
     {        
         $Id = $CrmRecord.($CrmRecord.logicalname + "id")
@@ -1550,36 +1211,12 @@ function Invoke-CrmRecordWorkflow{
     {
         throw $conn.LastCrmException
     }
-
     return $result
 }
 
 #GetMyCrmUserId
 function Get-MyCrmUserId{
-
-<#
- .SYNOPSIS
- Retrieves login user's CRM UserId (guid).
-
- .DESCRIPTION
- The Get-MyCrmUserId cmdlet retrieves login user's CRM UserId. 
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .EXAMPLE
- Get-MyCrmUserId -conn $conn
-
- This example returns login user's CRM UserId.
-
- .EXAMPLE
- Get-MyCrmUserId
- 
- This example returns login user's CRM UserId by ommiting -conn parameter. 
- To omit conn parameter, you need creating $conn in advance, then cmdlets automatically finds it.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
@@ -1606,61 +1243,7 @@ function Get-MyCrmUserId{
 
 #GetAllAttributesForEntity
 function Get-CrmEntityAttributes{
-
-<#
- .SYNOPSIS
- Retrieves all attributes metadata for an Entity.
-
- .DESCRIPTION
- The Get-CrmEntityAttributes cmdlet lets you retrieve all attributes metadata for an Entity. 
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER EntityLogicalName
- A logicalname for Entity. i.e.)accout, contact, lead, etc..
-
- .EXAMPLE
- Get-CrmEntityAttributes -conn $conn -EntityLogicalName account
- AttributeOf                 : preferredcontactmethodcode
- AttributeType               : Virtual
- AttributeTypeName           : Microsoft.Xrm.Sdk.Metadata.AttributeTypeDisplayName
- ColumnNumber                : 149
- Description                 : Microsoft.Xrm.Sdk.Label
- DisplayName                 : Microsoft.Xrm.Sdk.Label
- DeprecatedVersion           : 
- IntroducedVersion           : 5.0.0.0
- EntityLogicalName           : account
- IsAuditEnabled              : Microsoft.Xrm.Sdk.BooleanManagedProperty
- IsCustomAttribute           : False
- ...
-
- This example retrieves all attributes metadata for Account Entity.
-
- .EXAMPLE
- Get-CrmEntityAttributes account
- AttributeOf                 : preferredcontactmethodcode
- AttributeType               : Virtual
- AttributeTypeName           : Microsoft.Xrm.Sdk.Metadata.AttributeTypeDisplayName
- ColumnNumber                : 149
- Description                 : Microsoft.Xrm.Sdk.Label
- DisplayName                 : Microsoft.Xrm.Sdk.Label
- DeprecatedVersion           : 
- IntroducedVersion           : 5.0.0.0
- EntityLogicalName           : account
- IsAuditEnabled              : Microsoft.Xrm.Sdk.BooleanManagedProperty
- IsCustomAttribute           : False
- ...
-
- This example retrieves all attributes metadata for Account Entity by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
- .EXAMPLE Get-CrmEntityAttributes account | Where {$_.IsCustomAttribute -eq $true} | Select logicalname
-
- This example retrieves all attributes metadata for an account, and filter for only custom fields. Then displays logicalname field only.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
@@ -1689,55 +1272,7 @@ function Get-CrmEntityAttributes{
 
 #GetAllEntityMetadata 
 function Get-CrmEntityAllMetadata{
-
-<#
- .SYNOPSIS
- Retrieves all Metadata for CRM organization.
-
- .DESCRIPTION
- The Get-CrmEntityAllMetadata cmdlet lets you retrieve all Metadata for CRM organization. You can specify which type of Metadata you want to retrive by using EntityFilters parameter.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER OnlyPublished
- Specify $True if you retrieve only published Metadata.
-
- .PARAMETER EntityFilters
- Specify which type of Metadata you want to retrieve. Valid options are "all", "attributes", "entity", "privileges", "relationships".
-
- .EXAMPLE
- Get-CrmEntityAllMetadata -conn $conn -OnlyPublished $True EntityFilters all
- ActivityTypeMask                  : 0
- Attributes                        : {, , Microsoft.Xrm.Sdk.Metadata.AttributeTypeDisplayName, ...}
- AutoRouteToOwnerQueue             : False
- CanTriggerWorkflow                : False
- Description                       : Microsoft.Xrm.Sdk.Label
- DisplayCollectionName             : Microsoft.Xrm.Sdk.Label
- DisplayName                       : Microsoft.Xrm.Sdk.Label
- EntityHelpUrlEnabled              : False
- EntityHelpUrl                     : 
- ...
-
- This example retrieves all published Metadata.
-
- .EXAMPLE
- Get-CrmEntityAllMetadata $True Entity
- ActivityTypeMask                  : 0
- Attributes                        : 
- AutoRouteToOwnerQueue             : False
- CanTriggerWorkflow                : False
- Description                       : Microsoft.Xrm.Sdk.Label
- DisplayCollectionName             : Microsoft.Xrm.Sdk.Label
- DisplayName                       : Microsoft.Xrm.Sdk.Label
- EntityHelpUrlEnabled              : False
- ...
-
- This example retrieves all published Entity metadata by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
@@ -1747,9 +1282,7 @@ function Get-CrmEntityAllMetadata{
         [parameter(Mandatory=$false, Position=2)]
         [string]$EntityFilters
     )
-
 	$conn = VerifyCrmConnectionParam $conn 
-    
     switch($EntityFilters.ToLower())
     {
         "all" {
@@ -1777,7 +1310,6 @@ function Get-CrmEntityAllMetadata{
             break
         }               
     }
-
     try
     {
         $result = $conn.GetAllEntityMetadata($OnlyPublished, $filter)
@@ -1790,65 +1322,12 @@ function Get-CrmEntityAllMetadata{
     {
         throw $conn.LastCrmException
     }    
-
     return $result
 }
 
 #GetEntityAttributeMetadataForAttribute  
 function Get-CrmEntityAttributeMetadata{
-
-<#
- .SYNOPSIS
- Retrieves an attribute metadata for an Entity.
-
- .DESCRIPTION
- The Get-CrmEntityAttributeMetadata cmdlet lets you retrieve an attribute metadata for an Entity. 
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER EntityLogicalName
- A logicalname for Entity. i.e.)accout, contact, lead, etc..
-
- .PARAMETER FieldLogicalName
- A logicalname for a field.
-
- .EXAMPLE
- Get-CrmEntityAttributeMetadata -conn $conn -EntityLogicalName account -FieldLogicalName parentaccountid
- Targets                     : {account}
- AttributeOf                 : 
- AttributeType               : Lookup
- AttributeTypeName           : Microsoft.Xrm.Sdk.Metadata.AttributeTypeDisplayName
- ColumnNumber                : 57
- Description                 : Microsoft.Xrm.Sdk.Label
- DisplayName                 : Microsoft.Xrm.Sdk.Label
- DeprecatedVersion           : 
- IntroducedVersion           : 5.0.0.0
- EntityLogicalName           : account
- ...
-
- This example retrieves Parent Account attribute metadata for Account Entity.
-
- .EXAMPLE
- Get-CrmEntityAttributeMetadata account parentaccountid
- AttributeOf                 : preferredcontactmethodcode
- AttributeType               : Virtual
- AttributeTypeName           : Microsoft.Xrm.Sdk.Metadata.AttributeTypeDisplayName
- ColumnNumber                : 149
- Description                 : Microsoft.Xrm.Sdk.Label
- DisplayName                 : Microsoft.Xrm.Sdk.Label
- DeprecatedVersion           : 
- IntroducedVersion           : 5.0.0.0
- EntityLogicalName           : account
- IsAuditEnabled              : Microsoft.Xrm.Sdk.BooleanManagedProperty
- IsCustomAttribute           : False
- ...
-
- This example retrieves Parent Account attribute metadata for Account Entity by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
- 
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
@@ -1873,142 +1352,12 @@ function Get-CrmEntityAttributeMetadata{
     {
         throw $conn.LastCrmException
     }    
-
     return $result
 }
 
 #GetEntityDataByFetchSearch
 function Get-CrmRecordsByFetch{
-
-<#
- .SYNOPSIS
- Retrieves CRM records by using FetchXML query.
-
- .DESCRIPTION
- The Get-CrmRecordsByFetch cmdlet lets you retrieve up to 5,000 records from your CRM organization by using FetchXML query. 
- The output contains CrmRecords (List or retrieved records), PagingCookie (for next iteration), and NextPage (to indicate if there are more records on the next page).
-
- if you need to paging the result, you can also specify TopCount, PageNumber and PagingCookie.
-
- You can obtain FetchXML by using Advanced Find tool. As FetchXML query can be multiple lines, use "@ ... @" syntax to speficy the query. 
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER Fetch
- A FetchXML query to retrive records. You can obtain FetchXML by using Advanced Find tool. Use "@ ... @" syntax to speficy the query. 
-
- .PARAMETER TopCount
- Specify how many records you need to retireve at once (up to 5,000 at once).
-
- .PARAMETER PageNumber
- Specify starting page number for paging. Starting from 1.
-
- .PARAMETER PageCookie
- Specify cookie string for paging. Keep previous PagingCookie value for next iteration.
-
- .PARAMETER AllRows
- By default the first 5000 rows are returned, this switch will bring back all results regardless of how many
-
- .EXAMPLE
- Get-CrmRecordsByFetch -conn $conn -Fetch @"
- <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
-   <entity name="account">
-     <attribute name="name" />
-     <attribute name="primarycontactid" />
-     <attribute name="telephone1" />
-     <attribute name="accountid" />
-     <order attribute="name" descending="false" />
-   </entity>
- </fetch>
- "@
- Key             Value
- ---             -----                                                                                  
- CrmRecords      {@{name_Property=[name, A. Datum Corporation (sample)]; name=A. Datum Corporation (s...
- Count           5
- PagingCookie   <cookie page="1"><name last="Litware, Inc. (sample)" first="A. Datum Corporation (sa...
- NextPage    False
- 
- This example retrieves account records by using FetchXML and results contains CrmRecords, PagingCookie and NextPage.
- Please note that copying and pasting above example may not work due to multiline issue. Please remove all whitespace before last @"
-
- .EXAMPLE
-
- $result = Get-CrmRecordsByFetch @"
- <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
-   <entity name="account">
-     <attribute name="name" />
-     <attribute name="primarycontactid" />
-     <attribute name="telephone1" />
-     <attribute name="accountid" />
-     <order attribute="name" descending="false" />
-   </entity>
- </fetch>
- "@
-
- PS C:\>$result.CrmRecords
- name_Property             : [name, A. Datum Corporation (sample)]
- name                      : A. Datum Corporation (sample)
- primarycontactid_Property : [primarycontactid, Microsoft.Xrm.Sdk.EntityReference]
- primarycontactid          : Rene Valdes (sample)
- telephone1_Property       : [telephone1, 555-0158]
- telephone1                : 555-0158
- accountid_Property        : [accountid, be02caab-6c16-e511-80d6-c4346bc43dc0]
- accountid                 : be02caab-6c16-e511-80d6-c4346bc43dc0
- returnProperty_EntityName : account
- returnProperty_Id         : be02caab-6c16-e511-80d6-c4346bc43dc0
- original                  : {[name_Property, [name, A. Datum Corporation (sample)]], [name, A. Datum Corporation (sample)], [primarycontactid_Property, [primarycontactid, 
-                             Microsoft.Xrm.Sdk.EntityReference]], [primarycontactid, Microsoft.Xrm.Sdk.EntityReference]...}
- logicalname               : account
- 
- name_Property             : [name, Adventure Works (sample)]
- name                      : Adventure Works (sample)
- primarycontactid_Property : [primarycontactid, Microsoft.Xrm.Sdk.EntityReference]
- primarycontactid          : Nancy Anderson (sample)
- telephone1_Property       : [telephone1, 555-0152] 
- ....
-
- This example stores retrieved result into $result variable, then show records by CrmRecords property.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
- .EXAMPLE
-
- $result1 = Get-CrmRecordsByFetch @"
- <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
-   <entity name="contact">
-     <attribute name="fullname" />
-   </entity>
- </fetch>
- "@
-
- PS C:\>$result1.CrmRecords.Count
- 5000
-
- PS C:\>$result1.NextPage
- True
-
- PS C:\>$result1.PagingCookie
- <cookie page="1"><contactid last="{890FDA88-4217-E511-80DB-C4346BC42D18}" first="{E1D47674-4017-E511-80DB-C4346BC42D18}" /></cookie>
-
- PS C:\>$result2 = Get-CrmRecordsByFetch -conn $conn -Fetch @"
- <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
-   <entity name="contact">
-     <attribute name="fullname" />
-   </entity>
- </fetch>
- "@ -TopCount 5000 -PageNumber 2 -PageCookie $result1.PagingCookie
-
- PS C:\>$result2.CrmRecords.Count
- 453
-
- PS C:\>$result2.NextPage
- False
-
- This example stores retrieved result into $result1 variable, then use $result1.PagingCookie data for next iteration.
- FetchXML is exactly same but specifying additional Parameters for second command.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -2025,33 +1374,26 @@ function Get-CrmRecordsByFetch{
         [switch]$AllRows
 
     )
-    
     $conn = VerifyCrmConnectionParam $conn
-    
     #default page number to 1 if not supplied
     if($PageNumber -eq 0)
     {
         $PageNumber = 1
     }
-    
     $PagingCookie = ""
     $NextPage = $false
-    
     if($PageCookie -eq "")
     {
         $PageCookie = $null
     }
-
     $recordslist = New-Object 'System.Collections.Generic.List[System.Management.Automation.PSObject]'
     $resultSet = New-Object 'System.Collections.Generic.Dictionary[[System.String],[System.Management.Automation.PSObject]]'
-
     try
     {
         Write-Debug "Getting data from CRM"
         $records = $conn.GetEntityDataByFetchSearch($Fetch, $TopCount, $PageNumber, $PageCookie, [ref]$PagingCookie, [ref]$NextPage, [Guid]::Empty)
         $xml = [xml]$Fetch
         $logicalname = $xml.SelectSingleNode("/fetch/entity").Name
-
         #if there are zero results returned 
         if($records.Count -eq 0)
         {
@@ -2061,7 +1403,6 @@ function Get-CrmRecordsByFetch{
             $resultSet.Add("Count", $recordslist.Count)
             $resultSet.Add("PagingCookie",$null)
             $resultSet.Add("NextPage",$false)
-            
             #EXIT
             return $resultSet
         }
@@ -2091,7 +1432,6 @@ function Get-CrmRecordsByFetch{
 
                 Add-Member -InputObject $psobj -MemberType NoteProperty -Name "original" -Value $record
                 Add-Member -InputObject $psobj -MemberType NoteProperty -Name "logicalname" -Value $logicalname
-
                 $recordslist.Add($psobj)
             }
             #IF we have multiple pages!
@@ -2113,48 +1453,18 @@ function Get-CrmRecordsByFetch{
         Write-Error $_.Exception
         throw $conn.LastCrmException
     }
-    
     $resultSet = New-Object 'System.Collections.Generic.Dictionary[[System.String],[System.Management.Automation.PSObject]]'
     $resultSet.Add("CrmRecords", $recordslist)
     $resultSet.Add("Count", $recordslist.Count)
     $resultSet.Add("PagingCookie",$PagingCookie)
     $resultSet.Add("NextPage",$NextPage)
     $resultSet.Add("FetchXml", $Fetch)
-
     return $resultSet
 }
 
 #GetEntityDisplayName
 function Get-CrmEntityDisplayName{
-
-<#
- .SYNOPSIS
- Retrieves Display Name for an Entity.
-
- .DESCRIPTION
- The Get-CrmEntityDisplayName cmdlet lets you retrieve Display Name for an Entity.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER EntityLogicalName
- A logicalname for Entity. i.e.)accout, contact, lead, etc..
-
- .EXAMPLE
- Get-CrmEntityDisplayName -conn $conn -EntityLogicalName account
- Account
-
- This example retrieves Display Name for Account Entity.
-
- .EXAMPLE
- Get-CrmEntityDisplayName incident
- Case
-
- This example retrieves Display Name for Incident Entity by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
- 
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
@@ -2162,9 +1472,7 @@ function Get-CrmEntityDisplayName{
         [parameter(Mandatory=$true, Position=1, ParameterSetName="EntityLogicalName")]
         [string]$EntityLogicalName
     )
-
 	$conn = VerifyCrmConnectionParam $conn 
-
     try
     {
         $result = $conn.GetEntityDisplayName($EntityLogicalName)
@@ -2177,41 +1485,12 @@ function Get-CrmEntityDisplayName{
     {
         throw $conn.LastCrmException
     }    
-
     return $result
 }
 
 #GetEntityDisplayNamePlural
 function Get-CrmEntityDisplayPluralName{
-
-<#
- .SYNOPSIS
- Retrieves Display Plural Name for an Entity.
-
- .DESCRIPTION
- The Get-CrmEntityDisplayPluralName cmdlet lets you retrieve Display Plural Name for an Entity.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER EntityLogicalName
- A logicalname for Entity. i.e.)accout, contact, lead, etc..
-
- .EXAMPLE
- Get-CrmEntityDisplayPluralName -conn $conn -EntityLogicalName account
- Accounts
-
- This example retrieves Display Name for Account Entity.
-
- .EXAMPLE
- Get-CrmEntityDisplayPluralName incident
- Cases
-
- This example retrieves Display Name for Incident Entity by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
- 
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
@@ -2219,9 +1498,7 @@ function Get-CrmEntityDisplayPluralName{
         [parameter(Mandatory=$true, Position=1)]
         [string]$EntityLogicalName
     )
-
 	$conn = VerifyCrmConnectionParam $conn 
-
     try
     {
         $result = $conn.GetEntityDisplayNamePlural($EntityLogicalName)
@@ -2234,58 +1511,12 @@ function Get-CrmEntityDisplayPluralName{
     {
         throw $conn.LastCrmException
     }     
-
     return $result
 }
 
 #GetEntityMetadata
 function Get-CrmEntityMetadata{
-
-<#
- .SYNOPSIS
- Retrieves Metadata for an Entity.
-
- .DESCRIPTION
- The Get-CrmEntityMetadata cmdlet lets you retrieve Metadata for an Entity. You can specify which type of Metadata you want to retrive by using EntityFilters parameter.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER EntityLogicalName
- A logicalname for Entity. i.e.)accout, contact, lead, etc..
-
- .PARAMETER EntityFilters
- Specify which type of Metadata you want to retrieve. Valid options are "all", "attributes", "entity", "privileges", "relationships".
-
- .EXAMPLE
- Get-CrmEntityMetadata -conn $conn -EntityLogicalName account EntityFilters all
- ActivityTypeMask                  : 0
- Attributes                        : {Microsoft.Xrm.Sdk.Metadata.AttributeTypeDisplayName, Microsoft.Xrm.Sdk.Metadata.StringFormatName, 
-                                     Microsoft.Xrm.Sdk.Metadata.StringFormatName, Microsoft.Xrm.Sdk.Metadata.StringFormatName...}
- AutoRouteToOwnerQueue             : False
- CanTriggerWorkflow                : True
- Description                       : Microsoft.Xrm.Sdk.Label
- DisplayCollectionName             : Microsoft.Xrm.Sdk.Label
- ...
-
- This example retrieves all Metadata for Account Entity.
-
- .EXAMPLE
- Get-CrmEntityMetadata account relationships
- ActivityTypeMask                  : 0
- Attributes                        : {Microsoft.Xrm.Sdk.Metadata.AttributeTypeDisplayName, Microsoft.Xrm.Sdk.Metadata.StringFormatName, 
-                                     Microsoft.Xrm.Sdk.Metadata.StringFormatName, Microsoft.Xrm.Sdk.Metadata.StringFormatName...}
- AutoRouteToOwnerQueue             : False
- CanTriggerWorkflow                : True
- Description                       : Microsoft.Xrm.Sdk.Label
- DisplayCollectionName             : Microsoft.Xrm.Sdk.Label
- ...
-
- This example retrieves all Metadata for Account Entity by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
@@ -2344,35 +1575,7 @@ function Get-CrmEntityMetadata{
 
 #GetEntityName
 function Get-CrmEntityName{
-
-<#
- .SYNOPSIS
- Retrieves Entity logicalname for EntityTypeCode.
-
- .DESCRIPTION
- The Get-CrmEntityName cmdlet lets you retrieve Entity logicalname. You can specify EntityTypeCode.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER EntityTypeCode
- A number for Entity.
-
- .EXAMPLE
- Get-CrmEntityName -conn $conn -EntityTypeCode 1
- account
-
- This example retrieves Entity logicalname for EntityTypeCode 1 (Account).
-
- .EXAMPLE
- Get-CrmEntityName 4200
- activitypointer
-
- This example retrieves Entity logicalname for EntityTypeCode 4200 (Activity) by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
@@ -2401,35 +1604,7 @@ function Get-CrmEntityName{
 
 #GetEntityTypeCode 
 function Get-CrmEntityTypeCode{
-
-<#
- .SYNOPSIS
- Retrieves EntityTypeCode for an Entity.
-
- .DESCRIPTION
- The Get-CrmEntityTypeCode cmdlet lets you retrieve EntityTypeCode. You can specify EntityLogicalName.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER EntityLogicalName
- A logicalname for Entity. i.e.)accout, contact, lead, etc..
-
- .EXAMPLE
- Get-CrmEntityTypeCode -conn $conn -EntityLogicalName account
- 1
-
- This example retrieves EntityTypeCode for Account Entity.
-
- .EXAMPLE
- Get-CrmEntityTypeCode lead
- 4
-
- This example retrieves EntityTypeCode for Lead Entity by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
@@ -2437,9 +1612,7 @@ function Get-CrmEntityTypeCode{
         [parameter(Mandatory=$true, Position=1)]
         [string]$EntityLogicalName
     )
-
 	$conn = VerifyCrmConnectionParam $conn  
-
     try
     {
         $result = $conn.GetEntityTypeCode($EntityLogicalName)
@@ -2452,76 +1625,12 @@ function Get-CrmEntityTypeCode{
     {
         throw $conn.LastCrmException
     }    
-
     return $result
 }
 
 #GetGlobalOptionSetMetadata  
 function Get-CrmGlobalOptionSet{
-
-<#
- .SYNOPSIS
- Retrieves a global OptionSet.
-
- .DESCRIPTION
- The Get-CrmGlobalOptionSet cmdlet lets you retrieve a global OptionSet.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER OptionSetName
- A logicalname for a global OptionSet.
-
- .EXAMPLE
- Get-CrmGlobalOptionSet -conn $conn -OptionSetName incident_caseorigincode
- Options           : {, , , ...}
- Description       : Microsoft.Xrm.Sdk.Label
- DisplayName       : Microsoft.Xrm.Sdk.Label
- IsCustomOptionSet : False
- IsGlobal          : True
- IsManaged         : True
- IsCustomizable    : Microsoft.Xrm.Sdk.BooleanManagedProperty
- Name              : incident_caseorigincode
- OptionSetType     : Picklist
- IntroducedVersion : 
- MetadataId        : 08fa2cb2-e3fe-497a-9b5d-ee887f5cc3cd
- HasChanged        : 
- ExtensionData     : System.Runtime.Serialization.ExtensionDataObject
-
- This example retrieves incident_caseorigincode global OptionSet.
-
- .EXAMPLE
- Get-CrmGlobalOptionSet incident_caseorigincode
- Options           : {, , , ...}
- Description       : Microsoft.Xrm.Sdk.Label
- DisplayName       : Microsoft.Xrm.Sdk.Label
- IsCustomOptionSet : False
- IsGlobal          : True
- IsManaged         : True
- IsCustomizable    : Microsoft.Xrm.Sdk.BooleanManagedProperty
- Name              : incident_caseorigincode
- OptionSetType     : Picklist
- IntroducedVersion : 
- MetadataId        : 08fa2cb2-e3fe-497a-9b5d-ee887f5cc3cd
- HasChanged        : 
- ExtensionData     : System.Runtime.Serialization.ExtensionDataObject
-
- This example retrieves incident_caseorigincode global OptionSet by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
- .EXAMPLE
- PS C:\>$optionset = Get-CrmGlobalOptionSet incident_caseorigincode
- PS C:\>$optionset.Options | % {[string]$_.Value + ":" + $_.Label.LocalizedLabels.Label}
- 1:Phone
- 2:Email
- 3:Web
- 2483:Facebook
- 3986:Twitter
-
- This example retrieves incident_caseorigincode global OptionSet and stores to variable, then query its value and display name.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
@@ -2529,9 +1638,7 @@ function Get-CrmGlobalOptionSet{
         [parameter(Mandatory=$true, Position=1)]
         [string]$OptionSetName
     )
-
 	$conn = VerifyCrmConnectionParam $conn  
-
     try
     {
         $result = $conn.GetGlobalOptionSetMetadata($OptionSetName)
@@ -2544,57 +1651,12 @@ function Get-CrmGlobalOptionSet{
     {
         throw $conn.LastCrmException
     }
-
     return $result
 }
 
 #GetPickListElementFromMetadataEntity   
 function Get-CrmEntityOptionSet{
-
-<#
- .SYNOPSIS
- Retrieves a picklist field of an Entity.
-
- .DESCRIPTION
- The Get-CrmEntityOptionSet cmdlet lets you retrieve a picklist field of an Entity.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER EntityLogicalName
- A logicalname for Entity. i.e.)accout, contact, lead, etc..
-
- .PARAMETER FieldLogicalName
- A logicalname for a picklist filed.
-
- .EXAMPLE
- Get-CrmEntityOptionSet -conn $conn -EntityLogicalName account -FieldLogicalName statuscode
- ActualValue   PickListLabel   DisplayValue   Items
- -----------   -------------   ------------   -----
-                               Status Reason  {1, 2}  
-
- This example retrieves statuscode picklist for Account Entity.
-
- .EXAMPLE
- Get-CrmEntityOptionSet account statuscode
- ActualValue   PickListLabel   DisplayValue   Items
- -----------   -------------   ------------   -----
-                               Status Reason  {1, 2} 
-
- This example retrieves statuscode picklist for Account Entity by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
- .EXAMPLE
- Get-CrmEntityOptionSet account statuscode | % {$_.Items}
- DisplayLabel   PickListItemId
- ------------   --------------
- Active         1
- Inactive       2
-
- This example retrieves statuscode picklist for Account Entity and displays Label and Id.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
@@ -2604,9 +1666,7 @@ function Get-CrmEntityOptionSet{
         [parameter(Mandatory=$true, Position=2)]
         [string]$FieldLogicalName
     )
-
 	$conn = VerifyCrmConnectionParam $conn
-
     try
     {
         $result = $conn.GetPickListElementFromMetadataEntity($EntityLogicalName, $FieldLogicalName)
@@ -2625,48 +1685,7 @@ function Get-CrmEntityOptionSet{
 
 #ImportSolutionToCrm   
 function Import-CrmSolution{
-
-<#
- .SYNOPSIS
- Imports solution file to CRM Organization.
-
- .DESCRIPTION
- The Import-CrmSolution cmdlet lets you import solution file to CRM Organization and returns Job Id. You can use the Job Id to check import progress.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER SolutionFilePath
- A file path to solution zip file.
-
- .PARAMETER ActivatePlugIns
- Specify the parameter to active plug-ins when importing solution.
-
- .PARAMETER OverwriteUnManagedCustomizations
- Specify the parameter to overwrite conflicting unmanaged customizations when importing solution.
-
- .PARAMETER SkipDependancyOnProductUpdateCheckOnInstall
- Specify the parameter to skip dependency check when importing solution.
-
- .PARAMETER PublishChanges
- Specify the parameter to publish all customizations (applicable only for unmanaged solution)
-
- .PARAMETER MaxWaitTimeInSeconds
- Specify the parameter to override the default maximum 900 seconds (15 minutes) to wait for an imported solution to complete.
-
- .EXAMPLE
- Import-CrmSolution -conn $conn -SolutionFilePath "C:\SampleSolution_1_0_0_0.zip"
-
- This example imports solution and returns JobId.
-
- .EXAMPLE
- Import-CrmSolution "C:\SampleSolution_1_0_0_0.zip" $True
-
- This example imports solution by activating plug-ins and returns JobId by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -2684,7 +1703,6 @@ function Import-CrmSolution{
 		[parameter(Mandatory=$false, Position=6)]
         [int64]$MaxWaitTimeInSeconds = 900
     )
-    
 	$conn = VerifyCrmConnectionParam $conn
 	$importId = [guid]::Empty
     try
@@ -2693,24 +1711,19 @@ function Import-CrmSolution{
         {
             throw [System.IO.FileNotFoundException] "$SolutionFilePath not found."
         }
-        
         $tmpDest = $conn.CrmConnectOrgUriActual
         Write-Host "Importing solution file $SolutionFilePath into: $tmpDest" 
         Write-Verbose "OverwriteCustomizations: $OverwriteUnManagedCustomizations"
         Write-Verbose "SkipDependancyCheck: $SkipDependancyOnProductUpdateCheckOnInstall"
         Write-Verbose "Maximum seconds to poll for successful completion: $MaxWaitTimeInSeconds"
         Write-Verbose "Calling .ImportSolutionToCrm() this process can take minutes..."
-
         $result = $conn.ImportSolutionToCrm($SolutionFilePath, [ref]$importId, $ActivatePlugIns,
                 $OverwriteUnManagedCustomizations, $SkipDependancyOnProductUpdateCheckOnInstall)
-		
         $pollingStart = Get-Date
         $isProcessing = $true
 		$secondsSpentPolling = 0
         $pollingDelaySeconds = 5
-
         Write-Host "Import of file completed, waiting on completion of importId: $importId"
-        
 		try{
 			while($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds){
 				#delay
@@ -2740,12 +1753,10 @@ function Import-CrmSolution{
 		} Finally{
             $ProcPercent = ([double](Coalesce $ProcPercent 0))
         }
-		
         #User provided timeout and exit function with an error
 	    if($secondsSpentPolling -gt $MaxWaitTimeInSeconds){
 			throw "Import-CrmSolution halted due to exceeding the maximum timeout of $MaxWaitTimeInSeconds."
 		}
-
 		#detect a failure by a failure result OR the percent being less than 100%
         if($importresult.result -eq "failure") #Must look at %age instead of this result as the result is usually wrong!
         {
@@ -2808,44 +1819,13 @@ function Import-CrmSolution{
 
 #InstallSampleDataToCrm    
 function Add-CrmSampleData{
-
-<#
- .SYNOPSIS
- Add sample data CRM Organization.
-
- .DESCRIPTION
- The Add-CrmSampleData cmdlet lets you add sample data to CRM Organization and returns Job Id. You can confirm the status by using Test-CrmSampleDataInstalled cmdlet.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .EXAMPLE
- Add-CrmSampleData -conn $conn
- Guid
- ----
- 9f7ff9ec-d2b5-4599-9909-04a072e0a546 
-
- This example adds sample data.
-
- .EXAMPLE
- Add-CrmSampleData
- Guid
- ----
- 9f7ff9ec-d2b5-4599-9909-04a072e0a546 
-
- This example adds sample data by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false, Position=0)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
-
 	$conn = VerifyCrmConnectionParam $conn 
-
     try
     {
         $result = $conn.InstallSampleDataToCrm()
@@ -2858,38 +1838,12 @@ function Add-CrmSampleData{
     {
         throw $conn.LastCrmException
     }
-
     return $result
 }
 
 #IsSampleDataInstalled    
 function Test-CrmSampleDataInstalled{
-
-<#
- .SYNOPSIS
- Checks if sample data has been installed to CRM Organization.
-
- .DESCRIPTION
- The Test-CrmSampleDataInstalled cmdlet lets you Check if sample data has been installed to CRM Organization.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .EXAMPLE
- Test-CrmSampleDataInstalled -conn $conn
- Completed
-
- This example checks if sample data has been installed.
-
- .EXAMPLE
- Test-CrmSampleDataInstalled 
- Completed
-
- This example checks if sample data has been installed by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -2912,35 +1866,7 @@ function Test-CrmSampleDataInstalled{
 
 #PublishEntity  
 function Publish-CrmEntity{
-
-<#
- .SYNOPSIS
- Publishes customization for an Entity.
-
- .DESCRIPTION
- The Publish-CrmEntity cmdlet lets you publish customization for an Entity.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER EntityLogicalName
- A logicalname for Entity. i.e.)accout, contact, lead, etc..
-
- .EXAMPLE
- Publish-CrmEntity -conn $conn -EntityLogicalName account
- True
-
- This example publishes customization for Account Entity.
-
- .EXAMPLE
- Publish-CrmEntity lead
- True
-
- This example publishes customization for Lead Entity by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
@@ -2969,35 +1895,7 @@ function Publish-CrmEntity{
 
 #ResetLocalMetadataCache  
 function Remove-CrmEntityMetadataCache{
-
-<#
- .SYNOPSIS
- Removes metadata cache for an Entity.
-
- .DESCRIPTION
- The Remove-CrmEntityMetadataCache cmdlet lets you remove metadata cache for an Entity.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER EntityLogicalName
- A logicalname for Entity. i.e.)accout, contact, lead, etc..
-
- .EXAMPLE
- Remove-CrmEntityMetadataCache -conn $conn -EntityLogicalName account
- True
-
- This example removes metadata cache for Account Entity.
-
- .EXAMPLE
- Remove-CrmEntityMetadataCache lead
- True
-
- This example removes metadata cache for Lead Entity by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
@@ -3029,36 +1927,7 @@ function Remove-CrmEntityMetadataCache{
 
 #UninstallSampleDataFromCrm     
 function Remove-CrmSampleData{
-
-<#
- .SYNOPSIS
- Removes sample data CRM Organization.
-
- .DESCRIPTION
- The Remove-CrmSampleData cmdlet lets you remove sample data to CRM Organization and returns Job Id. You can confirm the status by using Test-CrmSampleDataInstalled cmdlet.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .EXAMPLE
- Remove-CrmSampleData -conn $conn
- Guid
- ----
- 9f7ff9ec-d2b5-4599-9909-04a072e0a546 
-
- This example removes sample data.
-
- .EXAMPLE
- Add-CrmSampleData
- Guid
- ----
- 9f7ff9ec-d2b5-4599-9909-04a072e0a546 
-
- This example removes sample data by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -3081,55 +1950,7 @@ function Remove-CrmSampleData{
 
 #UpdateStateAndStatusForEntity 
 function Set-CrmRecordState{
-
-<#
- .SYNOPSIS
- Sets Status/State for a CRM record.
-
- .DESCRIPTION
- The Set-CrmRecordState cmdlet lets you set Status/State for a CRM record. 
- 
- There are two ways to specify a record. 
- 1. Pass EntityLogicalName and record's Id.
- 2. Get a record object by using Get-CrmRecord/Get-CrmRecords cmdlets, then pass it.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
-  .PARAMETER CrmRecord
- A record object which is obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use EntityLogicalName/Id.
-
- .PARAMETER EntityLogicalName
- A logicalname for an Entity to set an owner. i.e.)accout, contact, lead, etc..
-
- .PARAMETER Id
- An Id (guid) of the record
-
- .PARAMETER StateCode
- StateCode value for a record. You can retrieve values by using Get-CrmEntityOptionSet <EntityLogicalName> statecode | % {$_.Items}
-
- .PARAMETER StatusCode
- StatusCode value for a record. You can retrieve values by using Get-CrmEntityOptionSet <EntityLogicalName> statuscode | % {$_.Items}
-
- .EXAMPLE
- Set-CrmRecordState -conn $conn -EntityLogicalName account -Id 1bf8d93d-1f18-e511-80da-c4346bc43d94 -StateCode Inactive -StatusCode Inactive
- 
- This example sets disabled state for an account record.
-
- .EXAMPLE
- Set-CrmRecordState account 1bf8d93d-1f18-e511-80da-c4346bc43d94 Inactive Inactive
- 
- This example sets disabled state for an account record by ommiting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
- .EXAMPLE 
- PS C:\>$contact = Get-CrmRecord contact 81f8d93d-1f18-e511-80da-c4346bc43d94 fullname
- 
- PS C:\>Set-CrmRecordState $contact Inactive Inactive
-
- This example retrieves and store a contact record, then pass it to Set-CrmRecordState to disable it.
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -3174,6 +1995,9 @@ function Set-CrmRecordState{
 	}
 }
 
+
+<#LEFT OFF HERE#> 
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
 ### Other Cmdlets added by Dynamics CRM PFE ###
 
 function Add-CrmSecurityRoleToTeam{
@@ -3216,8 +2040,8 @@ function Add-CrmSecurityRoleToTeam{
  .EXAMPLE
  Add-CrmSecurityRoleToTeam 00005a70-6317-e511-80da-c4346bc43d94 66005a70-6317-e511-80da-c4346bc43d94
  
- This example assigns the security role to the team by using Id by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ This example assigns the security role to the team by using Id by omitting parameters names.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
  PS C:\>$team = Get-CrmRecord team 00005a70-6317-e511-80da-c4346bc43d94 name
@@ -3342,8 +2166,8 @@ function Add-CrmSecurityRoleToUser{
  .EXAMPLE
  Add-CrmSecurityRoleToUser 00005a70-6317-e511-80da-c4346bc43d94 66005a70-6317-e511-80da-c4346bc43d94
  
- This example assigns the security role to the user by using Id by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ This example assigns the security role to the user by using Id by omitting parameters names.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
  PS C:\>$user = Get-CrmRecord sysetmuser 00005a70-6317-e511-80da-c4346bc43d94 fullname
@@ -3456,8 +2280,8 @@ function Approve-CrmEmailAddress{
  .EXAMPLE
  Approve-CrmEmailAddress -UserId 00005a70-6317-e511-80da-c4346bc43d94
  
- This example approves email address for a user by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ This example approves email address for a user by omitting parameters names.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
  Approve-CrmEmailAddress -conn $conn -QueueId 00005a70-6317-e511-80da-c4346bc43d94
@@ -3511,8 +2335,8 @@ function Disable-CrmLanguagePack{
  .EXAMPLE
  Disable-CrmLanguagePack 1041
  
- This example deprovisions Japanese Language Pack by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ This example deprovisions Japanese Language Pack by omitting parameters names.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -3566,8 +2390,8 @@ function Enable-CrmLanguagePack{
  .EXAMPLE
  Enable-CrmLanguagePack 1041
  
- This example provisions Japanese Language Pack by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ This example provisions Japanese Language Pack by omitting parameters names.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -3803,8 +2627,8 @@ function Export-CrmSolution{
  ----------------------                            ------------                                              
  Microsoft.Crm.Sdk.Messages.ExportSolutionResponse C:\Users\xxxx\Desktop\MySolution_unmanaged_1.0.0.0.zip
 
- This example exports "MySolution" solution as unmanaged with current path and default name by ommiting $conn parameter.
- When ommiting $conn parameter, cmdlets automatically finds it.
+ This example exports "MySolution" solution as unmanaged with current path and default name by omitting $conn parameter.
+ When omitting $conn parameter, cmdlets automatically finds it.
 
  .EXAMPLE
  Export-CrmSolution -conn $conn -SolutionName "MySolution" -Managed -SolutionFilePath "C:\temp" -SolutionZipFileName "MySolution_Managed.zip" 
@@ -3961,8 +2785,8 @@ function Export-CrmSolutionTranslation{
  -------------------------                            -----------------------                                         
  Microsoft.Crm.Sdk.Messages.ExportTranslationResponse C:\Users\xxx\Desktop\CrmTranslations_MySolution_1_0_0_0.zip
 
- This example exports translation file of "MySolution" solution with current path and default name by ommiting $conn parameter.
- When ommiting $conn parameter, cmdlets automatically finds it.
+ This example exports translation file of "MySolution" solution with current path and default name by omitting $conn parameter.
+ When omitting $conn parameter, cmdlets automatically finds it.
 
  .EXAMPLE
  Export-CrmSolutionTranslation -conn $conn -SolutionName "MySolution" -TranslationFilePath "C:\temp" -TranslationZipFileName "CrmTranslations_MySolution.zip"
@@ -4073,8 +2897,8 @@ function Get-CrmAllLanguagePacks{
  2052
  ...
 
- This example etrieves all available Language Pack by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ This example etrieves all available Language Pack by omitting parameters names.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -4113,7 +2937,7 @@ function Get-CrmEntityRecordCount{
  A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
 
  .PARAMETER EntityLogicalName
- A logicalname for an Entity to retrieve. i.e.)accout, contact, lead, etc..
+ A logicalname for an Entity to retrieve. i.e.)account, contact, lead, etc..
 
  .EXAMPLE
  Get-CrmEntityRecordCount -conn $conn -EntityLogicalName account
@@ -4126,7 +2950,7 @@ function Get-CrmEntityRecordCount{
  8413
  
  This example retrieves total record count for Contact Entity by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -4215,7 +3039,7 @@ function Get-CrmFailedWorkflows{
  FetchXml       <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false">...
 
  This example retrieves failed workflow records notifications by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
  Get-CrmFailedWorkflows | % {$_.CrmRecords} | select message,startedon
@@ -4360,7 +3184,7 @@ function Get-CrmLicenseSummary{
                             2 Administrative
 
  This example displays License assignment and AccessMode/CalType summery by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -4423,7 +3247,7 @@ function Get-CrmOrgDbOrgSettings{
  DisableSmartMatching                          : false
  
  This example retrieves CrmOrgDbOrgSettings by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -4473,7 +3297,7 @@ function Get-CrmRecords{
  A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
 
  .PARAMETER EntityLogicalName
- A logicalname for an Entity to retrieve. i.e.)accout, contact, lead, etc..
+ A logicalname for an Entity to retrieve. i.e.)account, contact, lead, etc..
 
  .PARAMETER FilterAttribute
  A field logical name for filtering.
@@ -4511,7 +3335,7 @@ function Get-CrmRecords{
  NextPage         False
  
  This example retrieves account(s) which name includes "sample", with specified fields by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -4659,7 +3483,7 @@ function Get-CrmRecordsByViewName{
  
 
  This example retrieves account records by using "My Custom Account View" user view by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
   
 #>
 
@@ -4741,7 +3565,7 @@ function Get-CrmRecordsCount{
  A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
 
  .PARAMETER EntityLogicalName
- A logicalname for an Entity to retrieve. i.e.)accout, contact, lead, etc..
+ A logicalname for an Entity to retrieve. i.e.)account, contact, lead, etc..
 
  .EXAMPLE
  Get-CrmRecordsCount -conn $conn -EntityLogicalName account
@@ -4754,7 +3578,7 @@ function Get-CrmRecordsCount{
  5677
 
  This example retrieves total number of Account entity records by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -4822,7 +3646,7 @@ function Get-CrmSdkMessageProcessingStepsForPluginAssembly{
  Get-CrmSdkMessageProcessingStepsForPluginAssembly -PluginAssemblyName YourPluginAssemblyName
  
  This example retrieves all registered steps for the plugin assembly by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.  
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.  
 #>
     [CmdletBinding()]
     PARAM(
@@ -4878,10 +3702,10 @@ function Get-CrmSiteMap{
  A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
 
  .PARAMETER SiteXml
- Specify SiteXml switch to retrive SiteMapXml xml data.
+ Specify SiteXml switch to retrieve SiteMapXml xml data.
 
  .PARAMETER Areas
- Specify Areas switch to retrive AreaIds list.
+ Specify Areas switch to retrieve AreaIds list.
  
  .PARAMETER GroupsOfArea
  Passing AreaId to GroupsOfArea parameter retrievs GroupIds of the specified Area.
@@ -4929,7 +3753,7 @@ function Get-CrmSiteMap{
  ...
 
  This example retrieves SubAreaIds of CRM Organization's SiteMap by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -5026,7 +3850,7 @@ function Get-CrmSystemSettings{
  ...
 
  This example retrieves CRM Organization's System Settings by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
  Get-CrmSystemSettings -ShowDisplayName
@@ -5038,7 +3862,7 @@ function Get-CrmSystemSettings{
  ...
 
  This example retrieves CRM Organization's System Settings and show DisplayName for fields by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -5158,7 +3982,7 @@ function Get-CrmTimeZones{
  ...  
 
  This example retrieves timezone information by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
   
 #>
 
@@ -5218,7 +4042,7 @@ function Get-CrmTraceAlerts{
  NextPage   False
 
  This example retrieves alert notifications by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
  Get-CrmTraceAlerts | % {$_.CrmRecords} | select text,level
@@ -5327,7 +4151,7 @@ function Get-CrmUserMailbox{
  ...
 
  This example retrieves User's mailbox and shows DisplayName for each field by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -5465,7 +4289,7 @@ function Get-CrmUserPrivileges{
  ...
 
  This example retrieves privileges assigned to the CRM User by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -5607,7 +4431,7 @@ function Get-CrmUserSecurityRoles{
  ...
 
  This example retrieves Security Roles assigned to the CRM User and Teams which the CRM User belongs to by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -5721,7 +4545,7 @@ function Get-CrmUserSettings{
  ...
 
  This example retrieves all fields from login User's UserSettings by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -5766,8 +4590,8 @@ function Import-CrmSolutionTranslation{
  .EXAMPLE
  Import-CrmSolutionTranslation -conn $conn -TranslationZipFileName "C:\temp\CrmTranslations_MySolution_1_0_0_0.zip"
 
- This example imports translation file "CrmTranslations_MySolution_1_0_0_0" by ommiting $conn parameter.
- When ommiting $conn parameter, cmdlets automatically finds it.
+ This example imports translation file "CrmTranslations_MySolution_1_0_0_0" by omitting $conn parameter.
+ When omitting $conn parameter, cmdlets automatically finds it.
 
  .EXAMPLE
  Import-CrmSolutionTranslation -conn $conn -TranslationZipFileName "C:\temp\CrmTranslations_MySolution_1_0_0_0.zip" -PublishChanges
@@ -5849,8 +4673,8 @@ function Invoke-CrmWhoAmI{
  .EXAMPLE
  Invoke-CrmWhoAmI
  
- This example executes WhoAmI by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ This example executes WhoAmI by omitting parameters names.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -5895,8 +4719,8 @@ function Publish-CrmAllCustomization{
  .EXAMPLE
  Publish-CrmAllCustomization
  
- This example publishes all customizations by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ This example publishes all customizations by omitting parameters names.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -5959,8 +4783,8 @@ function Remove-CrmSecurityRoleFromTeam{
  .EXAMPLE
  Remove-CrmSecurityRoleFromTeam 00005a70-6317-e511-80da-c4346bc43d94 66005a70-6317-e511-80da-c4346bc43d94
  
- This example removes a security role to a team by using Id by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ This example removes a security role to a team by using Id by omitting parameters names.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
  PS C:\>$team = Get-CrmRecord team 00005a70-6317-e511-80da-c4346bc43d94 name
@@ -6036,8 +4860,8 @@ function Remove-CrmSecurityRoleFromUser{
  .EXAMPLE
  Remove-CrmSecurityRoleFromUser 00005a70-6317-e511-80da-c4346bc43d94 66005a70-6317-e511-80da-c4346bc43d94
  
- This example removes a security role to a user by using Id by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ This example removes a security role to a user by using Id by omitting parameters names.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
  .EXAMPLE
  PS C:\>$user = Get-CrmRecord sysetmuser 00005a70-6317-e511-80da-c4346bc43d94 fullname
@@ -6099,8 +4923,8 @@ function Remove-CrmUserManager{
  .EXAMPLE
  Remove-CrmUserManager 3772fe6e-8a18-e511-80dc-c4346bc42d48
  
- This example removes a manager from a CRM user by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ This example removes a manager from a CRM user by omitting parameters names.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -6518,8 +5342,8 @@ function Set-CrmSystemSettings {
  .EXAMPLE
  Set-CrmSystemSettings -IsAutoSaveEnabled $false
  
- This example disables "Enable auto save on all forms" System setting by ommiting -conn parameter.
- When ommiting conn parameter, cmdlets automatically finds it.
+ This example disables "Enable auto save on all forms" System setting by omitting -conn parameter.
+ When omitting conn parameter, cmdlets automatically finds it.
 #>
 
     [CmdletBinding()]
@@ -6806,8 +5630,8 @@ function Set-CrmUserBusinessUnit{
  .EXAMPLE
  Set-CrmUserBusinessUnit 3772fe6e-8a18-e511-80dc-c4346bc42d48 5a18974c-ae18-e511-80dd-c4346bc44d24 f9d40920-7a43-4f51-9749-0549c4caf67d
  
- This example moves a CRM User to specified BusinessUnit, then reassign the records ownership by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ This example moves a CRM User to specified BusinessUnit, then reassign the records ownership by omitting parameters names.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -6895,14 +5719,14 @@ function Set-CrmUserMailbox {
  .EXAMPLE
  Set-CrmUserMailbox -UserId f9d40920-7a43-4f51-9749-0549c4caf67d -IncomingEmailDeliveryMethod 0
  
- This example disables "Incoming Email" setting to "None" by ommiting -conn parameter.
- When ommiting conn parameter, cmdlets automatically finds it.
+ This example disables "Incoming Email" setting to "None" by omitting -conn parameter.
+ When omitting conn parameter, cmdlets automatically finds it.
 
  .EXAMPLE
  Set-CrmUserMailbox -UserId f9d40920-7a43-4f51-9749-0549c4caf67d -ApplyDefaultEmailSettings
 
- This example updates mailbox email settings to default settings, which is in System Settings by ommiting -conn parameter.
- When ommiting conn parameter, cmdlets automatically finds it.
+ This example updates mailbox email settings to default settings, which is in System Settings by omitting -conn parameter.
+ When omitting conn parameter, cmdlets automatically finds it.
 #>
 
     [CmdletBinding()]
@@ -7015,8 +5839,8 @@ function Set-CrmUserManager{
  .EXAMPLE
  Set-CrmUserManager 3772fe6e-8a18-e511-80dc-c4346bc42d48 5a18974c-ae18-e511-80dd-c4346bc44d24 $True
  
- This example sets a manager to a CRM User and keeps its child users by ommiting parameters names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ This example sets a manager to a CRM User and keeps its child users by omitting parameters names.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -7081,7 +5905,7 @@ function Set-CrmUserSettings{
  PS C:\>Set-CrmUserSettings $userSettings
 
  This example retrieves all fields from login User's UserSettings and update PagingLimit to 100 by omitting parameter names.
- When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -7123,7 +5947,7 @@ function Upsert-CrmRecord{
  A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
 
  .PARAMETER EntityLogicalName
- A logicalname for an Entity to create. i.e.)accout, contact, lead, etc..
+ A logicalname for an Entity to create. i.e.)account, contact, lead, etc..
 
  .PARAMETER Id
  An Id of the record
@@ -7142,7 +5966,7 @@ function Upsert-CrmRecord{
  Upsert-CrmRecord account 57bd1c45-2b17-e511-80dc-c4346bc4fc6c @{"name"="account name";"industrycode"=New-CrmOptionSetValue -Value 1}
  
  This example updates record with id of 57bd1c45-2b17-e511-80dc-c4346bc4fc6c. If no matching record exists, then create an record by 
- assigning the id as it's id by omming parameter names. When ommiting parameter names, you do not provide $conn, cmdlets automatically finds it.
+ assigning the id as it's id by omming parameter names. When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
   
 #>
 
@@ -7254,7 +6078,7 @@ function New-CrmMoney{
  ----- -------------
  1000.01
 
- This example instantiates Money object with Value of 1000.01 by ommiting parameter names.
+ This example instantiates Money object with Value of 1000.01 by omitting parameter names.
 
 #>
 
@@ -7296,7 +6120,7 @@ function New-CrmOptionSetValue{
  ----- -------------
  20
 
- This example instantiates OptionSetValue object with Value of 20 by ommiting parameter names.
+ This example instantiates OptionSetValue object with Value of 20 by omitting parameter names.
 
 #>
 
@@ -7322,7 +6146,7 @@ function New-CrmEntityReference{
  The New-CrmEntityReference cmdlet lets you instantiates EntityReference type object. 
  
  .PARAMETER EntityLogicalName
- A logicalname for an Entity to update. i.e.)accout, contact, lead, etc..
+ A logicalname for an Entity to update. i.e.)account, contact, lead, etc..
 
  .PARAMETER Id
  An Id (guid) of the record
@@ -7347,7 +6171,7 @@ function New-CrmEntityReference{
  RowVersion    : 
  ExtensionData :
 
- This example instantiates CrmEntityReference object for an account record by ommiting parameter names.
+ This example instantiates CrmEntityReference object for an account record by omitting parameter names.
 
 #>
 
@@ -7593,7 +6417,6 @@ function Coalesce {
 		}
 	}
 }
-
 function VerifyCrmConnectionParam {
 	[CmdletBinding()]
     PARAM( 
@@ -7616,7 +6439,6 @@ function VerifyCrmConnectionParam {
     }
 	return $conn
 }
-
 ## Taken from CRM SDK sample code
 ## https://msdn.microsoft.com/en-us/library/microsoft.crm.sdk.messages.retrieveentityribbonresponse.compressedentityxml.aspx
 function UnzipCrmRibbon {
