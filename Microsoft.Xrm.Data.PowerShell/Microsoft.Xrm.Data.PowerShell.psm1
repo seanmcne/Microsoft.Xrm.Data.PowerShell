@@ -4901,33 +4901,7 @@ function Remove-CrmSecurityRoleFromUser{
 }
 
 function Remove-CrmUserManager{
-
-<#
- .SYNOPSIS
- Removes CRM user's manager.
-
- .DESCRIPTION
- The Remove-CrmUserManager lets you remove CRM user's manager.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER UserId
- An Id (guid) of CRM User.
-
- .EXAMPLE
- Remove-CrmUserManager -conn $conn -UserId 3772fe6e-8a18-e511-80dc-c4346bc42d48
-
- This example removes a manager from a CRM user.
-
- .EXAMPLE
- Remove-CrmUserManager 3772fe6e-8a18-e511-80dc-c4346bc42d48
- 
- This example removes a manager from a CRM user by omitting parameters names.
- When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
@@ -4957,26 +4931,7 @@ function Remove-CrmUserManager{
 }
 
 function Set-CrmConnectionCallerId{
-
-<#
- .SYNOPSIS
- Sets CRM Connection CallerId to impersonate.
-
- .DESCRIPTION
- The Set-CrmConnectionCallerId lets you set CRM Connection CallerId to impersonate.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER CallerId
- A guid of the User to impersonate.
-
- .EXAMPLE
- Set-CrmConnectionCallerId -conn $conn -CallerId 2eded89d-be89-e511-80f0-c4346bc4ef0c
-
- This example sets CRM Connection CallerId to 2eded89d-be89-e511-80f0-c4346bc4ef0c.
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
@@ -4992,35 +4947,7 @@ function Set-CrmConnectionCallerId{
 }
 
 function Set-CrmConnectionTimeout{
-
-<#
- .SYNOPSIS
- Sets CRM Connection timeout value in seconds.
-
- .DESCRIPTION
- The Set-CrmConnectionTimeout lets you set CRM Connection timeout value in seconds.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER TimeoutInSeconds
- Timeout value for CRM connection.
-
- .PARAMETER SetDefault
- Specyfing SetDefault will set default value to the connection. (120 seconds)
-
- .EXAMPLE
- Set-CrmConnectionTimeout -conn $conn -TimeoutInSeconds 1000
-
- This example sets CRM Connection timeout to 1000 seconds.
-
- .EXAMPLE
- Set-CrmConnectionTimeout -conn $conn -SetDefault
- 
- This example sets CRM Connection timeout to default. (120 seconds)
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
@@ -5048,304 +4975,7 @@ function Set-CrmConnectionTimeout{
 }
 
 function Set-CrmSystemSettings {
-
-<#
- .SYNOPSIS
- Update CRM Organization's System Settings.
-
- .DESCRIPTION
- The Set-CrmSystemSettings cmdlet lets you update CRM Organization's System Settings. Use Get-CrmSystemSettings to confirm current settings.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER ACTDeliveryMethod
- Change "Appointments, Contact, and Tasks" setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox actdeliverymethod | % Items command and use PickListItemId.
-
- .PARAMETER AllowAddressBookSyncs 
- Change "Users can schedule background address book synchronization" setting.
-
- .PARAMETER AllowAutoResponseCreation 
- Indicates whether automatic response creation is allowed.
-
- .PARAMETER AllowAutoUnsubscribe 
- Indicates whether automatic unsubscribe is allowed.
-
- .PARAMETER AllowAutoUnsubscribeAcknowledgement 
- Change "Send acknowledgement to customers when they unsubscribe" setting.
-
- .PARAMETER AllowClientMessageBarAd 
- Change "Users see "Get CRM for Outlook" option displayed in the message bar" setting.
-
- .PARAMETER AllowEntityOnlyAudit 
- Indicates whether auditing of changes to an entity is allowed when no attributes have changed.
-
- .PARAMETER AllowMarketingEmailExecution 
- Indicates whether marketing emails execution is allowed
-
- .PARAMETER AllowOfflineScheduledSyncs 
- Change "Users can schedule background local data synchronization" setting.
-
- .PARAMETER AllowOutlookScheduledSyncs  
- Change "Users can schedule synchronization" setting.
-
- .PARAMETER AllowUnresolvedPartiesOnEmailSend 
- Change "Allw messages with unresolved email recipients to be sent" setting.
-
- .PARAMETER AllowUsersSeeAppdownloadMessage
- Change "Users see app download message" setting.
-
- .PARAMETER AllowWebExcelExport 
- Indicates whether web-based export of grids to Microsoft Office Excel is allowed.
-
- .PARAMETER BlockedAttachments
- Update "Set blocked file extensions for attachements" list.
-  
- .PARAMETER CampaignPrefix
- Prefix used for campaign numbering.
-
- .PARAMETER CasePrefix
- Prefix to use for all cases throughout Microsoft Dynamics CRM.
-
- .PARAMETER ContractPrefix
- Prefix to use for all contracts throughout Microsoft Dynamics CRM.
-
- .PARAMETER CurrencyDisplayOption
- Change "Display currencies by using" setting. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet organization currencydisplayoption | % Items command and use PickListItemId.
-
- .PARAMETER CurrentCampaignNumber 
- Current campaign number.
-
- .PARAMETER CurrentCaseNumber 
- First case number to use.
-
- .PARAMETER CurrentContractNumber  
- First contract number to use.
-
- .PARAMETER CurrentInvoiceNumber  
- First invoice number to use.
-
- .PARAMETER CurrentKbNumber  
- First article number to use.
- 
- .PARAMETER CurrentOrderNumber  
- First order number to use.
-
- .PARAMETER CurrentQuoteNumber   
- First quote number to use.
-
- .PARAMETER DefaultCountryCode
- Chnage "Country/Region Code Prefix" value.
-
- .PARAMETER DefaultEmailServerProfileId
- Change "Server Profile" setting for Configure default synchronization method. This parameter accepts Email Server Profile record's guid. To get all profiles, use Get-CrmEmailServerProfiles command and use ProfileId.
-
- .PARAMETER DisableSocialCare
- Change "Prevent feature from receiving social data in CRM" setting.
-
- .PARAMETER DisplayNavigationTour
- Change "Display welcome screen to users when they sign in" setting.
-
- .PARAMETER EmailConnectionChannel
- Change "Process Email Using" setting. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet organization emailcommunicationchannel | % Items command and use PickListItemId.
-
- .PARAMETER EmailCorrelationEnabled 
- Change "User correlation to track email conversations" setting.
-
- .PARAMETER EnableBingMapsIntegration
- Change "Show Bing Maps on forms" setting.
-
- .PARAMETER EnableSmartMatching 
- Change "Use Smart Matching" setting.
-
- .PARAMETER FullNameConventionCode
- Change "Name Format" setting for full-name fields. This parameters accept int. To get all options, use Get-CrmEntityOptionSet organization fullnameconventioncode | % Items command and use PickListItemId.
-
- .PARAMETER GenerateAlertsForErrors
- Change "Erorr level of Configure Alerts" setting.
-
- .PARAMETER GenerateAlertsForWarnings
- Change "Warning level of Configure Alerts" setting.
-
- .PARAMETER GenerateAlertsForInformation
- Change "Information level of Configure Alerts" setting.
-
- .PARAMETER GlobalHelpUrlEnabled
- Change "Use custom Help for customizable entities" setting.
-
- .PARAMETER GlobalHelpUrl
- Change "Global custom Help URL" value.
-
- .PARAMETER GlobalAppendUrlParametersEnabled
- Change "Append parameters to URL" setting.
-
- .PARAMETER HashDeltaSubjectCount
- Change "Maximum difference allowed between subject keywords" setting.
- 
- .PARAMETER HashFilterKeywords 
- Change "Filter subject keywords" setting.
-
- .PARAMETER HashMaxCount 
- Change "Maximum number of subject keywords or recipients" setting.
-
- .PARAMETER HashMinAddressCount 
- Change "Minimum number of recipients required to match" setting.
-
- .PARAMETER IgnoreInternalEmail 
- Change "Track emails sent between CRM users as two activities" setting.
-
- .PARAMETER IncomingEmailDeliveryMethod
- Change "Incoming Email" setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox incomingemaildeliverymethod | % Items command and use PickListItemId.
-
- .PARAMETER InvoicePrefix 
- Prefix to use for all invoice numbers throughout Microsoft Dynamics CRM.
-
- .PARAMETER IsAutoSaveEnabled
- Change "Enable auto save on all forms" setting.
-  
- .PARAMETER IsDefaultCountryCodeCheckEnabled
- Change "Enable country/region code prefixing" setting.
-
- .PARAMETER IsDuplicateDetectionEnabled
- Indicates whether duplicate detection of records is enabled.
-
- .PARAMETER IsDuplicateDetectionEnabledForImport 
- Indicates whether duplicate detection of records during import is enabled.
-
- .PARAMETER IsDuplicateDetectionEnabledForOfflineSync  
- Indicates whether duplicate detection of records during offline synchronization is enabled.
-
- .PARAMETER IsDuplicateDetectionEnabledForOnlineCreateUpdate   
- Indicates whether duplicate detection during online create or update is enabled.
-
- .PARAMETER IsFolderBasedTrackingEnabled
- Change "Use folder-level tracking for Exchange folders" setting. Supported at v7.1 or above.
-
- .PARAMETER IsFullTextSearchEnabled 
- Change "Enable full-text search for Quick Find" setting.
-
- .PARAMETER IsHierarchicalSecurityModelEnabled 
- Indicates whether the hierarchical security model is enabled.
-
- .PARAMETER IsPresenceEnabled
- Change "Enable presence for the system" setting.
-
- .PARAMETER IsUserAccessAuditEnabled
- Change "Audit user access" setting.
-
- .PARAMETER KbPrefix 
- Prefix to use for all articles in Microsoft Dynamics CRM.
-  
- .PARAMETER MaxAppointmentDurationDays 
- Set "Maximum durations of an appointment in days" setting.
-
- .PARAMETER MaxDepthForHierarchicalSecurityModel 
- Maximum depth for hierarchy security propagation.
-
- .PARAMETER MaxFolderBasedTrackingMappings 
- Maximum number of Folder Based Tracking mappings user can add.
- 
- .PARAMETER MaximumActiveBusinessProcessFlowsAllowedPerEntity 
- Maximum number of active business process flows allowed per entity.
-
- .PARAMETER MaximumDynamicPropertiesAllowed 
- Maximum number of product properties for a product family or bundle.
-
- .PARAMETER MaximumTrackingNumber 
- Change "Number of digits for incremental message counter" setting. Specify 999 will set 3 as setting, 9999 will set 4 as setting and you can set up to 999999999. You can disable "Use Tracking Token" by setting 0.
-
- .PARAMETER MaxProductsInBundle 
- Maximum number of items in a bundle.
-
- .PARAMETER MaxRecordsForExportToExcel 
- Maximum number of records that will be exported to a static Microsoft Office Excel worksheet when exporting from the grid.
-
- .PARAMETER MaxRecordsForLookupFilters 
- Maximum number of lookup and picklist records that can be selected by user for filtering.
-
- .PARAMETER MaxUploadFileSize 
- Maximum allowed size of an attachment.
-
- .PARAMETER MinAddressBookSyncInterval 
- Change "Minimum time between address book synchronizations" setting.
-
- .PARAMETER MinOfflineSyncInterval 
- Change "Minimum time between background local data synchronizations" setting.
-
- .PARAMETER MinOutlookSyncInterval  
- Change "Minimum time between synchronizations" setting.
-
- .PARAMETER NotifyMailboxOwnerOfEmailServerLevelAlerts
- Change "Notify mailbox owner" setting.
-
- .PARAMETER OrderPrefix 
- Prefix to use for all orders throughout Microsoft Dynamics CRM.
-
- .PARAMETER OutgoingEmailDeliveryMethod
- Change "Outgoing Email" setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox outgoingemaildeliverymethod | % Items command and use PickListItemId.
-
- .PARAMETER PluginTraceLogSetting
- Change "Enable logging to plug-in trace log" setting. 0:Off 1:Exception 2:All
-
- .PARAMETER PricingDecimalPrecision
- Change "Pricing Decimal Precision" setting.
- 
- .PARAMETER QuickFindRecordLimitEnabled
- Change "Enable Quick Find record limits" setting.
-  
- .PARAMETER QuotePrefix 
- Prefix to use for all quotes throughout Microsoft Dynamics CRM.
-
- .PARAMETER RenderSecureIFrameForEmail 
- Change "Use secure frames to restrict email message content" setting.
-
- .PARAMETER RequireApprovalForUserEmail
- Change "Process emails only for approved users" setting.
-
- .PARAMETER RequireApprovalForQueueEmail
- Change "Process emails only for approved queues" setting.
-
- .PARAMETER ShareToPreviousOwnerOnAssign
- Change "Share reassigned records with original owner" setting.
- 
- .PARAMETER TrackingPrefix 
- Change Tracking Token "Prefix" setting.
-
- .PARAMETER TrackingTokenIdBase
- Change "Deployment base tracking number" setting.
-
- .PARAMETER TrackingTokenIdDigits  
- Change "Number of digits for user numbers" setting
-
- .PARAMETER UniqueSpecifierLength 
- Number of characters appended to invoice, quote, and order numbers.
-
- .PARAMETER UseLegacyRendering
- Change "Use legacy form rendering" setting.
-
- .PARAMETER UsePositionHierarchy 
- Indicates whether to use position hierarchy.
-
- .PARAMETER UseSkypeProtocol
- Change "Select provider for Click to call" setting. $true: Skype $false: Lync
- 
- .EXAMPLE
- Set-CrmSystemSettings -conn $conn -IsAutoSaveEnabled $false
-
- This example disables "Enable auto save on all forms" System setting.
-
- .EXAMPLE
- Set-CrmSystemSettings -conn $conn -FullNameConventionCode 7
- 
- This example updates "Name Format" of Set the full-name format to "Last NameFirst Name" System setting.
-
- .EXAMPLE
- Set-CrmSystemSettings -IsAutoSaveEnabled $false
- 
- This example disables "Enable auto save on all forms" System setting by omitting -conn parameter.
- When omitting conn parameter, cmdlets automatically finds it.
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -5602,39 +5232,7 @@ function Set-CrmSystemSettings {
 }
 
 function Set-CrmUserBusinessUnit{
-
-<#
- .SYNOPSIS
- Moves Crm User to another Business Unit.
-
- .DESCRIPTION
- The Set-CrmUserBusinessUnit lets you move Crm User to another Business Unit. You can specify different CRM UserId to ReassignUserId to update ownership of records as well. 
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER UserId
- An Id (guid) of CRM User which moves to another Business Unit.
-
- .PARAMETER BusinessUnitId
- An Id (guid) of Business Unit.
-
- .PARAMETER ReassignUserId
- An Id (guid) of CRM User to own records of Moving CRM User. You can specify same Id as UserId if you want to keep records ownership.
-
- .EXAMPLE
- Set-CrmUserBusinessUnit -conn $conn -UserId 3772fe6e-8a18-e511-80dc-c4346bc42d48 -BusinessUnitId 5a18974c-ae18-e511-80dd-c4346bc44d24 -ReassignUserId 3772fe6e-8a18-e511-80dc-c4346bc42d48
-
- This example moves a CRM User to specified BusinessUnit, then keeps the records ownership.
-
- .EXAMPLE
- Set-CrmUserBusinessUnit 3772fe6e-8a18-e511-80dc-c4346bc42d48 5a18974c-ae18-e511-80dd-c4346bc44d24 f9d40920-7a43-4f51-9749-0549c4caf67d
- 
- This example moves a CRM User to specified BusinessUnit, then reassign the records ownership by omitting parameters names.
- When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
@@ -5671,64 +5269,7 @@ function Set-CrmUserBusinessUnit{
 }
 
 function Set-CrmUserMailbox {
-
-<#
- .SYNOPSIS
- Updates CRM user's mailibox.
-
- .DESCRIPTION
- The Set-CrmUserMailbox cmdlet lets you update CRM user's mailibox. Use Get-CrmUserMailbox to confirm current values.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER UserId
- An Id of CRM user.
- 
- .PARAMETER EmailAddress
- An EmailAddress of CRM user. 
-
- .PARAMETER EmailServerProfile
- Change "Server Profile" setting of Synchronization Method. This parameter accepts Email Server Profile record's guid. To get all profiles, use Get-CrmEmailServerProfiles command and use ProfileId.
-
- .PARAMETER IncomingEmailDeliveryMethod
- Change "Incoming Email" setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox incomingemaildeliverymethod | % Items command and use PickListItemId.
-
- .PARAMETER OutgoingEmailDeliveryMethod
- Change "Outgoing Email" setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox outgoingemaildeliverymethod | % Items command and use PickListItemId.
-
- .PARAMETER ACTDeliveryMethod
- Change "Appointments, Contact, and Tasks" setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox actdeliverymethod | % Items command and use PickListItemId.
-
-
- .EXAMPLE
- Set-CrmUserMailbox -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d -IncomingEmailDeliveryMethod 0
-
- This example updates "Incoming Email" setting to "None".
-
- .EXAMPLE
- Set-CrmUserMailbox -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d -EmailServerProfile 1b2d4b03-831e-e511-80e1-c4346bc44d24
- 
- This example updates "Server Profile" setting to specified Profile.
-
- .EXAMPLE
- Set-CrmUserMailbox -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d -ApplyDefaultEmailSettings
-
- This example updates mailbox email settings to default settings, which is in System Settings.
-
- .EXAMPLE
- Set-CrmUserMailbox -UserId f9d40920-7a43-4f51-9749-0549c4caf67d -IncomingEmailDeliveryMethod 0
- 
- This example disables "Incoming Email" setting to "None" by omitting -conn parameter.
- When omitting conn parameter, cmdlets automatically finds it.
-
- .EXAMPLE
- Set-CrmUserMailbox -UserId f9d40920-7a43-4f51-9749-0549c4caf67d -ApplyDefaultEmailSettings
-
- This example updates mailbox email settings to default settings, which is in System Settings by omitting -conn parameter.
- When omitting conn parameter, cmdlets automatically finds it.
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -5749,11 +5290,8 @@ function Set-CrmUserMailbox {
         [parameter(Mandatory=$false, ParameterSetName="Default")]
         [switch]$ApplyDefaultEmailSettings
     )
-
 	$conn = VerifyCrmConnectionParam $conn
-    
     $updateFields = @{}
-
     if($ApplyDefaultEmailSettings)
     {
         $fetch = @"
@@ -5764,17 +5302,13 @@ function Set-CrmUserMailbox {
             </entity>
         </fetch>
 "@
-    
         $record = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords[0]
-
         $updateFields.Add("emailserverprofile", $record.defaultemailserverprofileid_Property.Value)
         $xml = [xml]$record.defaultemailsettings
-
         $updateFields.Add("incomingemaildeliverymethod", (New-CrmOptionSetValue $xml.ChildNodes.IncomingEmailDeliveryMethod))
         $updateFields.Add("outgoingemaildeliverymethod", (New-CrmOptionSetValue $xml.ChildNodes.OutgoingEmailDeliveryMethod))
         $updateFields.Add("actdeliverymethod", (New-CrmOptionSetValue $xml.ChildNodes.ACTDeliveryMethod))
     }
-
     foreach($parameter in $MyInvocation.BoundParameters.GetEnumerator())
     {   
         if($parameter.Key -in ("UserId", "ApplyDefaultEmailSettings", "conn"))
@@ -5794,7 +5328,6 @@ function Set-CrmUserMailbox {
             $updateFields.Add($parameter.Key.ToLower(), $parameter.Value)
         }
     }
-
     $fetch = @"
 <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
   <entity name="mailbox">
@@ -5806,41 +5339,41 @@ function Set-CrmUserMailbox {
 </fetch>
 "@
     $Id = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords[0].MailboxId
-
     Set-CrmRecord -conn $conn -EntityLogicalName mailbox -Id $Id -Fields $updateFields
 }
 
+<############SKIPPED FROM HELP XML####################>
 function Set-CrmUserManager{
 
 <#
- .SYNOPSIS
- Sets CRM user's manager.
+.SYNOPSIS
+Sets CRM user's manager.
 
- .DESCRIPTION
- The Set-CrmUserManager lets you set CRM user's manager.
+.DESCRIPTION
+The Set-CrmUserManager lets you set CRM user's manager.
 
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
+.PARAMETER conn
+A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
 
- .PARAMETER UserId
- An Id (guid) of CRM User.
+.PARAMETER UserId
+An Id (guid) of CRM User.
 
- .PARAMETER ManagerId
- An Id (guid) of Manager.
+.PARAMETER ManagerId
+An Id (guid) of Manager.
 
- .PARAMETER KeepChildUsers
- Specify if you keep child users for the user.
+.PARAMETER KeepChildUsers
+Specify if you keep child users for the user.
 
- .EXAMPLE
- Set-CrmUserManager -conn $conn -UserId 3772fe6e-8a18-e511-80dc-c4346bc42d48 -ManagerId 5a18974c-ae18-e511-80dd-c4346bc44d24 -KeepChildUsers $True
+.EXAMPLE
+Set-CrmUserManager -conn $conn -UserId 3772fe6e-8a18-e511-80dc-c4346bc42d48 -ManagerId 5a18974c-ae18-e511-80dd-c4346bc44d24 -KeepChildUsers $True
 
- This example sets a manager to a CRM User and keeps its child users.
+This example sets a manager to a CRM User and keeps its child users.
 
- .EXAMPLE
- Set-CrmUserManager 3772fe6e-8a18-e511-80dc-c4346bc42d48 5a18974c-ae18-e511-80dd-c4346bc44d24 $True
+.EXAMPLE
+Set-CrmUserManager 3772fe6e-8a18-e511-80dc-c4346bc42d48 5a18974c-ae18-e511-80dd-c4346bc44d24 $True
  
- This example sets a manager to a CRM User and keeps its child users by omitting parameters names.
- When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
+This example sets a manager to a CRM User and keeps its child users by omitting parameters names.
+When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
 
 #>
 
@@ -5877,6 +5410,7 @@ function Set-CrmUserManager{
     } 
 }
 
+<############SKIPPED FROM HELP XML####################>
 function Set-CrmUserSettings{
 
 <#
@@ -5930,6 +5464,7 @@ function Set-CrmUserSettings{
     }    
 }
 
+<############SKIPPED FROM HELP XML####################>
 function Upsert-CrmRecord{
 
 <#
@@ -6053,35 +5588,7 @@ function Upsert-CrmRecord{
 
 ### Get CRM Types object ###
 function New-CrmMoney{
-
-<#
- .SYNOPSIS
- Instantiates Money type object.
-
- .DESCRIPTION
- The New-CrmMoney cmdlet lets you instantiates Money type object. 
- 
- .PARAMETER Value
- Money Value.
-
- .EXAMPLE
- New-CrmMoney -Value 1000
- Value ExtensionData
- ----- -------------
- 1000
- 
- This example instantiates Money object with Value of 1000.
-
- .EXAMPLE
- New-CrmMoney 1000.01
- Value ExtensionData
- ----- -------------
- 1000.01
-
- This example instantiates Money object with Value of 1000.01 by omitting parameter names.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM(        
         [parameter(Mandatory=$true, Position=0)]
@@ -6095,35 +5602,7 @@ function New-CrmMoney{
 }
 
 function New-CrmOptionSetValue{
-
-<#
- .SYNOPSIS
- Instantiates OptionSetValue type object.
-
- .DESCRIPTION
- The New-CrmOptionSetValue cmdlet lets you instantiates OptionSetValue type object. 
- 
- .PARAMETER Value
- OptionSetValue Value.
-
- .EXAMPLE
- New-CrmOptionSetValue -Value 20
- Value ExtensionData
- ----- -------------
- 20
- 
- This example instantiates OptionSetValue object with Value of 20.
-
- .EXAMPLE
- New-CrmOptionSetValue 20
- Value ExtensionData
- ----- -------------
- 20
-
- This example instantiates OptionSetValue object with Value of 20 by omitting parameter names.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM(        
         [parameter(Mandatory=$true, Position=0)]
@@ -6137,44 +5616,7 @@ function New-CrmOptionSetValue{
 }
 
 function New-CrmEntityReference{
-
-<#
- .SYNOPSIS
- Instantiates EntityReference type object.
-
- .DESCRIPTION
- The New-CrmEntityReference cmdlet lets you instantiates EntityReference type object. 
- 
- .PARAMETER EntityLogicalName
- A logicalname for an Entity to update. i.e.)account, contact, lead, etc..
-
- .PARAMETER Id
- An Id (guid) of the record
-
- .EXAMPLE
- New-CrmEntityReference -EntityLogicalName account -Id 1df8d93d-1f18-e511-80da-c4346bc43d94
- Id            : 1df8d93d-1f18-e511-80da-c4346bc43d94
- LogicalName   : account
- Name          : 
- KeyAttributes : {}
- RowVersion    : 
- ExtensionData :
- 
- This example instantiates CrmEntityReference object for an account record.
-
- .EXAMPLE
- New-CrmEntityReference account 1df8d93d-1f18-e511-80da-c4346bc43d94
- Id            : 1df8d93d-1f18-e511-80da-c4346bc43d94
- LogicalName   : account
- Name          : 
- KeyAttributes : {}
- RowVersion    : 
- ExtensionData :
-
- This example instantiates CrmEntityReference object for an account record by omitting parameter names.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
     PARAM(        
         [parameter(Mandatory=$true, Position=0)]
@@ -6182,72 +5624,15 @@ function New-CrmEntityReference{
         [parameter(Mandatory=$true, Position=1)]
         [guid]$Id
     )
-
     $crmEntityReference = New-Object -TypeName Microsoft.Xrm.Sdk.EntityReference
-
     $crmEntityReference.LogicalName = $EntityLogicalName
     $crmEntityReference.Id = $Id
-
     return $crmEntityReference
 }
 
 ### Performance Test cmdlets ###
 function Test-CrmViewPerformance{
-
-<#
- .SYNOPSIS
- Test CRM View performance.
-
- .DESCRIPTION
- The Test-CrmViewPerformance cmdlet lets you test CRM View performance.
-
- .PARAMETER conn
- A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
-
- .PARAMETER View
- A view record object to test performance.
- 
- .PARAMETER ViewId
- A view id to test performance.
-
- .PARAMETER ViewName
- A view name to test performance.
-
- .PARAMETER RunAsViewOwner
- Indicate if using view owner's id to run the view to test performance.
-
- .PARAMETER RunAs
- Specify User Id to run the view to test performance.
-
- .PARAMETER IsUserView
- Indicate if the view is user owned view.
-
- .EXAMPLE
- Test-CrmViewPerformance -conn $conn -ViewName "Active Accounts"
-
- This example test "Active Accounts" system view performance by using user of the connection.
-	
- .EXAMPLE
- Test-CrmViewPerformance -conn $conn -ViewId 00000000-0000-0000-00aa-000010001002
-
- This example test view which has id of 00000000-0000-0000-00aa-000010001002 performance by using user of the connection.
- 
- .EXAMPLE
- Test-CrmViewPerformance -conn $conn -ViewName "Active Accounts" 
-
- This example test "Active Accounts" system view performance by using user of the connection.
-
- .EXAMPLE
- Test-CrmViewPerformance -conn $conn -ViewName "Active Accounts" -RunAs f9d40920-7a43-4f51-9749-0549c4caf67d 
-
- This example test "Active Accounts" system view performance by using specified user.
-
- .EXAMPLE
- Test-CrmViewPerformance -conn $conn -ViewName "My Custom View" -RunAsViewOwner -IsUserView
-
- This example test "My Custom View" user view performance by using view owner.	
-
-#>
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -6270,15 +5655,16 @@ function Test-CrmViewPerformance{
  
     if($IsUserView)
     { 
+		Write-Verbose "querying userquery"
         $logicalName = "userquery"
-        $fields = "name,fetchxml,layoutxml,returnedtypecode,ownerid"        
+        $fields = "name,fetchxml,layoutxml,returnedtypecode,ownerid".Split(",");      
     } 
     else
     {
+		Write-Verbose "querying savedquery"
         $logicalName = "savedquery"
-        $fields = "name,fetchxml,layoutxml,returnedtypecode"
+        $fields = "name,fetchxml,layoutxml,returnedtypecode".Split(",");
     }
-    
     try
     {
         if($ViewId -ne $null)
@@ -6297,7 +5683,9 @@ function Test-CrmViewPerformance{
 				$view = $views.CrmRecords[0]
 			}
         }
-        
+		else{
+			throw "ViewID or ViewName is null, input a valid view name or View ID."
+		}
         # if the view has ownerid, then its User Defined View
         if($View.ownerid -ne $null)
         {
@@ -6309,10 +5697,10 @@ function Test-CrmViewPerformance{
             {
                 Set-CrmConnectionCallerId -conn $conn -CallerId $RunAs
             }
-            else
-            {
-                Set-CrmConnectionCallerId -conn $conn -CallerId (Get-MyCrmUserId -conn $conn)
-            }
+            #else
+            #{
+            #    Set-CrmConnectionCallerId -conn $conn -CallerId (Get-MyCrmUserId -conn $conn)
+            #}
         
             # Get all records by using Fetch
             Test-XrmTimerStart
@@ -6327,11 +5715,10 @@ function Test-CrmViewPerformance{
             {
                 Set-CrmConnectionCallerId -conn $conn -CallerId $RunAs                
             }
-            else
-            {
-                Set-CrmConnectionCallerId -conn $conn -CallerId (Get-MyCrmUserId -conn $conn)
-            }
-
+            #else
+            #{
+            #    Set-CrmConnectionCallerId -conn $conn -CallerId (Get-MyCrmUserId -conn $conn)
+            #}
 			# Get all records by using Fetch
             Test-XrmTimerStart
             $records = Get-CrmRecordsByFetch -conn $conn -Fetch $View.fetchxml -AllRows -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
@@ -6342,7 +5729,6 @@ function Test-CrmViewPerformance{
         
 		# Create result set
         $psobj = New-Object -TypeName System.Management.Automation.PSObject
-              
 	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "ViewName" -Value $View.name 
 	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "FetchXml" -Value $View.fetchxml 
 	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "Entity" -Value $View.returnedtypecode
@@ -6351,6 +5737,12 @@ function Test-CrmViewPerformance{
 	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "TotalRecords" -Value $totalCount
 	    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "Owner" -Value $owner
         Add-Member -InputObject $psobj -MemberType NoteProperty -Name "Performance" -Value $perf
+		
+		#before returning always set connection caller id back to ourself: 
+        if($RunAs -or $RunAsViewOwner){
+			Write-verobse "Setting connection caller id back to current user"
+			Set-CrmConnectionCallerId -conn $conn -CallerId $RunAs                
+		}
 
         return $psobj
     }
@@ -6361,43 +5753,13 @@ function Test-CrmViewPerformance{
 }
 
 function Test-XrmTimerStart{
-
-<#
- .SYNOPSIS
- Instantiate timer object and start it.
-
- .DESCRIPTION
- The Test-XrmTimerStart cmdlet lets you instantiate timer object and start it. Use with Text-XrmTimerStop.
- 
- .EXAMPLE
- Test-XrmTimerStart; $result = Get-MyCrmUserId; Test-XrmTimerStop
- The operation took 00:00:00.0816009
- 
- This example shows performance result of Get-MyCrmUserId.
-
-#>
- 
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     $script:crmtimer = New-Object -TypeName 'System.Diagnostics.Stopwatch'
     $script:crmtimer.Start()
 }
 
 function Test-XrmTimerStop{
-
-<#
- .SYNOPSIS
- Find timer object which started by Test-XrmTimerStart and stop it. Then display the elapsed time.
-
- .DESCRIPTION
- The Test-XrmTimerStop cmdlet lets you see the elapsed time after you call Test-XrmTimerStart.
- 
- .EXAMPLE
- Test-XrmTimerStart; $result = Get-MyCrmUserId; Test-XrmTimerStop
- The operation took 00:00:00.0816009
- 
- This example shows performance result of Get-MyCrmUserId.
-
-#>
-
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     $crmtimerobj = Get-Variable crmtimer -Scope Script
     if($crmtimerobj.Value -ne $null)
     {

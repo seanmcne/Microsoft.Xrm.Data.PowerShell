@@ -5123,8 +5123,9 @@ PS C:\&gt;Move-CrmRecordToQueue $incident "Support Queue" f9d40920-7a43-4f51-974
     <CmdletObject verb="New" noun="CrmEntityReference">
       <Name>New-CrmEntityReference</Name>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Instantiates EntityReference type object.</Synopsis>
+        <Description>The New-CrmEntityReference cmdlet lets you instantiates EntityReference type object. 
+</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -5147,7 +5148,8 @@ PS C:\&gt;Move-CrmRecordToQueue $incident "Support Queue" f9d40920-7a43-4f51-974
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>A logicalname for an Entity to update. i.e.)account, contact, lead, etc..
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Guid" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
@@ -5157,7 +5159,8 @@ PS C:\&gt;Move-CrmRecordToQueue $incident "Support Queue" f9d40920-7a43-4f51-974
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>An Id (guid) of the record
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="ActionPreference" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -5186,7 +5189,30 @@ PS C:\&gt;Move-CrmRecordToQueue $incident "Support Queue" f9d40920-7a43-4f51-974
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
-      <Examples />
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>New-CrmEntityReference -EntityLogicalName account -Id 1df8d93d-1f18-e511-80da-c4346bc43d94</Cmd>
+          <Description>This example instantiates CrmEntityReference object for an account record.</Description>
+          <Output>Id            : 1df8d93d-1f18-e511-80da-c4346bc43d94
+LogicalName   : account
+Name          : 
+KeyAttributes : {}
+RowVersion    : 
+ExtensionData :</Output>
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>New-CrmEntityReference account 1df8d93d-1f18-e511-80da-c4346bc43d94</Cmd>
+          <Description>This example instantiates CrmEntityReference object for an account record by omitting parameter names.</Description>
+          <Output>Id            : 1df8d93d-1f18-e511-80da-c4346bc43d94
+LogicalName   : account
+Name          : 
+KeyAttributes : {}
+RowVersion    : 
+ExtensionData :</Output>
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
@@ -5194,8 +5220,10 @@ PS C:\&gt;Move-CrmRecordToQueue $incident "Support Queue" f9d40920-7a43-4f51-974
     <CmdletObject verb="New" noun="CrmMoney">
       <Name>New-CrmMoney</Name>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Instantiates Money type object.
+</Synopsis>
+        <Description>The New-CrmMoney cmdlet lets you instantiates Money type object. 
+</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -5218,7 +5246,7 @@ PS C:\&gt;Move-CrmRecordToQueue $incident "Support Queue" f9d40920-7a43-4f51-974
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Money Value.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="ActionPreference" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -5247,7 +5275,17 @@ PS C:\&gt;Move-CrmRecordToQueue $incident "Support Queue" f9d40920-7a43-4f51-974
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
-      <Examples />
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>New-CrmMoney -Value 1000.01</Cmd>
+          <Description>This example instantiates Money object with Value of 1,000.01 in whatever currency is applicable given the record configuration &amp;/or CRM Settings. 
+</Description>
+          <Output>Value ExtensionData
+----- -------------
+1000</Output>
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
@@ -5255,8 +5293,10 @@ PS C:\&gt;Move-CrmRecordToQueue $incident "Support Queue" f9d40920-7a43-4f51-974
     <CmdletObject verb="New" noun="CrmOptionSetValue">
       <Name>New-CrmOptionSetValue</Name>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis> Instantiates OptionSetValue type object.
+</Synopsis>
+        <Description> The New-CrmOptionSetValue cmdlet lets you instantiates OptionSetValue type object. 
+</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -5279,7 +5319,8 @@ PS C:\&gt;Move-CrmRecordToQueue $incident "Support Queue" f9d40920-7a43-4f51-974
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description> OptionSetValue Value.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="ActionPreference" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -5308,7 +5349,17 @@ PS C:\&gt;Move-CrmRecordToQueue $incident "Support Queue" f9d40920-7a43-4f51-974
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
-      <Examples />
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>New-CrmOptionSetValue -Value 20</Cmd>
+          <Description>This example instantiates OptionSetValue object with Value of 20.</Description>
+          <Output>Value ExtensionData
+----- -------------
+20
+ </Output>
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
@@ -6293,8 +6344,10 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
     <CmdletObject verb="Remove" noun="CrmUserManager">
       <Name>Remove-CrmUserManager</Name>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Removes CRM user's manager.
+</Synopsis>
+        <Description>The Remove-CrmUserManager lets you remove CRM user's manager.
+</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -6317,7 +6370,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Guid" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
@@ -6327,7 +6381,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>An Id (guid) of CRM User.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="ActionPreference" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -6356,7 +6411,23 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
-      <Examples />
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Remove-CrmUserManager -conn $conn -UserId 3772fe6e-8a18-e511-80dc-c4346bc42d48
+</Cmd>
+          <Description>This example removes a manager from a CRM user.
+</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Remove-CrmUserManager 3772fe6e-8a18-e511-80dc-c4346bc42d48
+</Cmd>
+          <Description />
+          <Output />
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
@@ -6503,8 +6574,10 @@ PS C:\&gt;Set-CrmActivityRecordToCloseState $task Open "Not Started"</Cmd>
     <CmdletObject verb="Set" noun="CrmConnectionCallerId">
       <Name>Set-CrmConnectionCallerId</Name>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Sets CRM Connection CallerId to impersonate.
+</Synopsis>
+        <Description>The Set-CrmConnectionCallerId lets you set CRM Connection CallerId to impersonate.
+</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -6527,7 +6600,8 @@ PS C:\&gt;Set-CrmActivityRecordToCloseState $task Open "Not Started"</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Guid" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
@@ -6540,7 +6614,8 @@ PS C:\&gt;Set-CrmActivityRecordToCloseState $task Open "Not Started"</Cmd>
           <Aliases>
             <string>UserId</string>
           </Aliases>
-          <Description />
+          <Description>A guid of the User to impersonate.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="ActionPreference" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -6569,7 +6644,15 @@ PS C:\&gt;Set-CrmActivityRecordToCloseState $task Open "Not Started"</Cmd>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
-      <Examples />
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Set-CrmConnectionCallerId -conn $conn -CallerId 2eded89d-be89-e511-80f0-c4346bc4ef0c
+</Cmd>
+          <Description>This example sets CRM Connection CallerId to 2eded89d-be89-e511-80f0-c4346bc4ef0c. NOTE THIS WILL CONTINUE TO IMPERSONATE THE USER UNTIL YOU SET IT BACK TO YOUR OWN USERID. </Description>
+          <Output />
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
@@ -6577,8 +6660,10 @@ PS C:\&gt;Set-CrmActivityRecordToCloseState $task Open "Not Started"</Cmd>
     <CmdletObject verb="Set" noun="CrmConnectionTimeout">
       <Name>Set-CrmConnectionTimeout</Name>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Sets CRM Connection timeout value in seconds.
+</Synopsis>
+        <Description>The Set-CrmConnectionTimeout lets you set CRM Connection timeout value in seconds.
+</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -6601,7 +6686,8 @@ PS C:\&gt;Set-CrmActivityRecordToCloseState $task Open "Not Started"</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int64" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
@@ -6611,7 +6697,8 @@ PS C:\&gt;Set-CrmActivityRecordToCloseState $task Open "Not Started"</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Timeout value for CRM connection.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
@@ -6621,7 +6708,8 @@ PS C:\&gt;Set-CrmActivityRecordToCloseState $task Open "Not Started"</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Specyfing SetDefault will set default value to the connection. (120 seconds)
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="ActionPreference" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -6650,7 +6738,24 @@ PS C:\&gt;Set-CrmActivityRecordToCloseState $task Open "Not Started"</Cmd>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
-      <Examples />
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Set-CrmConnectionTimeout -conn $conn -TimeoutInSeconds 1000
+</Cmd>
+          <Description>This example sets CRM Connection timeout to 1000 seconds.
+</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Set-CrmConnectionTimeout -conn $conn -SetDefault
+</Cmd>
+          <Description>This example sets CRM Connection timeout to default. (120 seconds)
+</Description>
+          <Output />
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
@@ -7136,8 +7241,10 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
     <CmdletObject verb="Set" noun="CrmSystemSettings">
       <Name>Set-CrmSystemSettings</Name>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis> Update CRM Organization's System Settings.
+</Synopsis>
+        <Description> The Set-CrmSystemSettings cmdlet lets you update CRM Organization's System Settings. Use Get-CrmSystemSettings to confirm current settings.
+</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -7160,7 +7267,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description> A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
@@ -7170,7 +7278,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Appointments, Contact, and Tasks" setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox actdeliverymethod | % Items command and use PickListItemId.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
@@ -7180,7 +7289,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Users can schedule background address book synchronization" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="3" globbing="false">
@@ -7190,7 +7300,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Indicates whether automatic response creation is allowed.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="4" globbing="false">
@@ -7200,7 +7311,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Indicates whether automatic unsubscribe is allowed.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="5" globbing="false">
@@ -7210,7 +7322,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Send acknowledgement to customers when they unsubscribe" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="6" globbing="false">
@@ -7220,7 +7333,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Users see "Get CRM for Outlook" option displayed in the message bar" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="7" globbing="false">
@@ -7230,7 +7344,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Indicates whether auditing of changes to an entity is allowed when no attributes have changed.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="8" globbing="false">
@@ -7240,7 +7355,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Indicates whether marketing emails execution is allowed
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="9" globbing="false">
@@ -7250,7 +7366,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Users can schedule background local data synchronization" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="10" globbing="false">
@@ -7260,7 +7377,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Users can schedule synchronization" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="11" globbing="false">
@@ -7270,7 +7388,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Allw messages with unresolved email recipients to be sent" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="12" globbing="false">
@@ -7280,7 +7399,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Users see app download message" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="13" globbing="false">
@@ -7290,7 +7410,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Indicates whether web-based export of grids to Microsoft Office Excel is allowed.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="14" globbing="false">
@@ -7300,7 +7421,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Update "Set blocked file extensions for attachements" list.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="15" globbing="false">
@@ -7310,7 +7432,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Prefix used for campaign numbering.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="16" globbing="false">
@@ -7320,7 +7443,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Prefix to use for all cases throughout Microsoft Dynamics CRM.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="17" globbing="false">
@@ -7330,7 +7454,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Prefix to use for all contracts throughout Microsoft Dynamics CRM.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="18" globbing="false">
@@ -7340,7 +7465,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Display currencies by using" setting. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet organization currencydisplayoption | % Items command and use PickListItemId.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="19" globbing="false">
@@ -7350,7 +7476,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Current campaign number.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="20" globbing="false">
@@ -7360,7 +7487,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>First case number to use.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="21" globbing="false">
@@ -7370,7 +7498,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>First contract number to use.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="22" globbing="false">
@@ -7380,7 +7509,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>First invoice number to use.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="23" globbing="false">
@@ -7390,7 +7520,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>First article number to use.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="24" globbing="false">
@@ -7400,7 +7531,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>First order number to use.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="25" globbing="false">
@@ -7410,7 +7542,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>First quote number to use.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="26" globbing="false">
@@ -7421,7 +7554,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Country/Region Code Prefix" value.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Guid" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="27" globbing="false">
@@ -7431,7 +7565,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Server Profile" setting for Configure default synchronization method. This parameter accepts Email Server Profile record's guid. To get all profiles, use Get-CrmEmailServerProfiles command and use ProfileId.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="28" globbing="false">
@@ -7441,7 +7576,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Prevent feature from receiving social data in CRM" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="29" globbing="false">
@@ -7451,7 +7587,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Display welcome screen to users when they sign in" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="30" globbing="false">
@@ -7461,7 +7598,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Process Email Using" setting. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet organization emailcommunicationchannel | % Items command and use PickListItemId.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="31" globbing="false">
@@ -7471,7 +7609,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "User correlation to track email conversations" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="32" globbing="false">
@@ -7481,7 +7620,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Show Bing Maps on forms" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="33" globbing="false">
@@ -7491,7 +7631,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Use Smart Matching" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="34" globbing="false">
@@ -7501,7 +7642,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Name Format" setting for full-name fields. This parameters accept int. To get all options, use Get-CrmEntityOptionSet organization fullnameconventioncode | % Items command and use PickListItemId.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="35" globbing="false">
@@ -7511,7 +7653,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Error level of Configure Alerts" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="36" globbing="false">
@@ -7521,7 +7664,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Warning level of Configure Alerts" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="37" globbing="false">
@@ -7531,7 +7675,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Information level of Configure Alerts" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="38" globbing="false">
@@ -7541,7 +7686,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Append parameters to URL" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="39" globbing="false">
@@ -7552,7 +7698,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Global custom Help URL" value.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="40" globbing="false">
@@ -7562,7 +7709,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Use custom Help for customizable entities" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="41" globbing="false">
@@ -7572,7 +7720,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Maximum difference allowed between subject keywords" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="42" globbing="false">
@@ -7582,7 +7731,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Filter subject keywords" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="43" globbing="false">
@@ -7592,7 +7742,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Maximum number of subject keywords or recipients" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="44" globbing="false">
@@ -7602,7 +7753,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Minimum number of recipients required to match" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="45" globbing="false">
@@ -7612,7 +7764,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Track emails sent between CRM users as two activities" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="46" globbing="false">
@@ -7622,7 +7775,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Incoming Email" setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox incomingemaildeliverymethod | % Items command and use PickListItemId.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="47" globbing="false">
@@ -7632,7 +7786,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Prefix to use for all invoice numbers throughout Microsoft Dynamics CRM.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="48" globbing="false">
@@ -7642,7 +7796,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Enable auto save on all forms" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="49" globbing="false">
@@ -7652,7 +7807,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Enable country/region code prefixing" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="50" globbing="false">
@@ -7662,7 +7818,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Indicates whether duplicate detection of records is enabled.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="51" globbing="false">
@@ -7672,7 +7829,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Indicates whether duplicate detection of records during import is enabled.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="52" globbing="false">
@@ -7682,7 +7840,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Indicates whether duplicate detection of records during offline synchronization is enabled.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="53" globbing="false">
@@ -7692,7 +7851,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Indicates whether duplicate detection during online create or update is enabled.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="54" globbing="false">
@@ -7702,7 +7862,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Use folder-level tracking for Exchange folders" setting. Supported at v7.1 or above.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="55" globbing="false">
@@ -7712,7 +7873,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Enable full-text search for Quick Find" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="56" globbing="false">
@@ -7722,7 +7884,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Indicates whether the hierarchical security model is enabled.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="57" globbing="false">
@@ -7732,7 +7895,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Enable presence for the system" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="58" globbing="false">
@@ -7742,7 +7906,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Audit user access" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="59" globbing="false">
@@ -7752,7 +7917,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Prefix to use for all articles in Microsoft Dynamics CRM.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="60" globbing="false">
@@ -7762,7 +7928,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Set "Maximum durations of an appointment in days" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="61" globbing="false">
@@ -7772,7 +7939,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Maximum depth for hierarchy security propagation.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="62" globbing="false">
@@ -7782,7 +7950,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Maximum number of active business process flows allowed per entity.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="63" globbing="false">
@@ -7792,7 +7961,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Maximum number of product properties for a product family or bundle.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="64" globbing="false">
@@ -7802,7 +7971,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Number of digits for incremental message counter" setting. Specify 999 will set 3 as setting, 9999 will set 4 as setting and you can set up to 999999999. You can disable "Use Tracking Token" by setting 0.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="65" globbing="false">
@@ -7812,7 +7982,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Maximum number of items in a bundle.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="66" globbing="false">
@@ -7822,7 +7992,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Maximum number of records that will be exported to a static Microsoft Office Excel worksheet when exporting from the grid.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="67" globbing="false">
@@ -7832,7 +8003,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Maximum number of lookup and picklist records that can be selected by user for filtering.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="68" globbing="false">
@@ -7842,7 +8014,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Maximum allowed size of an attachment.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="69" globbing="false">
@@ -7852,7 +8025,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Minimum time between address book synchronizations" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="70" globbing="false">
@@ -7862,7 +8036,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Minimum time between background local data synchronizations" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="71" globbing="false">
@@ -7872,7 +8047,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Minimum time between synchronizations" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="72" globbing="false">
@@ -7882,7 +8058,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Notify mailbox owner" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="73" globbing="false">
@@ -7892,7 +8069,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Prefix to use for all orders throughout Microsoft Dynamics CRM.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="74" globbing="false">
@@ -7902,7 +8080,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Outgoing Email" setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox outgoingemaildeliverymethod | % Items command and use PickListItemId.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="75" globbing="false">
@@ -7913,7 +8092,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Enable logging to plug-in trace log" setting. 0:Off 1:Exception 2:All
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="76" globbing="false">
@@ -7924,7 +8104,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Pricing Decimal Precision" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="77" globbing="false">
@@ -7934,7 +8115,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Enable Quick Find record limits" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="78" globbing="false">
@@ -7944,7 +8126,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Prefix to use for all quotes throughout Microsoft Dynamics CRM.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="79" globbing="false">
@@ -7954,7 +8137,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Process emails only for approved users" setting.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="80" globbing="false">
@@ -7964,7 +8147,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Process emails only for approved queues" setting.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="81" globbing="false">
@@ -7974,7 +8157,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Share reassigned records with original owner" setting.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="82" globbing="false">
@@ -7984,7 +8167,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change Tracking Token "Prefix" setting.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="83" globbing="false">
@@ -7994,7 +8177,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Deployment base tracking number" setting.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="84" globbing="false">
@@ -8004,7 +8187,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Number of digits for user numbers" setting
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="85" globbing="false">
@@ -8014,7 +8198,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Number of characters appended to invoice, quote, and order numbers.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="86" globbing="false">
@@ -8024,7 +8209,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Use legacy form rendering" setting.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="87" globbing="false">
@@ -8034,7 +8220,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Indicates whether to use position hierarchy.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="88" globbing="false">
@@ -8044,7 +8231,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Select provider for Click to call" setting. $true: Skype $false: Lync
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="ActionPreference" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -8073,7 +8261,30 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
-      <Examples />
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Set-CrmSystemSettings -conn $conn -IsAutoSaveEnabled $false</Cmd>
+          <Description>This example disables "Enable auto save on all forms" System setting.</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Set-CrmSystemSettings -conn $conn -FullNameConventionCode 7
+</Cmd>
+          <Description>This example updates "Name Format" of Set the full-name format to "Last NameFirst Name" System setting.
+</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 3</Name>
+          <Cmd>Set-CrmSystemSettings -IsAutoSaveEnabled $false
+</Cmd>
+          <Description>This example disables "Enable auto save on all forms" System setting by omitting -conn parameter.
+When omitting conn parameter, cmdlets automatically finds it.</Description>
+          <Output />
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
@@ -8081,8 +8292,10 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
     <CmdletObject verb="Set" noun="CrmUserBusinessUnit">
       <Name>Set-CrmUserBusinessUnit</Name>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Moves Crm User to another Business Unit.
+</Synopsis>
+        <Description>The Set-CrmUserBusinessUnit lets you move Crm User to another Business Unit. You can specify different CRM UserId to ReassignUserId to update ownership of records as well. 
+</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -8105,7 +8318,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Guid" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
@@ -8115,7 +8329,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>An Id (guid) of CRM User which moves to another Business Unit.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Guid" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
@@ -8125,7 +8340,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>An Id (guid) of Business Unit.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Guid" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="3" globbing="false">
@@ -8135,7 +8351,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>An Id (guid) of CRM User to own records of Moving CRM User. You can specify same Id as UserId if you want to keep records ownership.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="ActionPreference" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -8164,7 +8381,24 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
-      <Examples />
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Set-CrmUserBusinessUnit -conn $conn -UserId 3772fe6e-8a18-e511-80dc-c4346bc42d48 -BusinessUnitId 5a18974c-ae18-e511-80dd-c4346bc44d24 -ReassignUserId 3772fe6e-8a18-e511-80dc-c4346bc42d48
+</Cmd>
+          <Description>This example moves a CRM User to specified BusinessUnit, then keeps the records ownership.
+</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Set-CrmUserBusinessUnit 3772fe6e-8a18-e511-80dc-c4346bc42d48 5a18974c-ae18-e511-80dd-c4346bc44d24 f9d40920-7a43-4f51-9749-0549c4caf67d
+</Cmd>
+          <Description>This example moves a CRM User to specified BusinessUnit, then reassign the records ownership by omitting parameters names.
+When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.</Description>
+          <Output />
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
@@ -8172,8 +8406,10 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
     <CmdletObject verb="Set" noun="CrmUserMailbox">
       <Name>Set-CrmUserMailbox</Name>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Updates CRM user's mailibox.
+</Synopsis>
+        <Description>The Set-CrmUserMailbox cmdlet lets you update CRM user's mailibox. Use Get-CrmUserMailbox to confirm current values.
+</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -8198,7 +8434,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
@@ -8208,7 +8445,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>An Id of CRM user.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -8219,7 +8457,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>An EmailAddress of CRM user. 
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Guid" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -8229,7 +8468,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Server Profile" setting of Synchronization Method. This parameter accepts Email Server Profile record's guid. To get all profiles, use Get-CrmEmailServerProfiles command and use ProfileId.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -8239,7 +8479,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Incoming Email" setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox incomingemaildeliverymethod | % Items command and use PickListItemId.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -8249,7 +8490,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Outgoing Email" setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox outgoingemaildeliverymethod | % Items command and use PickListItemId.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -8259,7 +8501,8 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Change "Appointments, Contact, and Tasks" setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox actdeliverymethod | % Items command and use PickListItemId.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="ActionPreference" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -8298,7 +8541,48 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
-      <Examples />
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Set-CrmUserMailbox -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d -IncomingEmailDeliveryMethod 0
+</Cmd>
+          <Description>This example updates "Incoming Email" setting to "None".
+</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Set-CrmUserMailbox -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d -EmailServerProfile 1b2d4b03-831e-e511-80e1-c4346bc44d24
+</Cmd>
+          <Description>This example updates "Server Profile" setting to specified Profile.
+</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 3</Name>
+          <Cmd>Set-CrmUserMailbox -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d -ApplyDefaultEmailSettings
+</Cmd>
+          <Description>This example updates mailbox email settings to default settings, which is in System Settings.
+</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 4</Name>
+          <Cmd>Set-CrmUserMailbox -UserId f9d40920-7a43-4f51-9749-0549c4caf67d -IncomingEmailDeliveryMethod 0
+</Cmd>
+          <Description>This example disables "Incoming Email" setting to "None" by omitting -conn parameter.
+When omitting conn parameter, cmdlets automatically finds it.</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 5</Name>
+          <Cmd>Set-CrmUserMailbox -UserId f9d40920-7a43-4f51-9749-0549c4caf67d -ApplyDefaultEmailSettings
+</Cmd>
+          <Description>This example updates mailbox email settings to default settings, which is in System Settings by omitting -conn parameter.
+When omitting conn parameter, cmdlets automatically finds it.</Description>
+          <Output />
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
@@ -8389,8 +8673,10 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
     <CmdletObject verb="Test" noun="CrmViewPerformance">
       <Name>Test-CrmViewPerformance</Name>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Test CRM View performance.
+</Synopsis>
+        <Description>The Test-CrmViewPerformance cmdlet lets you test CRM View performance.
+</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -8417,7 +8703,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="PSObject" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
@@ -8430,7 +8717,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
           <Aliases>
             <string>CrmRecord</string>
           </Aliases>
-          <Description />
+          <Description>A view record object to test performance.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -8440,7 +8728,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Indicate if using view owner's id to run the view to test performance.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Guid" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -8450,7 +8739,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Specify User Id to run the view to test performance.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -8460,7 +8750,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Indicate if the view is user owned view.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="ActionPreference" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -8498,7 +8789,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
           <Aliases>
             <string>Id</string>
           </Aliases>
-          <Description />
+          <Description>A view id to test performance.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
@@ -8508,11 +8800,66 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>A view name to test performance.
+</Description>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
-      <Examples />
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Test-CrmViewPerformance -conn $conn -ViewName "Active Accounts"
+</Cmd>
+          <Description>This example test "Active Accounts" system view performance by using user of the connection.
+</Description>
+          <Output>ViewName     : Active Accounts
+FetchXml     : &lt;fetch version="1.0" output-format="xml-platform" mapping="logical"&gt;&lt;entity name="account"&gt;&lt;attribute name="name" /&gt;&lt;attribute
+               name="address1_city" /&gt;&lt;order attribute="name" descending="false" /&gt;&lt;attribute name="primarycontactid" /&gt;&lt;attribute name="telephone1"
+               /&gt;&lt;filter type="and"&gt;&lt;condition attribute="statecode" operator="eq" value="0" /&gt;&lt;/filter&gt;&lt;link-entity
+               alias="accountprimarycontactidcontactcontactid" name="contact" from="contactid" to="primarycontactid" link-type="outer"
+               visible="false"&gt;&lt;attribute name="emailaddress1" /&gt;&lt;/link-entity&gt;&lt;attribute name="accountid" /&gt;&lt;/entity&gt;&lt;/fetch&gt;
+Entity       : Account
+Columns      : 5
+LayoutXml    : &lt;grid name="resultset" object="1" jump="name" select="1" icon="1" preview="1"&gt;&lt;row name="result" id="accountid"&gt;&lt;cell name="name" width="300"
+               /&gt;&lt;cell name="telephone1" width="100" /&gt;&lt;cell name="address1_city" width="100" /&gt;&lt;cell name="primarycontactid" width="150" /&gt;&lt;cell
+               name="accountprimarycontactidcontactcontactid.emailaddress1" width="150" disableSorting="1" /&gt;&lt;/row&gt;&lt;/grid&gt;
+TotalRecords : 11
+Owner        : System
+Performance  : The operation took 00:00:00.3948901</Output>
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Test-CrmViewPerformance -conn $conn -ViewId 00000000-0000-0000-00aa-000010001002
+</Cmd>
+          <Description>This example test view which has id of 00000000-0000-0000-00aa-000010001002 performance by using user of the connection.
+</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 3</Name>
+          <Cmd>Test-CrmViewPerformance -conn $conn -ViewName "Active Accounts" 
+</Cmd>
+          <Description>This example test "Active Accounts" system view performance by using user of the connection.
+</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 4</Name>
+          <Cmd>Test-CrmViewPerformance -conn $conn -ViewName "Active Accounts" -RunAs f9d40920-7a43-4f51-9749-0549c4caf67d 
+</Cmd>
+          <Description>This example test "Active Accounts" system view performance by using specified user.
+</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 5</Name>
+          <Cmd>Test-CrmViewPerformance -conn $conn -ViewName "My Custom View" -RunAsViewOwner -IsUserView
+</Cmd>
+          <Description>This example test "My Custom View" user view performance by using view owner. 
+</Description>
+          <Output />
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
@@ -8520,8 +8867,10 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
     <CmdletObject verb="Test" noun="XrmTimerStart">
       <Name>Test-XrmTimerStart</Name>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Instantiate timer object and start it.
+</Synopsis>
+        <Description>The Test-XrmTimerStart cmdlet lets you instantiate timer object and start it. Use with Text-XrmTimerStop.
+</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -8537,7 +8886,14 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
         <string>Test-XrmTimerStart</string>
       </Syntax>
       <Parameters />
-      <Examples />
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Test-XrmTimerStart; $result = Get-MyCrmUserId; Test-XrmTimerStop</Cmd>
+          <Description>This example shows performance result of Get-MyCrmUserId using a one line execution. </Description>
+          <Output>The operation took 00:00:00.0816009</Output>
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
@@ -8545,8 +8901,10 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
     <CmdletObject verb="Test" noun="XrmTimerStop">
       <Name>Test-XrmTimerStop</Name>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Find timer object which started by Test-XrmTimerStart and stop it. Then display the elapsed time.
+</Synopsis>
+        <Description>The Test-XrmTimerStop cmdlet lets you see the elapsed time after you call Test-XrmTimerStart.
+</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -8562,7 +8920,14 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
         <string>Test-XrmTimerStop</string>
       </Syntax>
       <Parameters />
-      <Examples />
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Test-XrmTimerStart; $result = Get-MyCrmUserId; Test-XrmTimerStop</Cmd>
+          <Description>This example shows performance result of Get-MyCrmUserId using a one line execution. </Description>
+          <Output>The operation took 00:00:00.0816009</Output>
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
