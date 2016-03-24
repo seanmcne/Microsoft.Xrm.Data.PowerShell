@@ -7512,12 +7512,17 @@ function Set-CrmUserBusinessUnit{
  An Id (guid) of Business Unit.
 
  .PARAMETER ReassignUserId
- An Id (guid) of CRM User to own records of Moving CRM User. You can specify same Id as UserId if you want to keep records ownership.
+ An Id (guid) of CRM User to own records of Moving CRM User. You can specify same Id as UserId, or omit it if you want to keep records ownership.
 
  .EXAMPLE
  Set-CrmUserBusinessUnit -conn $conn -UserId 3772fe6e-8a18-e511-80dc-c4346bc42d48 -BusinessUnitId 5a18974c-ae18-e511-80dd-c4346bc44d24 -ReassignUserId 3772fe6e-8a18-e511-80dc-c4346bc42d48
 
  This example moves a CRM User to specified BusinessUnit, then keeps the records ownership.
+
+ .EXAMPLE
+ Set-CrmUserBusinessUnit -conn $conn -UserId 3772fe6e-8a18-e511-80dc-c4346bc42d48 -BusinessUnitId 5a18974c-ae18-e511-80dd-c4346bc44d24
+
+ This example moves a CRM User to specified BusinessUnit, then keeps the records ownership. When ommiting ReassignUserId, UserId is used for ReassignUserId
 
  .EXAMPLE
  Set-CrmUserBusinessUnit 3772fe6e-8a18-e511-80dc-c4346bc42d48 5a18974c-ae18-e511-80dd-c4346bc44d24 f9d40920-7a43-4f51-9749-0549c4caf67d
@@ -7535,11 +7540,17 @@ function Set-CrmUserBusinessUnit{
         [guid]$UserId,
         [parameter(Mandatory=$true, Position=2)]
         [guid]$BusinessUnitId,
-        [parameter(Mandatory=$true, Position=3)]
+        [parameter(Mandatory=$false, Position=3)]
         [guid]$ReassignUserId
     )
 
 	$conn = VerifyCrmConnectionParam $conn
+
+	# If ReassignUserId is not passed, then assign them to myself
+	if($ReassignUserId -eq $null)
+	{
+		$ReassignUserId = $UserId
+	}
 
     $ReassignPrincipal = New-CrmEntityReference -EntityLogicalName systemuser -Id $ReassignUserId
 
