@@ -1021,8 +1021,17 @@ function Set-CrmRecord{
 
             $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
             $value = New-Object psobject
-            switch($CrmRecord.($crmFieldKey + "_Property").Value.GetType().Name)
+            
+            # When value set to null, then just use raw type and set value to $null
+            if($crmFieldValue -eq $null)
             {
+                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
+                $value = $null
+            }
+            else
+            {
+                switch($CrmRecord.($crmFieldKey + "_Property").Value.GetType().Name)
+                {
                 "Boolean" {
                     $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmBoolean
                     if($crmFieldValue -is [Boolean])
@@ -1120,7 +1129,7 @@ function Set-CrmRecord{
                     break
                 }
             }
-        
+            }
             $newfield.Value = $value
             $newfields.Add($crmFieldKey, $newfield)
         }
@@ -1178,6 +1187,11 @@ function Set-CrmRecord{
     
     try
     {
+        # if no field has new value, then do nothing.
+        if($newfields.Count -eq 0)
+        {
+            return
+        }
         $result = $conn.UpdateEntity($entityLogicalName, $primaryKeyField, $Id, $newfields, $null, $false, [Guid]::Empty)
         if(!$result)
         {
