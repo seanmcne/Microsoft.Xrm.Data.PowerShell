@@ -872,12 +872,23 @@ function Set-CrmRecord{
         $retrieveFields = New-Object System.Collections.Generic.List[string]
         if($CrmRecord -ne $null)
         {
+            # when CrmRecord passed, assume this comes from other system.
             $id = $CrmRecord.$primaryKeyField
             foreach($crmFieldKey in ($CrmRecord | Get-Member -MemberType NoteProperty).Name)
             {
                 if($crmFieldKey.EndsWith("_Property"))
                 {
                     $retrieveFields.Add(($CrmRecord.$crmFieldKey).Key)
+                }
+                elseif(($crmFieldKey -eq "original") -or ($crmFieldKey -eq "logicalname") `
+                  -or ($crmFieldKey -like "ReturnProperty_*"))
+                {
+                    continue
+                }
+                else
+                {
+                    # to have original value, rather than formatted value, replace the value from original record.
+                    $CrmRecord.$crmFieldKey = $CrmRecord.original[$crmFieldKey+"_Property"].Value
                 }
             }            
         }
