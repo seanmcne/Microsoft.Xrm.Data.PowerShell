@@ -879,6 +879,15 @@ function Set-CrmRecord{
                 {
                     $retrieveFields.Add(($CrmRecord.$crmFieldKey).Key)
                 }
+                elseif(($crmFieldKey -eq "original") -or ($crmFieldKey -eq "logicalname") `
+                  -or ($crmFieldKey -like "ReturnProperty_*"))
+                {
+                    continue
+                }
+                else
+                {
+                    $CrmRecord.$crmFieldKey = $CrmRecord.original[$crmFieldKey+"_Property"].Value
+                }
             }            
         }
         else
