@@ -6687,6 +6687,163 @@ function Invoke-CrmWhoAmI{
     return $result
 }
 
+function Publish-CrmCustomization{
+
+<#
+ .SYNOPSIS
+ Publishes specified customizations for a CRM Organization.
+
+ .DESCRIPTION
+ The Publish-CrmCustomization cmdlet lets you publish specified customizations.
+
+ .PARAMETER conn
+ A connection to your CRM organizatoin. Use $conn = Get-CrmConnection <Parameters> to generate it.
+
+ .PARAMETER Entity
+ Specify this when you publish Entity.
+
+ .PARAMETER EntityLogicalNames
+ Array of Entity Logical Name to publish. Use with -Entity switch.
+ 
+ .PARAMETER Ribbon
+ Specify this to publish Ribbon.
+
+ .PARAMETER SiteMap
+ Specify this to publish SiteMap.
+
+ .PARAMETER Dashbord
+ Specify this when you publish Dashboard.
+
+ .PARAMETER DashbordIds
+ Array of Dashboard Id to publish. Use with -Dashboard switch.
+
+ .PARAMETER $OptionSet
+ Specify this when you publish OptionSet.
+
+ .PARAMETER OptionSetNames
+ Array of OptionSet Logical Name to publish. Use with -OptionSet switch.
+
+ .PARAMETER $WebResource
+ Specify this when you publish WebResource.
+
+ .PARAMETER WebResourceIds
+ Array of WebResource Ids to publish. Use with -WebResource switch.
+
+ .EXAMPLE
+ Publish-CrmAllCustomization -conn $conn
+
+ This example publishes all customizations.
+
+ .EXAMPLE
+ Publish-CrmCustomization -conn $conn -Entity -EntityLogicalNames account,contact,systemuser
+ 
+ This example publishes Account, Contact and System Entity Metadata.
+ 
+ .EXAMPLE
+ Publish-CrmCustomization -conn $conn -Ribbon -SiteMap
+ 
+ This example publishes Ribbon and SiteMap
+
+ .EXAMPLE
+ Publish-CrmCustomization -conn $conn -Dashbord -DashbordIds 79dcdea7-490a-46ed-a887-9ed87fe39d66,90a32046-973e-4370-ad3f-06b9e73ed036
+ 
+ This example publishes Dashboard with specified IDs
+
+#>
+
+ [CmdletBinding()]
+    PARAM( 
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$false)]
+        [switch]$Entity,
+        [parameter(Mandatory=$false)]
+        [string[]]$EntityLogicalNames,
+        [parameter(Mandatory=$false)]
+        [switch]$Ribbon,
+        [parameter(Mandatory=$false)]
+        [switch]$SiteMap,
+        [parameter(Mandatory=$false)]
+        [switch]$Dashbord,
+        [parameter(Mandatory=$false)]
+        [guid[]]$DashbordIds,
+        [parameter(Mandatory=$false)]
+        [switch]$OptionSet,
+        [parameter(Mandatory=$false)]
+        [string[]]$OptionSetNames,
+        [parameter(Mandatory=$false)]
+        [switch]$WebResource,
+        [parameter(Mandatory=$false)]
+        [guid[]]$WebResourceIds
+    )
+
+	$conn = VerifyCrmConnectionParam $conn  
+
+    $parameterXml = "<importexportxml>"
+
+    if($Entity -and $EntityLogicalNames.Count -ne 0)
+    {
+        $parameterXml += "<entities>"
+        foreach($entityLogicalName in $EntityLogicalNames)
+        {
+            $parameterXml += "<entity>" + $entityLogicalName + "</entity>"
+        }
+        $parameterXml += "</entities>"
+    }
+    if($Ribbon)
+    {
+        $parameterXml += "<ribbons><ribbon></ribbon></ribbons>"
+    }
+    if($Dashbord -and $DashbordIds.Count -ne 0)
+    {
+        $parameterXml += "<dashboards>"
+        foreach($dashbordId in $DashbordIds)
+        {
+            $parameterXml += "<dashboard>{" + $dashbordId + "}</dashboard>"
+        }
+        $parameterXml += "</dashboards>"
+    }
+    if($OptionSet -and $OptionSetNames.Count -ne 0)
+    {
+        $parameterXml += "<optionsets>"
+        foreach($optionSetName in $OptionSetNames)
+        {
+            $parameterXml += "<optionset>{" + $optionSetName + "}</optionset>"
+        }
+        $parameterXml += "</optionsets>"
+    }
+    if($SiteMap)
+    {
+        $parameterXml += "<sitemaps><sitemap></sitemap></sitemaps>"
+    }
+    if($WebResource -and $WebResourceIds.Count -ne 0)
+    {
+        $parameterXml += "<webresources>"
+        foreach($webResourceId in $WebResourceIds)
+        {
+            $parameterXml += "<webresource>{" + $webResourceId + "}</webresource>"
+        }
+        $parameterXml += "</webresources>"
+    }
+
+    $parameterXml += "</importexportxml>"
+
+    $request = New-Object Microsoft.Crm.Sdk.Messages.PublishXmlRequest
+    $request.ParameterXml = $parameterXml
+    try
+    {
+        $response = $conn.ExecuteCrmOrganizationRequest($request, $null)
+        if($response.ResponseName -eq $null)
+        {
+            throw $conn.LastCrmException
+        }
+    }
+    catch
+    {
+        throw $conn.LastCrmException
+    }    
+}
+
 function Publish-CrmAllCustomization{
 
 <#
