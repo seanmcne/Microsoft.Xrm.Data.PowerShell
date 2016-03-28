@@ -362,6 +362,7 @@ New-Alias -Name Update-CrmRecord -Value Set-CrmRecord
 
 function Set-CrmRecord{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+
     [CmdletBinding()]
     PARAM(
         [parameter(Mandatory=$false)]
@@ -373,7 +374,7 @@ function Set-CrmRecord{
         [parameter(Mandatory=$true, Position=2, ParameterSetName="Fields")]
         [guid]$Id,
         [parameter(Mandatory=$true, Position=3, ParameterSetName="Fields")]
-        [hashtable]$Fields, 
+        [hashtable]$Fields,
 		[parameter(Mandatory=$false)]
         [switch]$Upsert
     )
@@ -407,6 +408,75 @@ function Set-CrmRecord{
         $primaryKeyField = $entityLogicalName + "id"
     }
 
+    # If upsert specified
+    if($Upsert)
+    {
+        $retrieveFields = New-Object System.Collections.Generic.List[string]
+        if($CrmRecord -ne $null)
+        {
+            # when CrmRecord passed, assume this comes from other system.
+            $id = $CrmRecord.$primaryKeyField
+            foreach($crmFieldKey in ($CrmRecord | Get-Member -MemberType NoteProperty).Name)
+            {
+                if($crmFieldKey.EndsWith("_Property"))
+                {
+                    $retrieveFields.Add(($CrmRecord.$crmFieldKey).Key)
+                }
+                elseif(($crmFieldKey -eq "original") -or ($crmFieldKey -eq "logicalname") `
+                  -or ($crmFieldKey -like "ReturnProperty_*"))
+                {
+                    continue
+                }
+                else
+                {
+                    # to have original value, rather than formatted value, replace the value from original record.
+                    $CrmRecord.$crmFieldKey = $CrmRecord.original[$crmFieldKey+"_Property"].Value
+                }
+            }            
+        }
+        else
+        {
+            foreach($crmFieldKey in $Fields.Keys)
+            {
+                $retrieveFields.Add($crmFieldKey)
+            }           
+        }
+
+        $existingRecord = Get-CrmRecord -conn $conn -EntityLogicalName $entityLogicalName -Id $id -Fields $retrieveFields.ToArray() -ErrorAction SilentlyContinue
+
+        if($existingRecord.original -eq $null)
+        {
+            if($CrmRecord -ne $null)
+            {
+                $Fields = @{}
+                foreach($crmFieldKey in ($CrmRecord | Get-Member -MemberType NoteProperty).Name)
+                {
+                    if($crmFieldKey.EndsWith("_Property"))
+                    {
+                        $Fields.Add(($CrmRecord.$crmFieldKey).Key, ($CrmRecord.$crmFieldKey).Value)
+                    }
+                } 
+            }
+
+            if($Fields[$primaryKeyField] -eq $null)
+            {
+                $Fields.Add($primaryKeyField, $Id)
+            }
+            # if no record exists, then create new
+            $result = New-CrmRecord -conn $conn -EntityLogicalName $entityLogicalName -Fields $Fields
+
+            return $result
+        }
+        else
+        {   
+            if($CrmRecord -ne $null)
+            {
+                # if record exists, then swap original record so that we can compare updated fields
+                $CrmRecord.original = $existingRecord.original
+            }
+        }
+    }
+
     $newfields = New-Object 'System.Collections.Generic.Dictionary[[String], [Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper]]'
     
     if($CrmRecord -ne $null)
@@ -417,7 +487,8 @@ function Set-CrmRecord{
         foreach($crmFieldKey in ($CrmRecord | Get-Member -MemberType NoteProperty).Name)
         {
             $crmFieldValue = $CrmRecord.($crmFieldKey)
-            if(($crmFieldKey -eq "original") -or ($crmFieldKey -eq "logicalname") -or ($crmFieldKey -like "*_Property"))
+            if(($crmFieldKey -eq "original") -or ($crmFieldKey -eq "logicalname") `
+              -or ($crmFieldKey -like "*_Property") -or ($crmFieldKey -like "ReturnProperty_*"))
             {
                 continue
             }
@@ -503,8 +574,17 @@ function Set-CrmRecord{
 
             $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
             $value = New-Object psobject
-            switch($CrmRecord.($crmFieldKey + "_Property").Value.GetType().Name)
+            
+            # When value set to null, then just use raw type and set value to $null
+            if($crmFieldValue -eq $null)
             {
+                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
+                $value = $null
+            }
+            else
+            {
+                switch($CrmRecord.($crmFieldKey + "_Property").Value.GetType().Name)
+                {
                 "Boolean" {
                     $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmBoolean
                     if($crmFieldValue -is [Boolean])
@@ -602,7 +682,7 @@ function Set-CrmRecord{
                     break
                 }
             }
-        
+            }
             $newfield.Value = $value
             $newfields.Add($crmFieldKey, $newfield)
         }
@@ -660,6 +740,11 @@ function Set-CrmRecord{
     
     try
     {
+        # if no field has new value, then do nothing.
+        if($newfields.Count -eq 0)
+        {
+            return
+        }
         $result = $conn.UpdateEntity($entityLogicalName, $primaryKeyField, $Id, $newfields, $null, $false, [Guid]::Empty)
         if(!$result)
         {
