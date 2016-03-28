@@ -33,6 +33,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Microsoft.Crm.Sdk.Proxy.dll" />
+    <Compile Include="Microsoft.Xrm.Data.PowerShell.Help.pshproj" />
+    <Compile Include="Microsoft.Xrm.Data.PowerShell.Help.xml" />
     <Compile Include="Microsoft.Xrm.Data.PowerShell.psd1" />
     <Compile Include="Microsoft.Xrm.Data.PowerShell.psm1" />
     <Compile Include="Microsoft.Xrm.Sdk.dll" />
