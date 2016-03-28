@@ -2,13 +2,13 @@
 # Microsoft.Xrm.Data.PowerShell
 
 ### Overview 
-**Microsoft.Xrm.Data.Powershell.zip** contains one primary module, Microsoft.Xrm.Data.Powershell, but also relies on an included dll module Microsoft.Xrm.Tooling.CrmConnector.Powershell.  
+**Microsoft.Xrm.Data.Powershell.zip** contains one primary module, Microsoft.Xrm.Data.Powershell, but also relies on other included dll's such as Microsoft.Xrm.Tooling.CrmConnector.Powershell which we are loading as a secondary module (instead of a snap-in). 
 
-Releases are found on the [Release Page](https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/releases)
+New releases of this can be  found on the [Release Page](https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/releases) or can be downloaded using OneGet (Install-Module) from the Powershell Gallery. 
 
 **Microsoft.Xrm.Data.Powershell** 
 
-This module uses the CRM connection from Microsoft.Xrm.Tooling.CrmConnector.Powershell and provides common functions to create, delete, query, and update data as well as functions for common tasks such as publishing, and manipulating System & CRM User Settings, etc. The module should function for both Dynamics CRM Online and On-Premise environment.  
+This module builds from Microsoft.Xrm.Tooling.CrmConnector.Powershell, on top of this we are providing common functions to create, delete, query, and update data.  We have also included many helpful functions for common tasks such as publishing, and manipulating System & CRM User Settings, etc. The module will function for both Dynamics CRM Online and On-Premise environments. Note: while you can import or create data this utility was not specifically designed to do high throughput data imports. For data import please refer to our blog at https://aka.ms/CRMInTheField - you may also review sample code written to add high speed/high throughput data manipulation to .NET projects posted by Austin Jones & Sean McNellis at: https://pfexrmcore.codeplex.com/ 
 
 **Microsoft.Xrm.Tooling.CrmConnector.Powershell**
 
@@ -16,7 +16,16 @@ This module comes from Dynamics CRM SDK and it exposes two functions, Get-CrmOrg
 
 [Use PowerShell cmdlets for XRM tooling to connect to CRM](https://technet.microsoft.com/en-us/library/dn689040.aspx)
 
-###How to setup modules
+###How to deploy from the PowerShell Gallery using OneGet
+Note this method requires: Powershell Management Framework 5 or higher - details: https://www.powershellgallery.com/ 
+#####Install the module via OneGet
+<p>Type: Install-Module Microsoft.Xrm.Data.PowerShell -Scope CurrentUser</p>
+
+#####Inspect the module 
+<p>Type: Save-Module Microsoft.Xrm.Data.PowerShell -Path <path></p>
+
+
+###How to file copy or manually deploy this module
 <p>1.Go to Releases(https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/releases) and Download Microsoft.Xrm.Data.Powershell.zip.
 <p>2. Right click the downloaded zip file and click "Properties". </p> 
 <p>3. Check "Unblock" checkbox and click "OK", or simply click "Unblock" button depending on OS versions. </p> 
@@ -40,7 +49,7 @@ Import-Module Microsoft.Xrm.Data.Powershell
 ```
 *The module requires PowerShell v4.0.
 
-###How module works
+###How Microsoft.Xrm.Data.Powershell  works
 Microsoft.Xrm.Data.Powershell module exposes many functions, but you can use Connect-CrmOnlineDiscovery, Connect-CrmOnPremDiscovery to connect to any CRM organization by using Discovery Service. Use Connect-CrmOnline function for Azure Automation. By executing these function, it creates $conn global variable. Any other functions which needs to connect to the CRM Organization takes connection parameter. You can explicitly specify the connection by using -conn parameter, but if you omit the connection, functions retrieve connection from global variable.
 
 Alternatively, you can create multiple connection objects and pass them into each function under the –conn parameter.
