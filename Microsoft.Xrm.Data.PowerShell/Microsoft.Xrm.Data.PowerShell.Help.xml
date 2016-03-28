@@ -18439,7 +18439,7 @@ When omitting conn parameter, cmdlets automatically finds it.</maml:para>
 			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="3">
 				<maml:name>ReassignUserId</maml:name>
 				<maml:description>
-					<maml:para>An Id (guid) of CRM User to own records of Moving CRM User. You can specify same Id as UserId if you want to keep records ownership.
+					<maml:para>An Id (guid) of CRM User to own records of Moving CRM User. You can specify same Id as UserId or omit it if you want to keep records ownership.
 </maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Guid</command:parameterValue>
@@ -18503,7 +18503,7 @@ When omitting conn parameter, cmdlets automatically finds it.</maml:para>
 		<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="3">
 			<maml:name>ReassignUserId</maml:name>
 			<maml:description>
-				<maml:para>An Id (guid) of CRM User to own records of Moving CRM User. You can specify same Id as UserId if you want to keep records ownership.
+				<maml:para>An Id (guid) of CRM User to own records of Moving CRM User. You can specify same Id as UserId or omit it if you want to keep records ownership.
 </maml:para>
 			</maml:description>
 			<command:parameterValue required="true" variableLength="false">Guid</command:parameterValue>

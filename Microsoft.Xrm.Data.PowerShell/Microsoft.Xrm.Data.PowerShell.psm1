@@ -373,7 +373,9 @@ function Set-CrmRecord{
         [parameter(Mandatory=$true, Position=2, ParameterSetName="Fields")]
         [guid]$Id,
         [parameter(Mandatory=$true, Position=3, ParameterSetName="Fields")]
-        [hashtable]$Fields
+        [hashtable]$Fields, 
+		[parameter(Mandatory=$false)]
+        [switch]$Upsert
     )
 
 	$conn = VerifyCrmConnectionParam $conn
@@ -1343,7 +1345,7 @@ function Get-CrmEntityAttributeMetadata{
     try
     {
         $result = $conn.GetEntityAttributeMetadataForAttribute($EntityLogicalName, $FieldLogicalName)
-		if($result -ne $null)
+		if($result -eq $null)
         {
             throw $conn.LastCrmException
         }
@@ -3946,11 +3948,17 @@ function Set-CrmUserBusinessUnit{
         [guid]$UserId,
         [parameter(Mandatory=$true, Position=2)]
         [guid]$BusinessUnitId,
-        [parameter(Mandatory=$true, Position=3)]
+        [parameter(Mandatory=$false, Position=3)]
         [guid]$ReassignUserId
     )
 
 	$conn = VerifyCrmConnectionParam $conn
+
+	# If ReassignUserId is not passed, then assign them to myself  
+	if($ReassignUserId -eq $null)  
+	{  
+		$ReassignUserId = $UserId  
+	}  
 
     $ReassignPrincipal = New-CrmEntityReference -EntityLogicalName systemuser -Id $ReassignUserId
 
@@ -4018,7 +4026,7 @@ function Set-CrmUserMailbox {
     {   
         if($parameter.Key -in ("UserId", "ApplyDefaultEmailSettings", "conn"))
         {
-            continue
+            continue;
         }
         if($parameter.Key -in ("EmailServerProfile"))
         {

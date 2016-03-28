@@ -9284,7 +9284,7 @@ When omitting conn parameter, cmdlets automatically finds it.</Description>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description>An Id (guid) of CRM User to own records of Moving CRM User. You can specify same Id as UserId if you want to keep records ownership.
+          <Description>An Id (guid) of CRM User to own records of Moving CRM User. You can specify same Id as UserId or omit it if you want to keep records ownership.
 </Description>
           <DefaultValue />
         </ParameterDescription>
