@@ -15388,7 +15388,7 @@ You can use Get-CrmEntityAttributeMetadata cmdlet and check AttributeType to see
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 				<maml:name>Upsert</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>Spcify Upsert when you want to create a record if it does not exist in the system yet. It tries to retrieve a record by using Id first, and if exists, update otherwise create.</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			</command:parameter>
@@ -15441,7 +15441,7 @@ You can use Get-CrmEntityAttributeMetadata cmdlet and check AttributeType to see
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 				<maml:name>Upsert</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>Spcify Upsert when you want to create a record if it does not exist in the system yet. It tries to retrieve a record by using Id first, and if exists, update otherwise create.</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			</command:parameter>
@@ -15550,7 +15550,7 @@ You can use Get-CrmEntityAttributeMetadata cmdlet and check AttributeType to see
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 			<maml:name>Upsert</maml:name>
 			<maml:description>
-				<maml:para />
+				<maml:para>Spcify Upsert when you want to create a record if it does not exist in the system yet. It tries to retrieve a record by using Id first, and if exists, update otherwise create.</maml:para>
 			</maml:description>
 			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			<dev:type>
@@ -22564,7 +22564,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 			<dev:code>Publish-CrmCustomization -conn $conn -Dashbord -DashbordIds 79dcdea7-490a-46ed-a887-9ed87fe39d66,90a32046-973e-4370-ad3f-06b9e73ed036
 </dev:code>
 			<dev:remarks>
-				<maml:para />
+				<maml:para>This example publishes specified Dashboards.</maml:para>
 				<maml:para />
 				<maml:para />
 				<maml:para></maml:para>
