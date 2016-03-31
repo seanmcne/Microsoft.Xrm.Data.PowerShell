@@ -1301,6 +1301,9 @@ function Invoke-CrmRecordWorkflow{
     return $result
 }
 
+#Alias for Get-MyCrmUserId
+New-Alias -Name Get-CrmCurrentUserId -Value Get-MyCrmUserId
+
 #GetMyCrmUserId
 function Get-MyCrmUserId{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
