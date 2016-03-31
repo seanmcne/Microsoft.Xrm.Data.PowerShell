@@ -4385,24 +4385,27 @@ function Test-CrmViewPerformance{
     }
     try
     {
-        if($ViewId -ne $null)
-        {        
-            $View = Get-CrmRecord -conn $conn -EntityLogicalName $logicalName -Id $viewId -Fields $fields
-        }
-        elseif($viewName -ne "")
-        {
-            $views = Get-CrmRecords -conn $conn -EntityLogicalName $logicalName -FilterAttribute name -FilterOperator eq -FilterValue $viewName -Fields $fields
-            if($views.CrmRecords.Count -eq 0) 
-			{ 
-				return 
-			} 
-			else 
-			{ 
-				$view = $views.CrmRecords[0]
+		if($View -eq $null)
+		{
+			if($ViewId -ne $null)
+			{        
+			    $View = Get-CrmRecord -conn $conn -EntityLogicalName $logicalName -Id $viewId -Fields $fields
 			}
-        }
-		else{
-			throw "ViewID or ViewName is null, input a valid view name or View ID."
+			elseif($viewName -ne "")
+			{
+			    $views = Get-CrmRecords -conn $conn -EntityLogicalName $logicalName -FilterAttribute name -FilterOperator eq -FilterValue $viewName -Fields $fields
+			    if($views.CrmRecords.Count -eq 0) 
+				{ 
+					return 
+				} 
+				else 
+				{ 
+					$view = $views.CrmRecords[0]
+				}
+			}		
+			else{
+				throw "ViewID or ViewName is null, input a valid view name or View ID."
+			}
 		}
         # if the view has ownerid, then its User Defined View
         if($View.ownerid -ne $null)
@@ -4415,11 +4418,7 @@ function Test-CrmViewPerformance{
             {
                 Set-CrmConnectionCallerId -conn $conn -CallerId $RunAs
             }
-            #else
-            #{
-            #    Set-CrmConnectionCallerId -conn $conn -CallerId (Get-MyCrmUserId -conn $conn)
-            #}
-        
+           
             # Get all records by using Fetch
             Test-XrmTimerStart
             $records = Get-CrmRecordsByFetch -conn $conn -Fetch $View.fetchxml -AllRows -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
@@ -4433,10 +4432,7 @@ function Test-CrmViewPerformance{
             {
                 Set-CrmConnectionCallerId -conn $conn -CallerId $RunAs                
             }
-            #else
-            #{
-            #    Set-CrmConnectionCallerId -conn $conn -CallerId (Get-MyCrmUserId -conn $conn)
-            #}
+            
 			# Get all records by using Fetch
             Test-XrmTimerStart
             $records = Get-CrmRecordsByFetch -conn $conn -Fetch $View.fetchxml -AllRows -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
@@ -4466,7 +4462,7 @@ function Test-CrmViewPerformance{
     }
     catch
     {
-        return
+        throw
     }
 }
 
