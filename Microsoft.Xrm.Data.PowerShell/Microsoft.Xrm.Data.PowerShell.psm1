@@ -585,103 +585,108 @@ function Set-CrmRecord{
             {
                 switch($CrmRecord.($crmFieldKey + "_Property").Value.GetType().Name)
                 {
-                "Boolean" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmBoolean
-                    if($crmFieldValue -is [Boolean])
-                    {
+                    "Boolean" {
+                        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmBoolean
+                        if($crmFieldValue -is [Boolean])
+                        {
+                            $value = $crmFieldValue
+                        }
+                        else
+                        {
+                            $value = [Int32]::Parse($crmFieldValue)
+                        }
+                        break
+                    }
+                    "DateTime" {
+                        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDateTime
+                        if($crmFieldValue -is [DateTime])
+                        {
+                            $value = $crmFieldValue
+                        }
+                        else
+                        {
+                            $value = [DateTime]::Parse($crmFieldValue)
+                        }
+                        break
+                    }
+                    "Decimal" {
+                        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDecimal
+                        if($crmFieldValue -is [Decimal])
+                        {
+                            $value = $crmFieldValue
+                        }
+                        else
+                        {
+                            $value = [Decimal]::Parse($crmFieldValue)
+                        }
+                        break
+                    }
+                    "Single" {
+                        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmFloat
+                        if($crmFieldValue -is [Single])
+                        {
+                            $value = $crmFieldValue
+                        }
+                        else
+                        {
+                            $value = [Single]::Parse($crmFieldValue)
+                        }
+                        break
+                    }
+                    "Money" {
+                        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
+                        if($crmFieldValue -is [Microsoft.Xrm.Sdk.Money])
+                        {                
+                            $value = $crmFieldValue
+                        }
+                        else
+                        {                
+                            $value = New-Object -TypeName 'Microsoft.Xrm.Sdk.Money'
+                            $value.Value = $crmFieldValue
+                        }
+                        break
+                    }
+                    "Int32" {
+                        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmNumber
+                        if($crmFieldValue -is [Int32])
+                        {
+                            $value = $crmFieldValue
+                        }
+                        else
+                        {
+                            $value = [Int32]::Parse($crmFieldValue)
+                        }
+                        break
+                    }
+                    "EntityReference" {
+                        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
                         $value = $crmFieldValue
+                        break
                     }
-                    else
-                    {
-                        $value = [Int32]::Parse($crmFieldValue)
+                    "OptionSetValue" {
+                        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
+                        if($crmFieldValue -is [Microsoft.Xrm.Sdk.OptionSetValue])
+                        {
+                            $value = $crmFieldValue                        
+                        }
+                        else
+                        {
+                            $value = New-Object -TypeName 'Microsoft.Xrm.Sdk.OptionSetValue'
+                            $value.Value = [Int32]::Parse($crmFieldValue)
+                        }
+                        break
                     }
-                    break
-                }
-                "DateTime" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDateTime
-                    if($crmFieldValue -is [DateTime])
-                    {
+                    "String" {
+                        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::String
                         $value = $crmFieldValue
+                        break
                     }
-                    else
-                    {
-                        $value = [DateTime]::Parse($crmFieldValue)
-                    }
-                    break
-                }
-                "Decimal" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDecimal
-                    if($crmFieldValue -is [Decimal])
-                    {
+                    default {
+                        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
                         $value = $crmFieldValue
+                        break
                     }
-                    else
-                    {
-                        $value = [Decimal]::Parse($crmFieldValue)
-                    }
-                    break
                 }
-                "Single" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmFloat
-                    if($crmFieldValue -is [Single])
-                    {
-                        $value = $crmFieldValue
-                    }
-                    else
-                    {
-                        $value = [Single]::Parse($crmFieldValue)
-                    }
-                    break
-                }
-                "Money" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-                    if($crmFieldValue -is [Microsoft.Xrm.Sdk.Money])
-                    {                
-                        $value = $crmFieldValue
-                    }
-                    else
-                    {                
-                        $value = New-Object -TypeName 'Microsoft.Xrm.Sdk.Money'
-                        $value.Value = $crmFieldValue
-                    }
-                    break
-                }
-                "Int32" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmNumber
-                    if($crmFieldValue -is [Int32])
-                    {
-                        $value = $crmFieldValue
-                    }
-                    else
-                    {
-                        $value = [Int32]::Parse($crmFieldValue)
-                    }
-                    break
-                }
-                "EntityReference" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-                    $value = $crmFieldValue
-                    break
-                }
-                "OptionSetValue" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-                    if($crmFieldValue -is [Microsoft.Xrm.Sdk.OptionSetValue])
-                    {
-                        $value = $crmFieldValue                        
-                    }
-                    else
-                    {
-                        $value = New-Object -TypeName 'Microsoft.Xrm.Sdk.OptionSetValue'
-                        $value.Value = [Int32]::Parse($crmFieldValue)
-                    }
-                    break
-                }
-                "String" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::String
-                    $value = $crmFieldValue
-                    break
-                }
-            }
             }
             $newfield.Value = $value
             $newfields.Add($crmFieldKey, $newfield)
