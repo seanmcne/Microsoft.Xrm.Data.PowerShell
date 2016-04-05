@@ -270,6 +270,10 @@ function New-CrmRecord{
                 $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::String
                 break
             }
+			default {
+                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
+                break
+            }
         }
         
         $newfield.Value = $field.Value
