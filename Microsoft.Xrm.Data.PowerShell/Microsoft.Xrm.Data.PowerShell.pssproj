@@ -26,17 +26,21 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Microsoft.IdentityModel.Clients.ActiveDirectory.dll" />
+    <Content Include="Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll" />
+    <Content Include="Microsoft.Xrm.Sdk.Deployment.dll" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Microsoft.Crm.Sdk.Proxy.dll" />
+    <Compile Include="Microsoft.Xrm.Data.PowerShell.Help.pshproj" />
+    <Compile Include="Microsoft.Xrm.Data.PowerShell.Help.xml" />
     <Compile Include="Microsoft.Xrm.Data.PowerShell.psd1" />
     <Compile Include="Microsoft.Xrm.Data.PowerShell.psm1" />
-    <Compile Include="Microsoft.Xrm.Sdk.Deployment.dll" />
     <Compile Include="Microsoft.Xrm.Sdk.dll" />
     <Compile Include="Microsoft.Xrm.Tooling.Connector.dll" />
     <Compile Include="Microsoft.Xrm.Tooling.CrmConnectControl.dll" />
     <Compile Include="Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll" />
-    <Compile Include="Microsoft.Xrm.Tooling.PackageDeployment.Powershell.dll" />
     <Compile Include="Microsoft.Xrm.Tooling.Ui.Styles.dll" />
     <Compile Include="Microsoft.Xrm.Tooling.WebResourceUtility.dll" />
   </ItemGroup>
