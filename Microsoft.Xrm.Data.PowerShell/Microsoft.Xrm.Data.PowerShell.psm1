@@ -3843,21 +3843,31 @@ function Set-CrmSolutionVersionNumber {
 
 	$conn = VerifyCrmConnectionParam $conn
 
+	#test for valid version number
+	$invalidParts = $VersionNumber.Split('.') |
+		? { $_ -notmatch '^\d+$' } | 
+		Measure-Object | 
+		Select -ExpandProperty Count
+
+	if ($invalidParts -gt 0) {
+		throw "Version number must be numeric with '.' seperators."
+	}
+
+	$solutionRecords = (Get-CrmRecords -conn $conn -EntityLogicalName solution -FilterAttribute uniquename -FilterOperator "like" -FilterValue $SolutionName -Fields uniquename,version )
+    #if we can't find just one solution matching then ERROR
+    if($solutionRecords.CrmRecords.Count -ne 1)
+    {
+        $friendlyName = $conn.ConnectedOrgFriendlyName.ToString()
+        throw "Solution with name `"$SolutionName`" in CRM Instance: `"$friendlyName`" not found!"
+    }
+    #else PROCEED 
+    
+	$crmSolutionRecord = $solutionRecords.CrmRecords[0]
+	$oldVersion = $crmSolutionRecord.version
+    $crmSolutionRecord.version = $VersionNumber
+
 	try
     {
-        $solutionRecords = (Get-CrmRecords -conn $conn -EntityLogicalName solution -FilterAttribute uniquename -FilterOperator "like" -FilterValue $SolutionName -Fields uniquename,version )
-        #if we can't find just one solution matching then ERROR
-        if($solutionRecords.CrmRecords.Count -ne 1)
-        {
-            $friendlyName = $conn.ConnectedOrgFriendlyName.ToString()
-            Write-Error "Solution with name `"$SolutionName`" in CRM Instance: `"$friendlyName`" not found!"
-            break
-        }
-        #else PROCEED 
-		$crmSolutionRecord = $solutionRecords.CrmRecords[0]
-		$oldVersion = $crmSolutionRecord.version
-        $crmSolutionRecord.version = $VersionNumber
-
 		Write-Verbose "Updating $($crmSolutionRecord.uniquename) version to $VersionNumber"
 		Set-CrmRecord -conn $conn -CrmRecord $crmSolutionRecord
 
@@ -3866,15 +3876,13 @@ function Set-CrmSolutionVersionNumber {
 
         Add-Member -InputObject $result -MemberType NoteProperty -Name "PreviousVersionNumber" -Value $oldVersion
         Add-Member -InputObject $result -MemberType NoteProperty -Name "NewVersionNumber" -Value $VersionNumber
-
-        return $result
     }
     catch
     {
-        Write-Error $_.Exception
+        throw $conn.LastCrmException
     }
 
-    return $result
+    $result
 }
 
 function Set-CrmConnectionCallerId{
