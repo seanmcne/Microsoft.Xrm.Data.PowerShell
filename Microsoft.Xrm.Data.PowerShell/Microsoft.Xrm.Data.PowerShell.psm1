@@ -3838,20 +3838,11 @@ function Set-CrmSolutionVersionNumber {
 		[parameter(Mandatory=$true, Position=1)]
         [string]$SolutionName,
 		[parameter(Mandatory=$true, Position=2)]
+		[ValidatePattern('^(?:[\d]{1,}\.){1,3}[\d]{1,}$')]
 		[string]$VersionNumber
 	)
 
 	$conn = VerifyCrmConnectionParam $conn
-
-	#test for valid version number
-	$invalidParts = $VersionNumber.Split('.') |
-		? { $_ -notmatch '^\d+$' } | 
-		Measure-Object | 
-		Select -ExpandProperty Count
-
-	if ($invalidParts -gt 0) {
-		throw "Version number must be numeric with '.' seperators."
-	}
 
 	$solutionRecords = (Get-CrmRecords -conn $conn -EntityLogicalName solution -FilterAttribute uniquename -FilterOperator "like" -FilterValue $SolutionName -Fields uniquename,version )
     #if we can't find just one solution matching then ERROR
