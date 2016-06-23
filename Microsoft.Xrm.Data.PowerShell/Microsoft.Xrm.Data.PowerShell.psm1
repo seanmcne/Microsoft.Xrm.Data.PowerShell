@@ -1796,10 +1796,12 @@ function Import-CrmSolution{
         [parameter(Mandatory=$false, Position=3)]
         [switch]$OverwriteUnManagedCustomizations,
         [parameter(Mandatory=$false, Position=4)]
-        [switch]$SkipDependancyOnProductUpdateCheckOnInstall, 
-        [parameter(Mandatory=$false, Position=5)]
+        [switch]$SkipDependancyOnProductUpdateCheckOnInstall,
+		[parameter(Mandatory=$false, Position=5)]
+        [switch]$ImportAsHoldingSolution, 
+        [parameter(Mandatory=$false, Position=6)]
         [switch]$PublishChanges,
-		[parameter(Mandatory=$false, Position=6)]
+		[parameter(Mandatory=$false, Position=7)]
         [int64]$MaxWaitTimeInSeconds = 900
     )
 	$conn = VerifyCrmConnectionParam $conn
@@ -1814,14 +1816,17 @@ function Import-CrmSolution{
         Write-Host "Importing solution file $SolutionFilePath into: $tmpDest" 
         Write-Verbose "OverwriteCustomizations: $OverwriteUnManagedCustomizations"
         Write-Verbose "SkipDependancyCheck: $SkipDependancyOnProductUpdateCheckOnInstall"
+		Write-Verbose "ImportAsHoldingSolution: $ImportAsHoldingSolution"
         Write-Verbose "Maximum seconds to poll for successful completion: $MaxWaitTimeInSeconds"
         Write-Verbose "Calling .ImportSolutionToCrm() this process can take minutes..."
         $result = $conn.ImportSolutionToCrm($SolutionFilePath, [ref]$importId, $ActivatePlugIns,
-                $OverwriteUnManagedCustomizations, $SkipDependancyOnProductUpdateCheckOnInstall)
+                $OverwriteUnManagedCustomizations, $SkipDependancyOnProductUpdateCheckOnInstall,$ImportAsHoldingSolution)
         $pollingStart = Get-Date
         $isProcessing = $true
 		$secondsSpentPolling = 0
         $pollingDelaySeconds = 5
+		$TopPrevProcPercent = [double]0
+		$isProcPercentReduced = $false
         Write-Host "Import of file completed, waiting on completion of importId: $importId"
 		try{
 			while($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds){
@@ -1834,6 +1839,16 @@ function Import-CrmSolution{
 				$importManifest = ([xml]($import).data).importexportxml.solutionManifests.solutionManifest
 				$ProcPercent = [double](Coalesce $import.progress "0")
 
+				#check if processing percentage reduced at any given time
+				if($TopPrevProcPercent -gt $ProcPercent)
+				{
+					$isProcPercentReduced = $true
+					Write-Verbose "Processing is reversing... import will fail."
+				}else
+				{
+					$TopPrevProcPercent = $ProcPercent
+				}
+
 				#Check for import completion 
 				if($import.completedon -eq $null -and $importManifest.result -ne "success"){
 					$isProcessing = $true
@@ -1841,8 +1856,12 @@ function Import-CrmSolution{
 					Write-Output "$($secondsSPentPolling.ToString("000")) seconds of max: $MaxWaitTimeInSeconds ... ImportJob%: $ProcPercent"
 				}
 				else{
-					Write-Verbose "Processing Completed at: $($import.completedon)" 
-					$ProcPercent = 100.0
+					Write-Verbose "Processing Completed at: $($import.completedon) with ImportJob%: $ProcPercent" 
+					
+					if(-not $isProcPercentReduced)
+					{
+						$ProcPercent = 100.0
+					}					
 					$isProcessing = $false
 					break
 				}
@@ -4602,4 +4621,55 @@ function UnzipCrmRibbon {
             $reader = $null
         }
     }
+}
+
+#DeleteAndPromote-CrmSolution   
+function DeleteAndPromote-CrmSolution{
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+    [CmdletBinding()]
+    PARAM(
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$false, Position=1)]
+        [string]$SolutionName,
+        [parameter(Mandatory=$false, Position=2)]
+        [int64]$MaxWaitTimeInSeconds = 900
+    )
+
+    	$conn.OrganizationServiceProxy.Timeout = New-TimeSpan -Seconds $MaxWaitTimeInSeconds
+	    $conn = VerifyCrmConnectionParam $conn
+
+		#$promoteId = [System.Guid]::NewGuid()        
+
+		$PromoteRequest = new-object Microsoft.Crm.Sdk.Messages.DeleteAndPromoteRequest
+		$PromoteRequest.UniqueName = $SolutionName
+		#$PromoteRequest.RequestId = $promoteId
+
+		$tmpDest = $conn.CrmConnectOrgUriActual
+        Write-Host "Promoting solution: $SolutionName in: $tmpDest" 
+        Write-Verbose "Maximum seconds to wait for successful completion: $MaxWaitTimeInSeconds"
+        Write-Verbose "Calling .ExecuteCrmOrganizationRequest() this process can take minutes..."
+        $PromoteResponse = $conn.ExecuteCrmOrganizationRequest($PromoteRequest)
+		
+        if (($PromoteResponse -eq $null) -or (-not $PromoteResponse.Results.ContainsKey("SolutionId")))
+        {
+            #probably an error promoting solution. Print as much as possible and throw error
+            Write-Warning "Error might have occured"
+           
+           if($PromoteResponse -ne $null){
+            Write-Host $PromoteResponse.Results
+
+            Write-Host $PromoteResponse
+            }
+
+            thorw "Error in promoting solution $SolutionName"
+        }
+        else
+        {
+           Write-Host "Solution promote completed."
+
+           Write-Host "Results" $PromoteResponse.Results.Keys  $PromoteResponse.Results.Values
+           Write-Host "Response solution Id" $PromoteResponse.SolutionId
+           Write-Host $PromoteResponse.ResponseName
+        }
 }
