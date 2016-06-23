@@ -3830,6 +3830,52 @@ function Remove-CrmUserManager{
     } 
 }
 
+function Set-CrmSolutionVersionNumber {
+	[CmdletBinding()]
+	PARAM(
+		[parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+		[parameter(Mandatory=$true, Position=1)]
+        [string]$SolutionName,
+		[parameter(Mandatory=$true, Position=2)]
+		[ValidatePattern('^(?:[\d]{1,}\.){1,3}[\d]{1,}$')]
+		[string]$VersionNumber
+	)
+
+	$conn = VerifyCrmConnectionParam $conn
+
+	$solutionRecords = (Get-CrmRecords -conn $conn -EntityLogicalName solution -FilterAttribute uniquename -FilterOperator "like" -FilterValue $SolutionName -Fields uniquename,version )
+    #if we can't find just one solution matching then ERROR
+    if($solutionRecords.CrmRecords.Count -ne 1)
+    {
+        $friendlyName = $conn.ConnectedOrgFriendlyName.ToString()
+        throw "Solution with name `"$SolutionName`" in CRM Instance: `"$friendlyName`" not found!"
+    }
+    #else PROCEED 
+    
+	$crmSolutionRecord = $solutionRecords.CrmRecords[0]
+	$oldVersion = $crmSolutionRecord.version
+    $crmSolutionRecord.version = $VersionNumber
+
+	try
+    {
+		Write-Verbose "Updating $($crmSolutionRecord.uniquename) version to $VersionNumber"
+		Set-CrmRecord -conn $conn -CrmRecord $crmSolutionRecord
+
+        Write-Verbose "Successfully updated solution record"
+        $result = New-Object psObject
+
+        Add-Member -InputObject $result -MemberType NoteProperty -Name "PreviousVersionNumber" -Value $oldVersion
+        Add-Member -InputObject $result -MemberType NoteProperty -Name "NewVersionNumber" -Value $VersionNumber
+    }
+    catch
+    {
+        throw $conn.LastCrmException
+    }
+
+    $result
+}
+
 function Set-CrmConnectionCallerId{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
