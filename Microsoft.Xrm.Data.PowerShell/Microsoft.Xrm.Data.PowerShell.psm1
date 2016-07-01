@@ -1818,6 +1818,9 @@ function Import-CrmSolution{
         Write-Verbose "Calling .ImportSolutionToCrm() this process can take minutes..."
         $result = $conn.ImportSolutionToCrm($SolutionFilePath, [ref]$importId, $ActivatePlugIns,
                 $OverwriteUnManagedCustomizations, $SkipDependancyOnProductUpdateCheckOnInstall)
+        if ($result -eq [guid]::Empty) {
+            throw $conn.LastCrmError
+        }
         $pollingStart = Get-Date
         $isProcessing = $true
 		$secondsSpentPolling = 0
