@@ -446,7 +446,12 @@ function Set-CrmRecord{
             }           
         }
 
+        try{
         $existingRecord = Get-CrmRecord -conn $conn -EntityLogicalName $entityLogicalName -Id $id -Fields $retrieveFields.ToArray() -ErrorAction SilentlyContinue
+        }
+        catch{
+                # do nothing just continue. If the caller has try catch this will prevent this exception caught by the callers try catch
+            }
 
         if($existingRecord.original -eq $null)
         {
