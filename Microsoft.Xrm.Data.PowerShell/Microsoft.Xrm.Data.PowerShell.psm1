@@ -2076,16 +2076,32 @@ function Set-CrmRecordState{
 		if($CrmRecord -ne $null)
 		{
 			$EntityLogicalName = $CrmRecord.logicalname
-		    $Id = $CrmRecord.($EntityLogicalName + "id")
+		    #$Id = $CrmRecord.($EntityLogicalName + "id")
+			$Id = $CrmRecord.'ReturnProperty_Id '
 		}
 
+        # Try to parse into int
+        $StateCodeInt = 0
+        $StatusCodeInt = 0
+        
 		try
 		{
-			$result = $conn.UpdateStateAndStatusForEntity($EntityLogicalName, $Id, $stateCode, $statusCode, [Guid]::Empty)
-			if(!$result)
-			{
-				throw $conn.LastCrmException
-			}
+            if([int32]::TryParse($StateCode, [ref]$StateCodeInt) -and [int32]::TryParse($StatusCode, [ref]$StatusCodeInt))
+            {
+                $result = $conn.UpdateStateAndStatusForEntity($EntityLogicalName, $Id, $StateCodeInt, $statusCodeInt, [Guid]::Empty)
+			    if(!$result)
+			    {
+			    	throw $conn.LastCrmException
+			    }
+            }
+            else
+            {
+                $result = $conn.UpdateStateAndStatusForEntity($EntityLogicalName, $Id, $stateCode, $statusCode, [Guid]::Empty)
+			    if(!$result)
+			    {
+			    	throw $conn.LastCrmException
+			    }
+            }
 		}
 		catch
 		{
