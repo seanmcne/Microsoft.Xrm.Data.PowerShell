@@ -700,8 +700,11 @@ function Set-CrmRecord{
     {
         foreach($field in $Fields.GetEnumerator())
         {  
-           $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
-        
+            $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
+            if($field.Value -eq $null)
+            {
+                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
+            }
             switch($field.Value.GetType().Name)
             {
                 "Boolean" {
