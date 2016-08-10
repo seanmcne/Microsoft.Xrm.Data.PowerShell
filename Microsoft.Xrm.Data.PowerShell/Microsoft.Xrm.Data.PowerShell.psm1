@@ -1826,6 +1826,11 @@ function Import-CrmSolution{
         Write-Verbose "Calling .ImportSolutionToCrm() this process can take minutes..."
         $result = $conn.ImportSolutionToCrm($SolutionFilePath, [ref]$importId, $ActivatePlugIns,
                 $OverwriteUnManagedCustomizations, $SkipDependancyOnProductUpdateCheckOnInstall,$ImportAsHoldingSolution)
+        <#
+		This is not required now, since dependancy missing is set to detected with import job failure
+		if ($result -eq [guid]::Empty) {
+             throw $conn.LastCrmError
+         }#>
         $pollingStart = Get-Date
         $isProcessing = $true
 		$secondsSpentPolling = 0
@@ -1855,7 +1860,7 @@ function Import-CrmSolution{
 				}
 
 				#Check for import completion 
-				if($import.completedon -eq $null -and $importManifest.result -ne "success"){
+				if($import.completedon -eq $null -and $importManifest.result.result -ne "success"){
 					$isProcessing = $true
 					$secondsSpentPolling = ([Int]((Get-Date) - $pollingStart).TotalSeconds)
 					Write-Output "$($secondsSPentPolling.ToString("000")) seconds of max: $MaxWaitTimeInSeconds ... ImportJob%: $ProcPercent"
@@ -1863,7 +1868,7 @@ function Import-CrmSolution{
 				else{
 					Write-Verbose "Processing Completed at: $($import.completedon) with ImportJob%: $ProcPercent" 
 					
-					if(-not $isProcPercentReduced)
+					if(-not $isProcPercentReduced -and $importManifest.result.result -eq "success")
 					{
 						$ProcPercent = 100.0
 					}					
@@ -1881,12 +1886,8 @@ function Import-CrmSolution{
 			throw "Import-CrmSolution halted due to exceeding the maximum timeout of $MaxWaitTimeInSeconds."
 		}
 		#detect a failure by a failure result OR the percent being less than 100%
-        if($importresult.result -eq "failure") #Must look at %age instead of this result as the result is usually wrong!
+        if(($importManifest.result.result -eq "failure") -or ($ProcPercent -lt 100)) #Must look at %age instead of this result as the result is usually wrong!
         {
-            Write-Verbose "Import result: $($importManifest.result) - job with ID: $importId failed at $ProcPercent complete."
-            throw $importresult.errortext
-        }
-        elseif($ProcPercent -lt 100){
             try{
                 #lets try to dump the failure data as a best effort: 
                 ([xml]$import.data).importexportxml.entities.entity|foreach {
@@ -1909,10 +1910,17 @@ function Import-CrmSolution{
                         write-error "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext)"
                     }
                 }
+                #SolutionManifest problems
+                ([xml]$import.data).importexportxml.solutionManifests.solutionManifest|foreach {
+                    if($_.result.result -ne $null -and $_.result.result -eq 'failure'){
+                        write-output "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext) $($_.result.parameters.InnerXml)"
+                        write-error "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext) $($_.result.parameters.InnerXml)"
+                    }
+                }
             }catch{}
 
-            $erroText = "Import result: Job with ID: $importId failed at $ProcPercent percent complete."
-            throw $erroText
+            Write-Verbose "Import result: $($importManifest.result.result) - job with ID: $importId failed at $ProcPercent complete."
+            throw $importManifest.result.errortext
         }
         else
         {
