@@ -1494,6 +1494,10 @@ function Get-CrmRecordsByFetch{
     {
         Write-Debug "Getting data from CRM"
         $records = $conn.GetEntityDataByFetchSearch($Fetch, $TopCount, $PageNumber, $PageCookie, [ref]$PagingCookie, [ref]$NextPage, [Guid]::Empty)
+        if($conn.LastCrmException -ne $null)
+        {
+            throw $conn.LastCrmException
+        }
         $xml = [xml]$Fetch
         $logicalname = $xml.SelectSingleNode("/fetch/entity").Name
         #if there are zero results returned 
@@ -1532,12 +1536,14 @@ function Get-CrmRecordsByFetch{
                         Add-Member -InputObject $psobj -MemberType NoteProperty -Name $attName -Value $null
                         Add-Member -InputObject $psobj -MemberType NoteProperty -Name ($attName + "_Property") -Value $null
                     }
-
-                    Add-Member -InputObject $psobj -MemberType NoteProperty -Name ReturnProperty_EntityName -Value $null
-                    Add-Member -InputObject $psobj -MemberType NoteProperty -Name 'ReturnProperty_Id ' -Value $null
-
+                   
                     foreach($att in $record.GetEnumerator())
                     {
+                        if(!($psobj | gm).Name.Contains($att.Key))
+                        {
+                            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $null
+                        }
+
                         if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference])
                         {
                             $psobj.($att.Key) = $att.Value.Name
