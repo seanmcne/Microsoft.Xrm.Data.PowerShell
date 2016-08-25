@@ -4567,7 +4567,7 @@ function Test-CrmViewPerformance{
 		
 		#before returning always set connection caller id back to ourself: 
         if($RunAs -or $RunAsViewOwner){
-			Write-verobse "Setting connection caller id back to current user"
+			Write-Verbose "Setting connection caller id back to current user"
 			Set-CrmConnectionCallerId -conn $conn -CallerId $RunAs                
 		}
 
