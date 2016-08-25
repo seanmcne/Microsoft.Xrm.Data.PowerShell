@@ -1494,6 +1494,10 @@ function Get-CrmRecordsByFetch{
     {
         Write-Debug "Getting data from CRM"
         $records = $conn.GetEntityDataByFetchSearch($Fetch, $TopCount, $PageNumber, $PageCookie, [ref]$PagingCookie, [ref]$NextPage, [Guid]::Empty)
+        if($conn.LastCrmException -ne $null)
+        {
+            throw $conn.LastCrmException
+        }
         $xml = [xml]$Fetch
         $logicalname = $xml.SelectSingleNode("/fetch/entity").Name
         #if there are zero results returned 
@@ -1515,23 +1519,63 @@ function Get-CrmRecordsByFetch{
             foreach($record in $records.Values)
             {   
                 $psobj = New-Object -TypeName System.Management.Automation.PSObject
-        
-                foreach($att in $record.GetEnumerator())
+                
+                if($recordslist.Count -eq 0)
                 {
-                    if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference])
+                    $atts = $xml.GetElementsByTagName('attribute');
+                    foreach($att in $atts)
                     {
-                        Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value.Name
+                        if($att.ParentNode.HasAttribute('alias'))
+                        {
+                            $attName = $att.ParentNode.GetAttribute('alias') + "." + $att.name
+                        }
+                        else
+                        {
+                            $attName = $att.name
+                        }
+                        Add-Member -InputObject $psobj -MemberType NoteProperty -Name $attName -Value $null
+                        Add-Member -InputObject $psobj -MemberType NoteProperty -Name ($attName + "_Property") -Value $null
                     }
-					elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue])
-					{
-						Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value.Value
-					}
-                    else
+                   
+                    foreach($att in $record.GetEnumerator())
                     {
-                        Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value
-                    }
-                }  
+                        if(!($psobj | gm).Name.Contains($att.Key))
+                        {
+                            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $null
+                        }
 
+                        if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference])
+                        {
+                            $psobj.($att.Key) = $att.Value.Name
+                        }
+				    	elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue])
+				    	{
+				    		$psobj.($att.Key) = $att.Value.Value
+				    	}
+                        else
+                        {
+                            $psobj.($att.Key) = $att.Value
+                        }
+                    }  
+                }
+                else
+                {
+                    foreach($att in $record.GetEnumerator())
+                    {
+                        if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference])
+                        {
+                            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value.Name
+                        }
+				    	elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue])
+				    	{
+				    		Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value.Value
+				    	}
+                        else
+                        {
+                            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value
+                        }
+                    }  
+                }
                 Add-Member -InputObject $psobj -MemberType NoteProperty -Name "original" -Value $record
                 Add-Member -InputObject $psobj -MemberType NoteProperty -Name "logicalname" -Value $logicalname
                 $recordslist.Add($psobj)
