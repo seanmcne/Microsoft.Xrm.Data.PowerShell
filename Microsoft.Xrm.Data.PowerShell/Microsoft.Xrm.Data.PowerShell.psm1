@@ -1867,9 +1867,48 @@ function Import-CrmSolution{
 				}
 				else{
 					Write-Verbose "Processing Completed at: $($import.completedon) with ImportJob%: $ProcPercent" 
-					
-					if(-not $isProcPercentReduced -and $importManifest.result.result -eq "success")
+
+                    Write-Verbose "Import Manifest Result: $($importManifest.result.result) with ImportJob%: $ProcPercent" 					
+
+                    $solutionImportResults =  Select-Xml -Xml ([xml]$import.data) -XPath "//result"
+
+                    $anyFailuresInImport = $false;
+                    $allErrorText = "";
+
+                    foreach($solutionImportResult in $solutionImportResults)
+                    {
+                        try{
+                            $resultParent = ""
+                            $itemResult = ""
+                            $resultParent = $($solutionImportResult.Node.ParentNode.ParentNode.Name)
+                            $itemResult = $($solutionImportResult.Node.result)
+                        }catch{}
+
+                        Write-Verbose "Item:$resultParent  result: $itemResult" # write each item result in result data
+                        
+                        if ($solutionImportResult.Node.result -ne "success")
+                        {
+                            # if any error in result print more error details
+                            try{
+                                $errorCode = ""
+                                $errorText = ""
+                                $moreErrorDetails = ""
+                                $errorCode = $($solutionImportResult.Node.errorcode)
+                                $errorText = $($solutionImportResult.Node.errortext)
+                                $moreErrorDetails = $solutionImportResult.Node.parameters.InnerXml
+
+                            }catch{}
+
+                            Write-Verbose "errorcode: $errorCode errortext: $errorText more details: $moreErrorDetails"
+                            $anyFailuresInImport = $true; # mark if any failures in solution import
+                            $allErrorText = $allErrorText + ";" + $errorText;
+                        }
+                    }
+
+
+					if(-not $isProcPercentReduced -and $importManifest.result.result -eq "success" -and (-not $anyFailuresInImport))
 					{
+                        Write-Verbose "Setting to 100% since all results are success"
 						$ProcPercent = 100.0
 					}					
 					$isProcessing = $false
@@ -1886,9 +1925,12 @@ function Import-CrmSolution{
 			throw "Import-CrmSolution halted due to exceeding the maximum timeout of $MaxWaitTimeInSeconds."
 		}
 		#detect a failure by a failure result OR the percent being less than 100%
-        if(($importManifest.result.result -eq "failure") -or ($ProcPercent -lt 100)) #Must look at %age instead of this result as the result is usually wrong!
+        if(($importManifest.result.result -eq "failure") -or ($ProcPercent -lt 100) -or $anyFailuresInImport) #Must look at %age instead of this result as the result is usually wrong!
         {
-            try{
+            Write-Verbose "Import result: failed - job with ID: $importId failed at $ProcPercent complete."
+            throw $allErrorText
+            #errors already printed no need to reprint
+            <#try{
                 #lets try to dump the failure data as a best effort: 
                 ([xml]$import.data).importexportxml.entities.entity|foreach {
                     if($_.result.result -ne $null -and $_.result.result -eq 'failure'){
@@ -1920,7 +1962,7 @@ function Import-CrmSolution{
             }catch{}
 
             Write-Verbose "Import result: $($importManifest.result.result) - job with ID: $importId failed at $ProcPercent complete."
-            throw $importManifest.result.errortext
+            throw $importManifest.result.errortext#>
         }
         else
         {
