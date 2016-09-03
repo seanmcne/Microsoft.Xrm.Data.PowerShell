@@ -1900,8 +1900,12 @@ function Import-CrmSolution{
                             }catch{}
 
                             Write-Verbose "errorcode: $errorCode errortext: $errorText more details: $moreErrorDetails"
-                            $anyFailuresInImport = $true; # mark if any failures in solution import
-                            $allErrorText = $allErrorText + ";" + $errorText;
+
+                            if ($solutionImportResult.Node.result -eq "failure") # Fail only on errors, not on warnings
+                            {
+                                $anyFailuresInImport = $true; # mark if any failures in solution import
+                                $allErrorText = $allErrorText + ";" + $errorText;
+                            }
                         }
                     }
 
