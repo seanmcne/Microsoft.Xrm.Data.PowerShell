@@ -2922,7 +2922,7 @@ function Get-CrmRecords{
     {
         $FilterOperator = $FilterOperator.Remove(0, 1)
     }
-    if( !($EntityLogicalName -cmatch "^[a-z]*$") )
+    if( !($EntityLogicalName -cmatch "^[a-z_]*$") )
     {
         $EntityLogicalName = $EntityLogicalName.ToLower()
         Write-Verbose "EntityLogicalName contains uppercase which isn't possible in CRM, overwritting with ToLower() new value: $EntityLogicalName"
