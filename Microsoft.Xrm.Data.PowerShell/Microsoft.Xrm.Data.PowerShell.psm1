@@ -3992,6 +3992,8 @@ function Set-CrmSystemSettings {
     PARAM(
         [parameter(Mandatory=$false)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+		[parameter(Mandatory=$false)]
+		[guid]$AcknowledgementTemplateId,
         [parameter(Mandatory=$false)]
         [int]$ACTDeliveryMethod,
         [parameter(Mandatory=$false)]
@@ -4015,17 +4017,39 @@ function Set-CrmSystemSettings {
         [parameter(Mandatory=$false)]
         [bool]$AllowUnresolvedPartiesOnEmailSend,
         [parameter(Mandatory=$false)]
+		[bool]$AllowUserFormModePreference,
+        [parameter(Mandatory=$false)]
         [bool]$AllowUsersSeeAppdownloadMessage,
         [parameter(Mandatory=$false)]
         [bool]$AllowWebExcelExport,
+		[parameter(Mandatory=$false)]
+        [string]$AMDesignator,
+		[parameter(Mandatory=$false)]
+        [bool]$AutoApplyDefaultonCaseCreate,
+		[parameter(Mandatory=$false)]
+        [bool]$AutoApplyDefaultonCaseUpdate,
+		[parameter(Mandatory=$false)]
+        [bool]$AutoApplySLA,
+		[parameter(Mandatory=$false)]
+        [string]$BingMapsApiKey,
         [parameter(Mandatory=$false)]
         [string]$BlockedAttachments,
+		[parameter(Mandatory=$false)]
+        [guid]$BusinessClosureCalendarId,
         [parameter(Mandatory=$false)]
         [string]$CampaignPrefix,
+		[parameter(Mandatory=$false)]
+        [bool]$CascadeStatusUpdate,
         [parameter(Mandatory=$false)]
         [string]$CasePrefix,
         [parameter(Mandatory=$false)]
         [string]$ContractPrefix,
+		[parameter(Mandatory=$false)]
+        [bool]$CortanaProactiveExperienceEnabled,
+		[parameter(Mandatory=$false)]
+        [bool]$CreateProductsWithoutParentInActiveState,
+		[parameter(Mandatory=$false)]
+        [int]$CurrencyDecimalPrecision,
         [parameter(Mandatory=$false)]
         [int]$CurrencyDisplayOption,
         [parameter(Mandatory=$false)]

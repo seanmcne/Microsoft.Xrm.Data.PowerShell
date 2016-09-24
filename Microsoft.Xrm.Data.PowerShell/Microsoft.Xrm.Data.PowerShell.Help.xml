@@ -16428,6 +16428,15 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">CrmServiceClient</command:parameterValue>
 			</command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="1">
+        <maml:name>AcknowledgementTemplateId</maml:name>
+        <maml:description>
+          <maml:para>
+            ID of the template to be used for acknowledgement when a user unsubscribes.
+          </maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Guid</command:parameterValue>
+      </command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="1">
 				<maml:name>ACTDeliveryMethod</maml:name>
 				<maml:description>
@@ -16516,6 +16525,17 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
 			</command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="12">
+        <maml:name>
+          AllowUserFormModePreference
+        </maml:name>
+        <maml:description>
+          <maml:para>
+            Let user change Form Mode such as Read-Only. CRM 2011 only.
+          </maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
+      </command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="12">
 				<maml:name>AllowUsersSeeAppdownloadMessage</maml:name>
 				<maml:description>
@@ -16532,15 +16552,78 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
 			</command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="14">
+        <maml:name>
+          AMDesignator
+        </maml:name>
+        <maml:description>
+          <maml:para>
+            Update &quot;AM Symbol&quot; in Time Format.
+          </maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="13">
+        <maml:name>
+          AutoApplyDefaultonCaseCreate
+        </maml:name>
+        <maml:description>
+          <maml:para>
+            Change &quot;Select whether to automatically apply the default customer entitlement when a case is created.&quot; Settings
+          </maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="13">
+        <maml:name>AutoApplyDefaultonCaseUpdate</maml:name>
+        <maml:description>
+          <maml:para>
+            Change &quot;Select whether to automatically apply the default customer entitlement when a case is updated.&quot; Settings
+        </maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="13">
+        <maml:name>
+          AutoApplySLA
+        </maml:name>
+        <maml:description>
+          <maml:para>
+            Change &quot;Automatically apply SLA on entity record update after SLA was manually applied.&quot; Settings
+          </maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
+      </command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="14">
-				<maml:name>BlockedAttachments</maml:name>
+				<maml:name>BingMapsApiKey</maml:name>
 				<maml:description>
-					<maml:para>Update &quot;Set blocked file extensions for attachements&quot; list.
-</maml:para>
+					<maml:para>
+            API key to be used in requests to Bing Maps services.
+          </maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="15">
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="14">
+        <maml:name>BlockedAttachments</maml:name>
+        <maml:description>
+          <maml:para>
+            Update &quot;Set blocked file extensions for attachements&quot; list.
+          </maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="15">
+        <maml:name>
+          BusinessClosureCalendarId
+        </maml:name>
+        <maml:description>
+          <maml:para>
+            ID of the business closure calendar of organization.
+          </maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Guid</command:parameterValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="15">
 				<maml:name>CampaignPrefix</maml:name>
 				<maml:description>
 					<maml:para>Prefix used for campaign numbering.
@@ -16548,27 +16631,66 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="15">
+        <maml:name>CascadeStatusUpdate</maml:name>
+        <maml:description>
+          <maml:para>
+            Flag to cascade update on incident (case).
+          </maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Boolean</command:parameterValue>
+      </command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="16">
 				<maml:name>CasePrefix</maml:name>
 				<maml:description>
-					<maml:para>Prefix to use for all cases throughout Microsoft Dynamics CRM.
-</maml:para>
+					<maml:para>Prefix to use for all cases throughout Microsoft Dynamics CRM.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="17">
 				<maml:name>ContractPrefix</maml:name>
 				<maml:description>
-					<maml:para>Prefix to use for all contracts throughout Microsoft Dynamics CRM.
-</maml:para>
+					<maml:para>Prefix to use for all contracts throughout Microsoft Dynamics CRM.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="18">
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="15">
+        <maml:name>
+          CortanaProactiveExperienceEnabled
+        </maml:name>
+        <maml:description>
+          <maml:para>
+            Select whether to turn on task flows for Cortana for this organization.
+          </maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Boolean</command:parameterValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="15">
+        <maml:name>
+          CreateProductsWithoutParentInActiveState
+        </maml:name>
+        <maml:description>
+          <maml:para>
+            Enable Initial state of newly created products to be Active instead of Draft.
+          </maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Boolean</command:parameterValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="18">
+        <maml:name>
+          CurrencyDecimalPrecision
+        </maml:name>
+        <maml:description>
+          <maml:para>
+            Change &quot;Set the currency precision that is used for pricing throughout the system.&quot; Settings.
+          </maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="18">
 				<maml:name>CurrencyDisplayOption</maml:name>
 				<maml:description>
-					<maml:para>Change &quot;Display currencies by using&quot; setting. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet organization currencydisplayoption | % Items command and use PickListItemId.
-</maml:para>
+					<maml:para>Change &quot;Display currencies by using&quot; setting. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet organization currencydisplayoption | % Items command and use PickListItemId.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
