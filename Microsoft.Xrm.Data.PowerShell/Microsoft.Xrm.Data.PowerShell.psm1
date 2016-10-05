@@ -1832,6 +1832,137 @@ function Get-CrmEntityOptionSet{
     return $result
 }
 
+#ImportSolutionToCrmAsync
+function Import-CrmSolutionAsync{
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+    [CmdletBinding()]
+    PARAM(
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1)]
+        [string]$SolutionFilePath,
+        [parameter(Mandatory=$false, Position=2)]
+        [switch]$ActivateWorkflows,
+        [parameter(Mandatory=$false, Position=3)]
+        [switch]$OverwriteUnManagedCustomizations,
+        [parameter(Mandatory=$false, Position=4)]
+        [switch]$SkipDependancyOnProductUpdateCheckOnInstall, 
+        [parameter(Mandatory=$false, Position=5)]
+        [switch]$PublishChanges,
+		[parameter(Mandatory=$false, Position=6)]
+        [int64]$MaxWaitTimeInSeconds = 900,
+		[parameter(Mandatory=$false, Position=7)]
+        [switch]$ImportAsHoldingSolution
+    )
+	$conn = VerifyCrmConnectionParam $conn
+	$importId = [guid]::Empty
+    try
+    {
+        if (!(Test-Path $SolutionFilePath)) 
+        {
+            throw [System.IO.FileNotFoundException] "$SolutionFilePath not found."
+        }
+        $tmpDest = $conn.CrmConnectOrgUriActual
+        Write-Host "Importing solution file $SolutionFilePath into: $tmpDest" 
+        Write-Verbose "OverwriteCustomizations: $OverwriteUnManagedCustomizations"
+        Write-Verbose "SkipDependancyCheck: $SkipDependancyOnProductUpdateCheckOnInstall"
+		Write-Verbose "ImportAsHoldingSolution: $ImportAsHoldingSolution"
+        Write-Verbose "Maximum seconds to poll for successful completion: $MaxWaitTimeInSeconds"
+
+        Write-Verbose "Getting file contents"
+		$data = [System.IO.File]::ReadAllBytes($SolutionFilePath)
+		
+		Write-Verbose "Creating Request"
+		$request = New-Object Microsoft.Crm.Sdk.Messages.ImportSolutionRequest
+
+		Write-Verbose "Setting Request Properties"
+
+		$request.CustomizationFile = $data  
+		$request.PublishWorkflows = $ActivateWorkflows
+		$request.OverwriteUnmanagedCustomizations = $OverwriteUnManagedCustomizations
+		$request.SkipProductUpdateDependencies = $SkipDependancyOnProductUpdateCheckOnInstall
+		$request.HoldingSolution = $ImportAsHoldingSolution
+
+		$asyncRequest = New-Object Microsoft.Xrm.Sdk.Messages.ExecuteAsyncRequest
+		$asyncRequest.Request = $request; 
+
+		Write-Verbose "ExecuteCrmOrganizationRequest called for ImportSolutionRequest() this process can take a while..."
+		try
+		{
+			$asyncResponse = ($conn.ExecuteCrmOrganizationRequest($asyncRequest, "AsyncImportRequest") -as [Microsoft.Xrm.Sdk.Messages.ExecuteAsyncResponse]) 
+			$importId = $asyncResponse.AsyncJobId 
+			if($importId -eq $null -or $importId -eq [Guid]::Empty)
+			{
+				throw "Import request failed, asyncid is: $importId"
+			}
+		}
+		catch
+		{
+			throw $conn.LastCrmException
+		}    
+
+        Write-Verbose "ImportId: $importId" 
+        $pollingStart = Get-Date
+        $isProcessing = $true
+		$secondsSpentPolling = 0
+        $pollingDelaySeconds = 5
+
+		#this is for a bug where the service will throw a 401 on retrieve of importjob during an import under certain conditions 
+		$transientFailureCount = 0; 
+        Write-Host "Import of file completed, waiting on completion of AsyncOperationId: $importId"
+
+		try{
+			while($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds){
+				#delay
+				Start-Sleep -Seconds $pollingDelaySeconds
+				#check the import job for success/fail/inProgress
+				try{
+					#$import = Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields solutionname,data,completedon,startedon,progress
+					$import = Get-CrmRecord -conn $conn -EntityLogicalName asyncoperation -Id $importId -Fields statuscode
+				} catch {
+					if($transientFailureCount -gt 5){
+						Write-Error "Import Job status check FAILED 5 times this could be due to a bug where the service returns a 401. Throwing lastException:"; 
+						$transientFailureCount++
+						throw  $conn.LastCrmException
+					}
+					$transientFailureCount++; 
+					Write-Verbose "Import Job status check FAILED this could be due to a bug where the service returns a 401. We'll allow up to 5 failures before aborting."; 
+				}
+
+				$status = $import.statuscode_Property.value.Value; 
+				#Check for import completion - https://msdn.microsoft.com/en-us/library/gg309288.aspx
+				if($status -lt 30){
+					$isProcessing = $true
+					$secondsSpentPolling = ([Int]((Get-Date) - $pollingStart).TotalSeconds)
+					Write-Output "$($import.statuscode) - $($secondsSPentPolling.ToString("000")) seconds of max: $MaxWaitTimeInSeconds"
+				}
+				elseif($status -eq 31 -or $status -eq 32 ){
+					Write-Output "$($import.statuscode) - Job has been either cancelled or failed."
+					$isProcessing = $false
+					break; 
+				}
+				elseif($status -eq 30){
+					Write-Verbose "Processing Completed at: $($import.completedon)" 
+                    Write-Verbose "Setting to 100% since all results are success"
+					$isProcessing = $false
+					break; 
+				}
+			}
+		} Catch {
+			Write-Error "AsyncOperation with ID: $importId has encountered an exception: $_ "
+		}
+        #User provided timeout and exit function with an error
+	    if($secondsSpentPolling -gt $MaxWaitTimeInSeconds){
+			throw "Import-CrmSolution halted due to exceeding the maximum timeout of $MaxWaitTimeInSeconds."
+		}
+		#at this point we appear to have imported successfully 
+    }
+    catch
+    {
+        Write-Error $_.Exception
+    }    
+}
+
 #ImportSolutionToCrm   
 function Import-CrmSolution{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
@@ -1871,24 +2002,37 @@ function Import-CrmSolution{
         Write-Verbose "Calling .ImportSolutionToCrm() this process can take minutes..."
         $result = $conn.ImportSolutionToCrm($SolutionFilePath, [ref]$importId, $ActivatePlugIns,
                 $OverwriteUnManagedCustomizations, $SkipDependancyOnProductUpdateCheckOnInstall,$ImportAsHoldingSolution)
-        <#
-		This is not required now, since dependancy missing is set to detected with import job failure
+
+        Write-Verbose "ImportId: $result" 
+
 		if ($result -eq [guid]::Empty) {
              throw $conn.LastCrmError
-         }#>
+        }
+
         $pollingStart = Get-Date
         $isProcessing = $true
 		$secondsSpentPolling = 0
         $pollingDelaySeconds = 5
 		$TopPrevProcPercent = [double]0
 		$isProcPercentReduced = $false
+		#this is for a bug where the service will throw a 401 on retrieve of importjob during an import under certain conditions 
+		$transientFailureCount = 0; 
         Write-Host "Import of file completed, waiting on completion of importId: $importId"
 		try{
 			while($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds){
 				#delay
 				Start-Sleep -Seconds $pollingDelaySeconds
 				#check the import job for success/fail/inProgress
-				$import = Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields solutionname,data,completedon,startedon,progress
+				try{
+					$import = Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields solutionname,data,completedon,startedon,progress
+				} catch {
+					if($transientFailureCount > 5){
+						Write-Error "Import Job status check FAILED 5 times this could be due to a bug where the service returns a 401. Throwing lastException:"; 
+						throw  $conn.LastCrmException
+					}
+					Write-Verbose "Import Job status check FAILED this could be due to a bug where the service returns a 401. We'll allow up to 5 failures before aborting."; 
+					$transientFailureCount++; 
+				}
 				#Option to use Get-CrmRecords so we can force a no-lock to prevent hangs in the retrieve
 				#$import = (Get-CrmRecords -conn $conn -EntityLogicalName importjob -FilterAttribute importjobid -FilterOperator eq -FilterValue $importId -Fields data,completedon,startedon,progress).CrmRecords[0]
 				$importManifest = ([xml]($import).data).importexportxml.solutionManifests.solutionManifest
