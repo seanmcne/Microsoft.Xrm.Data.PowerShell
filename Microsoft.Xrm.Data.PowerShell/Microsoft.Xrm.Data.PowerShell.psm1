@@ -446,12 +446,7 @@ function Set-CrmRecord{
             }           
         }
 
-        try{
         $existingRecord = Get-CrmRecord -conn $conn -EntityLogicalName $entityLogicalName -Id $id -Fields $retrieveFields.ToArray() -ErrorAction SilentlyContinue
-        }
-        catch{
-                # do nothing just continue. If the caller has try catch this will prevent this exception caught by the callers try catch
-            }
 
         if($existingRecord.original -eq $null)
         {
@@ -705,47 +700,53 @@ function Set-CrmRecord{
     {
         foreach($field in $Fields.GetEnumerator())
         {  
-           $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
-        
-            switch($field.Value.GetType().Name)
+            $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
+            if($field.Value -eq $null)
             {
-                "Boolean" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmBoolean
-                    break             
-                }
-                "DateTime" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDateTime
-                    break
-                }
-                "Decimal" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDecimal
-                    break
-                }
-                "Single" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmFloat
-                    break
-                }
-                "Money" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-                    break
-                }
-                "Int32" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmNumber
-                    break
-                }
-                "EntityReference" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-                    break
-                }
-                "OptionSetValue" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-                    break
-                }
-                "String" {
-                    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::String
-                    break
-               }
+                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
             }
+			else
+			{
+				switch($field.Value.GetType().Name)
+				{
+				    "Boolean" {
+				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmBoolean
+				        break             
+				    }
+				    "DateTime" {
+				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDateTime
+				        break
+				    }
+				    "Decimal" {
+				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDecimal
+				        break
+				    }
+				    "Single" {
+				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmFloat
+				        break
+				    }
+				    "Money" {
+				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
+				        break
+				    }
+				    "Int32" {
+				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmNumber
+				        break
+				    }
+				    "EntityReference" {
+				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
+				        break
+				    }
+				    "OptionSetValue" {
+				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
+				        break
+				    }
+				    "String" {
+				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::String
+				        break
+				   }
+				}
+			}
         
             $newfield.Value = $field.Value
             $newfields.Add($field.Key, $newfield)
@@ -1496,6 +1497,10 @@ function Get-CrmRecordsByFetch{
     {
         Write-Debug "Getting data from CRM"
         $records = $conn.GetEntityDataByFetchSearch($Fetch, $TopCount, $PageNumber, $PageCookie, [ref]$PagingCookie, [ref]$NextPage, [Guid]::Empty)
+        if($conn.LastCrmException -ne $null)
+        {
+            throw $conn.LastCrmException
+        }
         $xml = [xml]$Fetch
         $logicalname = $xml.SelectSingleNode("/fetch/entity").Name
         #if there are zero results returned 
@@ -1517,23 +1522,63 @@ function Get-CrmRecordsByFetch{
             foreach($record in $records.Values)
             {   
                 $psobj = New-Object -TypeName System.Management.Automation.PSObject
-        
-                foreach($att in $record.GetEnumerator())
+                
+                if($recordslist.Count -eq 0)
                 {
-                    if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference])
+                    $atts = $xml.GetElementsByTagName('attribute');
+                    foreach($att in $atts)
                     {
-                        Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value.Name
+                        if($att.ParentNode.HasAttribute('alias'))
+                        {
+                            $attName = $att.ParentNode.GetAttribute('alias') + "." + $att.name
+                        }
+                        else
+                        {
+                            $attName = $att.name
+                        }
+                        Add-Member -InputObject $psobj -MemberType NoteProperty -Name $attName -Value $null
+                        Add-Member -InputObject $psobj -MemberType NoteProperty -Name ($attName + "_Property") -Value $null
                     }
-					elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue])
-					{
-						Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value.Value
-					}
-                    else
+                   
+                    foreach($att in $record.GetEnumerator())
                     {
-                        Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value
-                    }
-                }  
+                        if(!($psobj | gm).Name.Contains($att.Key))
+                        {
+                            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $null
+                        }
 
+                        if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference])
+                        {
+                            $psobj.($att.Key) = $att.Value.Name
+                        }
+				    	elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue])
+				    	{
+				    		$psobj.($att.Key) = $att.Value.Value
+				    	}
+                        else
+                        {
+                            $psobj.($att.Key) = $att.Value
+                        }
+                    }  
+                }
+                else
+                {
+                    foreach($att in $record.GetEnumerator())
+                    {
+                        if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference])
+                        {
+                            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value.Name
+                        }
+				    	elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue])
+				    	{
+				    		Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value.Value
+				    	}
+                        else
+                        {
+                            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value
+                        }
+                    }  
+                }
                 Add-Member -InputObject $psobj -MemberType NoteProperty -Name "original" -Value $record
                 Add-Member -InputObject $psobj -MemberType NoteProperty -Name "logicalname" -Value $logicalname
                 $recordslist.Add($psobj)
@@ -1826,9 +1871,11 @@ function Import-CrmSolution{
         Write-Verbose "Calling .ImportSolutionToCrm() this process can take minutes..."
         $result = $conn.ImportSolutionToCrm($SolutionFilePath, [ref]$importId, $ActivatePlugIns,
                 $OverwriteUnManagedCustomizations, $SkipDependancyOnProductUpdateCheckOnInstall,$ImportAsHoldingSolution)
-        if ($result -eq [guid]::Empty) {
-            throw $conn.LastCrmError
-        }
+        <#
+		This is not required now, since dependancy missing is set to detected with import job failure
+		if ($result -eq [guid]::Empty) {
+             throw $conn.LastCrmError
+         }#>
         $pollingStart = Get-Date
         $isProcessing = $true
 		$secondsSpentPolling = 0
@@ -1858,16 +1905,59 @@ function Import-CrmSolution{
 				}
 
 				#Check for import completion 
-				if($import.completedon -eq $null -and $importManifest.result -ne "success"){
+				if($import.completedon -eq $null -and $importManifest.result.result -ne "success"){
 					$isProcessing = $true
 					$secondsSpentPolling = ([Int]((Get-Date) - $pollingStart).TotalSeconds)
 					Write-Output "$($secondsSPentPolling.ToString("000")) seconds of max: $MaxWaitTimeInSeconds ... ImportJob%: $ProcPercent"
 				}
 				else{
 					Write-Verbose "Processing Completed at: $($import.completedon) with ImportJob%: $ProcPercent" 
-					
-					if(-not $isProcPercentReduced)
+
+                    Write-Verbose "Import Manifest Result: $($importManifest.result.result) with ImportJob%: $ProcPercent" 					
+
+                    $solutionImportResults =  Select-Xml -Xml ([xml]$import.data) -XPath "//result"
+
+                    $anyFailuresInImport = $false;
+                    $allErrorText = "";
+
+                    foreach($solutionImportResult in $solutionImportResults)
+                    {
+                        try{
+                            $resultParent = ""
+                            $itemResult = ""
+                            $resultParent = $($solutionImportResult.Node.ParentNode.ParentNode.Name)
+                            $itemResult = $($solutionImportResult.Node.result)
+                        }catch{}
+
+                        Write-Verbose "Item:$resultParent  result: $itemResult" # write each item result in result data
+                        
+                        if ($solutionImportResult.Node.result -ne "success")
+                        {
+                            # if any error in result print more error details
+                            try{
+                                $errorCode = ""
+                                $errorText = ""
+                                $moreErrorDetails = ""
+                                $errorCode = $($solutionImportResult.Node.errorcode)
+                                $errorText = $($solutionImportResult.Node.errortext)
+                                $moreErrorDetails = $solutionImportResult.Node.parameters.InnerXml
+
+                            }catch{}
+
+                            Write-Verbose "errorcode: $errorCode errortext: $errorText more details: $moreErrorDetails"
+
+                            if ($solutionImportResult.Node.result -eq "failure") # Fail only on errors, not on warnings
+                            {
+                                $anyFailuresInImport = $true; # mark if any failures in solution import
+                                $allErrorText = $allErrorText + ";" + $errorText;
+                            }
+                        }
+                    }
+
+
+					if(-not $isProcPercentReduced -and $importManifest.result.result -eq "success" -and (-not $anyFailuresInImport))
 					{
+                        Write-Verbose "Setting to 100% since all results are success"
 						$ProcPercent = 100.0
 					}					
 					$isProcessing = $false
@@ -1884,13 +1974,12 @@ function Import-CrmSolution{
 			throw "Import-CrmSolution halted due to exceeding the maximum timeout of $MaxWaitTimeInSeconds."
 		}
 		#detect a failure by a failure result OR the percent being less than 100%
-        if($importresult.result -eq "failure") #Must look at %age instead of this result as the result is usually wrong!
+        if(($importManifest.result.result -eq "failure") -or ($ProcPercent -lt 100) -or $anyFailuresInImport) #Must look at %age instead of this result as the result is usually wrong!
         {
-            Write-Verbose "Import result: $($importManifest.result) - job with ID: $importId failed at $ProcPercent complete."
-            throw $importresult.errortext
-        }
-        elseif($ProcPercent -lt 100){
-            try{
+            Write-Verbose "Import result: failed - job with ID: $importId failed at $ProcPercent complete."
+            throw $allErrorText
+            #errors already printed no need to reprint
+            <#try{
                 #lets try to dump the failure data as a best effort: 
                 ([xml]$import.data).importexportxml.entities.entity|foreach {
                     if($_.result.result -ne $null -and $_.result.result -eq 'failure'){
@@ -1912,10 +2001,17 @@ function Import-CrmSolution{
                         write-error "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext)"
                     }
                 }
+                #SolutionManifest problems
+                ([xml]$import.data).importexportxml.solutionManifests.solutionManifest|foreach {
+                    if($_.result.result -ne $null -and $_.result.result -eq 'failure'){
+                        write-output "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext) $($_.result.parameters.InnerXml)"
+                        write-error "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext) $($_.result.parameters.InnerXml)"
+                    }
+                }
             }catch{}
 
-            $erroText = "Import result: Job with ID: $importId failed at $ProcPercent percent complete."
-            throw $erroText
+            Write-Verbose "Import result: $($importManifest.result.result) - job with ID: $importId failed at $ProcPercent complete."
+            throw $importManifest.result.errortext#>
         }
         else
         {
@@ -2103,16 +2199,32 @@ function Set-CrmRecordState{
 		if($CrmRecord -ne $null)
 		{
 			$EntityLogicalName = $CrmRecord.logicalname
-		    $Id = $CrmRecord.($EntityLogicalName + "id")
+		    #$Id = $CrmRecord.($EntityLogicalName + "id")
+			$Id = $CrmRecord.'ReturnProperty_Id '
 		}
 
+        # Try to parse into int
+        $StateCodeInt = 0
+        $StatusCodeInt = 0
+        
 		try
 		{
-			$result = $conn.UpdateStateAndStatusForEntity($EntityLogicalName, $Id, $stateCode, $statusCode, [Guid]::Empty)
-			if(!$result)
-			{
-				throw $conn.LastCrmException
-			}
+            if([int32]::TryParse($StateCode, [ref]$StateCodeInt) -and [int32]::TryParse($StatusCode, [ref]$StatusCodeInt))
+            {
+                $result = $conn.UpdateStateAndStatusForEntity($EntityLogicalName, $Id, $StateCodeInt, $statusCodeInt, [Guid]::Empty)
+			    if(!$result)
+			    {
+			    	throw $conn.LastCrmException
+			    }
+            }
+            else
+            {
+                $result = $conn.UpdateStateAndStatusForEntity($EntityLogicalName, $Id, $stateCode, $statusCode, [Guid]::Empty)
+			    if(!$result)
+			    {
+			    	throw $conn.LastCrmException
+			    }
+            }
 		}
 		catch
 		{
@@ -2883,7 +2995,7 @@ function Get-CrmRecords{
     {
         $FilterOperator = $FilterOperator.Remove(0, 1)
     }
-    if( !($EntityLogicalName -cmatch "^[a-z]*$") )
+    if( !($EntityLogicalName -cmatch "^[a-z_]*$") )
     {
         $EntityLogicalName = $EntityLogicalName.ToLower()
         Write-Verbose "EntityLogicalName contains uppercase which isn't possible in CRM, overwritting with ToLower() new value: $EntityLogicalName"
@@ -3953,6 +4065,8 @@ function Set-CrmSystemSettings {
     PARAM(
         [parameter(Mandatory=$false)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+		[parameter(Mandatory=$false)]
+		[guid]$AcknowledgementTemplateId,
         [parameter(Mandatory=$false)]
         [int]$ACTDeliveryMethod,
         [parameter(Mandatory=$false)]
@@ -3976,17 +4090,39 @@ function Set-CrmSystemSettings {
         [parameter(Mandatory=$false)]
         [bool]$AllowUnresolvedPartiesOnEmailSend,
         [parameter(Mandatory=$false)]
+		[bool]$AllowUserFormModePreference,
+        [parameter(Mandatory=$false)]
         [bool]$AllowUsersSeeAppdownloadMessage,
         [parameter(Mandatory=$false)]
         [bool]$AllowWebExcelExport,
+		[parameter(Mandatory=$false)]
+        [string]$AMDesignator,
+		[parameter(Mandatory=$false)]
+        [bool]$AutoApplyDefaultonCaseCreate,
+		[parameter(Mandatory=$false)]
+        [bool]$AutoApplyDefaultonCaseUpdate,
+		[parameter(Mandatory=$false)]
+        [bool]$AutoApplySLA,
+		[parameter(Mandatory=$false)]
+        [string]$BingMapsApiKey,
         [parameter(Mandatory=$false)]
         [string]$BlockedAttachments,
+		[parameter(Mandatory=$false)]
+        [guid]$BusinessClosureCalendarId,
         [parameter(Mandatory=$false)]
         [string]$CampaignPrefix,
+		[parameter(Mandatory=$false)]
+        [bool]$CascadeStatusUpdate,
         [parameter(Mandatory=$false)]
         [string]$CasePrefix,
         [parameter(Mandatory=$false)]
         [string]$ContractPrefix,
+		[parameter(Mandatory=$false)]
+        [bool]$CortanaProactiveExperienceEnabled,
+		[parameter(Mandatory=$false)]
+        [bool]$CreateProductsWithoutParentInActiveState,
+		[parameter(Mandatory=$false)]
+        [int]$CurrencyDecimalPrecision,
         [parameter(Mandatory=$false)]
         [int]$CurrencyDisplayOption,
         [parameter(Mandatory=$false)]
@@ -4629,55 +4765,4 @@ function UnzipCrmRibbon {
             $reader = $null
         }
     }
-}
-
-#DeleteAndPromote-CrmSolution   
-function DeleteAndPromote-CrmSolution{
-# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
-    [CmdletBinding()]
-    PARAM(
-        [parameter(Mandatory=$false)]
-        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
-        [parameter(Mandatory=$false, Position=1)]
-        [string]$SolutionName,
-        [parameter(Mandatory=$false, Position=2)]
-        [int64]$MaxWaitTimeInSeconds = 900
-    )
-
-    	$conn.OrganizationServiceProxy.Timeout = New-TimeSpan -Seconds $MaxWaitTimeInSeconds
-	    $conn = VerifyCrmConnectionParam $conn
-
-		#$promoteId = [System.Guid]::NewGuid()        
-
-		$PromoteRequest = new-object Microsoft.Crm.Sdk.Messages.DeleteAndPromoteRequest
-		$PromoteRequest.UniqueName = $SolutionName
-		#$PromoteRequest.RequestId = $promoteId
-
-		$tmpDest = $conn.CrmConnectOrgUriActual
-        Write-Host "Promoting solution: $SolutionName in: $tmpDest" 
-        Write-Verbose "Maximum seconds to wait for successful completion: $MaxWaitTimeInSeconds"
-        Write-Verbose "Calling .ExecuteCrmOrganizationRequest() this process can take minutes..."
-        $PromoteResponse = $conn.ExecuteCrmOrganizationRequest($PromoteRequest)
-		
-        if (($PromoteResponse -eq $null) -or (-not $PromoteResponse.Results.ContainsKey("SolutionId")))
-        {
-            #probably an error promoting solution. Print as much as possible and throw error
-            Write-Warning "Error might have occured"
-           
-           if($PromoteResponse -ne $null){
-            Write-Host $PromoteResponse.Results
-
-            Write-Host $PromoteResponse
-            }
-
-            thorw "Error in promoting solution $SolutionName"
-        }
-        else
-        {
-           Write-Host "Solution promote completed."
-
-           Write-Host "Results" $PromoteResponse.Results.Keys  $PromoteResponse.Results.Values
-           Write-Host "Response solution Id" $PromoteResponse.SolutionId
-           Write-Host $PromoteResponse.ResponseName
-        }
 }
