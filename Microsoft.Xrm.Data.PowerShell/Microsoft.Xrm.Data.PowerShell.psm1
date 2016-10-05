@@ -1846,13 +1846,13 @@ function Import-CrmSolution{
         [parameter(Mandatory=$false, Position=3)]
         [switch]$OverwriteUnManagedCustomizations,
         [parameter(Mandatory=$false, Position=4)]
-        [switch]$SkipDependancyOnProductUpdateCheckOnInstall,
-		[parameter(Mandatory=$false, Position=5)]
-        [switch]$ImportAsHoldingSolution, 
-        [parameter(Mandatory=$false, Position=6)]
+        [switch]$SkipDependancyOnProductUpdateCheckOnInstall, 
+        [parameter(Mandatory=$false, Position=5)]
         [switch]$PublishChanges,
+		[parameter(Mandatory=$false, Position=6)]
+        [int64]$MaxWaitTimeInSeconds = 900,
 		[parameter(Mandatory=$false, Position=7)]
-        [int64]$MaxWaitTimeInSeconds = 900
+        [switch]$ImportAsHoldingSolution
     )
 	$conn = VerifyCrmConnectionParam $conn
 	$importId = [guid]::Empty
