@@ -1852,31 +1852,28 @@ function Import-CrmSolutionAsync{
 		[parameter(Mandatory=$false, Position=6)]
         [int64]$MaxWaitTimeInSeconds = 900,
 		[parameter(Mandatory=$false, Position=7)]
-        [switch]$ImportAsHoldingSolution
+        [switch]$ImportAsHoldingSolution, 
+		[parameter(Mandatory=$false, Position=8)]
+        [switch]$BlockUntilImportComplete
     )
 	$conn = VerifyCrmConnectionParam $conn
 	$importId = [guid]::Empty
+	$asyncResponse = $null
     try
     {
         if (!(Test-Path $SolutionFilePath)) 
         {
             throw [System.IO.FileNotFoundException] "$SolutionFilePath not found."
         }
-        $tmpDest = $conn.CrmConnectOrgUriActual
-        Write-Host "Importing solution file $SolutionFilePath into: $tmpDest" 
+        Write-Host "Importing solution file $SolutionFilePath into: $($conn.CrmConnectOrgUriActual)" 
         Write-Verbose "OverwriteCustomizations: $OverwriteUnManagedCustomizations"
         Write-Verbose "SkipDependancyCheck: $SkipDependancyOnProductUpdateCheckOnInstall"
 		Write-Verbose "ImportAsHoldingSolution: $ImportAsHoldingSolution"
         Write-Verbose "Maximum seconds to poll for successful completion: $MaxWaitTimeInSeconds"
-
         Write-Verbose "Getting file contents"
 		$data = [System.IO.File]::ReadAllBytes($SolutionFilePath)
 		
-		Write-Verbose "Creating Request"
 		$request = New-Object Microsoft.Crm.Sdk.Messages.ImportSolutionRequest
-
-		Write-Verbose "Setting Request Properties"
-
 		$request.CustomizationFile = $data  
 		$request.PublishWorkflows = $ActivateWorkflows
 		$request.OverwriteUnmanagedCustomizations = $OverwriteUnManagedCustomizations
@@ -1886,30 +1883,32 @@ function Import-CrmSolutionAsync{
 		$asyncRequest = New-Object Microsoft.Xrm.Sdk.Messages.ExecuteAsyncRequest
 		$asyncRequest.Request = $request; 
 
-		Write-Verbose "ExecuteCrmOrganizationRequest called for ImportSolutionRequest() this process can take a while..."
+		Write-Verbose "ExecuteCrmOrganizationRequest with ExecuteAsyncRequest containing ImportSolutionRequest() this process can take a while..."
 		try
 		{
 			$asyncResponse = ($conn.ExecuteCrmOrganizationRequest($asyncRequest, "AsyncImportRequest") -as [Microsoft.Xrm.Sdk.Messages.ExecuteAsyncResponse]) 
-			$importId = $asyncResponse.AsyncJobId 
+			$importId = $asyncResponse.AsyncJobId
+			
+			Write-Verbose "ImportId (asyncoperationid): $importId" 
 			if($importId -eq $null -or $importId -eq [Guid]::Empty)
 			{
-				throw "Import request failed, asyncid is: $importId"
+				throw "Import request failed, asyncoperationid is: $importId"
+			}
+			#if the caller wants to get the ID and does NOT want to wait 
+			if($BlockUntilImportComplete -eq $false){
+				return $asyncResponse; 
 			}
 		}
 		catch
 		{
 			throw $conn.LastCrmException
 		}    
-
-        Write-Verbose "ImportId: $importId" 
         $pollingStart = Get-Date
         $isProcessing = $true
 		$secondsSpentPolling = 0
         $pollingDelaySeconds = 5
-
-		#this is for a bug where the service will throw a 401 on retrieve of importjob during an import under certain conditions 
 		$transientFailureCount = 0; 
-        Write-Host "Import of file completed, waiting on completion of AsyncOperationId: $importId"
+        Write-Information "Import of file completed, waiting on completion of AsyncOperationId: $importId"
 
 		try{
 			while($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds){
@@ -1917,45 +1916,45 @@ function Import-CrmSolutionAsync{
 				Start-Sleep -Seconds $pollingDelaySeconds
 				#check the import job for success/fail/inProgress
 				try{
-					#$import = Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields solutionname,data,completedon,startedon,progress
 					$import = Get-CrmRecord -conn $conn -EntityLogicalName asyncoperation -Id $importId -Fields statuscode
 				} catch {
 					if($transientFailureCount -gt 5){
-						Write-Error "Import Job status check FAILED 5 times this could be due to a bug where the service returns a 401. Throwing lastException:"; 
 						$transientFailureCount++
-						throw  $conn.LastCrmException
+						#this is for a bug where the service will throw a 401 on retrieve of importjob during an import under certain conditions 
+						Write-Error "Import Job status check FAILED 5 times this could be due to a bug where the service returns a 401. Throwing lastException:"; 
+						throw $conn.LastCrmException
 					}
 					$transientFailureCount++; 
 					Write-Verbose "Import Job status check FAILED this could be due to a bug where the service returns a 401. We'll allow up to 5 failures before aborting."; 
 				}
-
 				$status = $import.statuscode_Property.value.Value; 
 				#Check for import completion - https://msdn.microsoft.com/en-us/library/gg309288.aspx
 				if($status -lt 30){
 					$isProcessing = $true
 					$secondsSpentPolling = ([Int]((Get-Date) - $pollingStart).TotalSeconds)
-					Write-Output "$($import.statuscode) - $($secondsSPentPolling.ToString("000")) seconds of max: $MaxWaitTimeInSeconds"
+					Write-Host "$($import.statuscode) - $($secondsSPentPolling.ToString("000")) seconds of max: $MaxWaitTimeInSeconds"
 				}
 				elseif($status -eq 31 -or $status -eq 32 ){
-					Write-Output "$($import.statuscode) - Job has been either cancelled or failed."
 					$isProcessing = $false
+					throw "$($import.statuscode) - AsyncOperation with Id: $importId has been either cancelled or has failed."
 					break; 
 				}
 				elseif($status -eq 30){
 					Write-Verbose "Processing Completed at: $($import.completedon)" 
-                    Write-Verbose "Setting to 100% since all results are success"
+                    Write-Verbose "Don't forget to publish customizations."
 					$isProcessing = $false
 					break; 
 				}
 			}
+			#User provided timeout and exit function with an error
+			if($secondsSpentPolling -gt $MaxWaitTimeInSeconds){
+				throw "Import-CrmSolutionAsync exited due to exceeding the maximum timeout of $MaxWaitTimeInSeconds."
+			}
+			#at this point we appear to have imported successfully 
+			return $asyncResponse; 
 		} Catch {
-			Write-Error "AsyncOperation with ID: $importId has encountered an exception: $_ "
+			Write-Error "AsyncOperation with ID: $importId has encountered an exception: $_"
 		}
-        #User provided timeout and exit function with an error
-	    if($secondsSpentPolling -gt $MaxWaitTimeInSeconds){
-			throw "Import-CrmSolution halted due to exceeding the maximum timeout of $MaxWaitTimeInSeconds."
-		}
-		#at this point we appear to have imported successfully 
     }
     catch
     {
@@ -1983,7 +1982,9 @@ function Import-CrmSolution{
 		[parameter(Mandatory=$false, Position=6)]
         [int64]$MaxWaitTimeInSeconds = 900,
 		[parameter(Mandatory=$false, Position=7)]
-        [switch]$ImportAsHoldingSolution
+        [switch]$ImportAsHoldingSolution, 
+		[parameter(Mandatory=$false, Position=8)]
+        [switch]$AsyncOperationImportMethod 
     )
 	$conn = VerifyCrmConnectionParam $conn
 	$importId = [guid]::Empty
@@ -1993,22 +1994,35 @@ function Import-CrmSolution{
         {
             throw [System.IO.FileNotFoundException] "$SolutionFilePath not found."
         }
-        $tmpDest = $conn.CrmConnectOrgUriActual
-        Write-Host "Importing solution file $SolutionFilePath into: $tmpDest" 
+        Write-Host "Importing solution file $SolutionFilePath into: $($conn.CrmConnectOrgUriActual)" 
         Write-Verbose "OverwriteCustomizations: $OverwriteUnManagedCustomizations"
         Write-Verbose "SkipDependancyCheck: $SkipDependancyOnProductUpdateCheckOnInstall"
 		Write-Verbose "ImportAsHoldingSolution: $ImportAsHoldingSolution"
         Write-Verbose "Maximum seconds to poll for successful completion: $MaxWaitTimeInSeconds"
+
+		if($AsyncOperationImportMethod){
+			Write-Verbose "Option to import using Aync method flagged!"
+			Write-Verbose "Due to this option you may not be able to debug problems - set this flag to false to debug imports"
+			$result = Import-CrmSolutionAsync `
+				-Conn $conn `
+				-SolutionFilePath $SolutionFilePath `
+				-OverwriteUnManagedCustomizations:$OverwriteUnManagedCustomizations `
+				-SkipDependancyOnProductUpdateCheckOnInstall:$SkipDependancyOnProductUpdateCheckOnInstall `
+				-MaxWaitTimeInSeconds $MaxWaitTimeInSeconds `
+				-ImportAsHoldingSolution:$ImportAsHoldingSolution `
+				-BlockUntilImportComplete:$true; 
+
+			Write-Information "Solution import using async completed - asyncoperationid = $($result.AsyncJobId)"; 
+			return $result; 
+		}
+
         Write-Verbose "Calling .ImportSolutionToCrm() this process can take minutes..."
         $result = $conn.ImportSolutionToCrm($SolutionFilePath, [ref]$importId, $ActivatePlugIns,
                 $OverwriteUnManagedCustomizations, $SkipDependancyOnProductUpdateCheckOnInstall,$ImportAsHoldingSolution)
-
         Write-Verbose "ImportId: $result" 
-
 		if ($result -eq [guid]::Empty) {
              throw $conn.LastCrmError
         }
-
         $pollingStart = Get-Date
         $isProcessing = $true
 		$secondsSpentPolling = 0
@@ -2043,8 +2057,7 @@ function Import-CrmSolution{
 				{
 					$isProcPercentReduced = $true
 					Write-Verbose "Processing is reversing... import will fail."
-				}else
-				{
+				} else {
 					$TopPrevProcPercent = $ProcPercent
 				}
 
@@ -2052,15 +2065,13 @@ function Import-CrmSolution{
 				if($import.completedon -eq $null -and $importManifest.result.result -ne "success"){
 					$isProcessing = $true
 					$secondsSpentPolling = ([Int]((Get-Date) - $pollingStart).TotalSeconds)
-					Write-Output "$($secondsSPentPolling.ToString("000")) seconds of max: $MaxWaitTimeInSeconds ... ImportJob%: $ProcPercent"
+					Write-Host "$($secondsSPentPolling.ToString("000")) seconds of max: $MaxWaitTimeInSeconds ... ImportJob%: $ProcPercent"
 				}
-				else{
+				else {
 					Write-Verbose "Processing Completed at: $($import.completedon) with ImportJob%: $ProcPercent" 
-
                     Write-Verbose "Import Manifest Result: $($importManifest.result.result) with ImportJob%: $ProcPercent" 					
 
                     $solutionImportResults =  Select-Xml -Xml ([xml]$import.data) -XPath "//result"
-
                     $anyFailuresInImport = $false;
                     $allErrorText = "";
 
@@ -2089,7 +2100,6 @@ function Import-CrmSolution{
                             }catch{}
 
                             Write-Verbose "errorcode: $errorCode errortext: $errorText more details: $moreErrorDetails"
-
                             if ($solutionImportResult.Node.result -eq "failure") # Fail only on errors, not on warnings
                             {
                                 $anyFailuresInImport = $true; # mark if any failures in solution import
@@ -2097,8 +2107,6 @@ function Import-CrmSolution{
                             }
                         }
                     }
-
-
 					if(-not $isProcPercentReduced -and $importManifest.result.result -eq "success" -and (-not $anyFailuresInImport))
 					{
                         Write-Verbose "Setting to 100% since all results are success"
@@ -2122,40 +2130,6 @@ function Import-CrmSolution{
         {
             Write-Verbose "Import result: failed - job with ID: $importId failed at $ProcPercent complete."
             throw $allErrorText
-            #errors already printed no need to reprint
-            <#try{
-                #lets try to dump the failure data as a best effort: 
-                ([xml]$import.data).importexportxml.entities.entity|foreach {
-                    if($_.result.result -ne $null -and $_.result.result -eq 'failure'){
-                        write-output "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext)"
-                        write-error "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext)"
-                    }
-                }
-                #webresource problems
-                ([xml]$import.data).importexportxml.webResources.webResource|foreach {
-                    if($_.result.result -ne $null -and $_.result.result -eq 'failure'){
-                        write-output "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext)"
-                        write-error "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext)"
-                    }
-                }
-                #optionset problems
-                ([xml]$import.data).importexportxml.optionSets.optionset|foreach {
-                    if($_.result.result -ne $null -and $_.result.result -eq 'failure'){
-                        write-output "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext)"
-                        write-error "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext)"
-                    }
-                }
-                #SolutionManifest problems
-                ([xml]$import.data).importexportxml.solutionManifests.solutionManifest|foreach {
-                    if($_.result.result -ne $null -and $_.result.result -eq 'failure'){
-                        write-output "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext) $($_.result.parameters.InnerXml)"
-                        write-error "Name: $($_.LocalizedName) Result: $($_.result.errorcode) Details: $($_.result.errortext) $($_.result.parameters.InnerXml)"
-                    }
-                }
-            }catch{}
-
-            Write-Verbose "Import result: $($importManifest.result.result) - job with ID: $importId failed at $ProcPercent complete."
-            throw $importManifest.result.errortext#>
         }
         else
         {
