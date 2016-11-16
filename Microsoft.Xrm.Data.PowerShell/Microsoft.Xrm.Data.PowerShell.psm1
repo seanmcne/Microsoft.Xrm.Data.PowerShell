@@ -239,7 +239,7 @@ function MapFieldTypeByFieldValue {
         }   
     }
 
-    $crmDatatype
+    return $crmDatatype
 }
 
 function New-CrmRecord{
