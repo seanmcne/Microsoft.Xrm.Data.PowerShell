@@ -208,7 +208,7 @@ function Connect-CrmOnPremDiscovery{
     }
 }
 
-function Get-FieldTypeByFieldValue {
+function MapFieldTypeByFieldValue {
     PARAM(
         [Parameter(Mandatory=$true)]
         [object]$Value
@@ -225,21 +225,21 @@ function Get-FieldTypeByFieldValue {
         "OptionSetValue" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw;
         "String" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::String;
         "Guid" =  [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::UniqueIdentifier;
-    };
+    }
 
     # default is RAW
-    $type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw;
+    $crmDataType = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
 
     if($Value -ne $null) {
 
-        $valueType = $Value.GetType().Name;
+        $valueType = $Value.GetType().Name
         
         if($valueTypeToCrmTypeMapping.ContainsKey($valueType)) {
-            $type = $valueTypeToCrmTypeMapping[$valueType];
+            $crmDataType = $valueTypeToCrmTypeMapping[$valueType]
         }   
     }
 
-    $type;
+    $crmDatatype
 }
 
 function New-CrmRecord{
@@ -262,7 +262,7 @@ function New-CrmRecord{
     {  
         $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
         
-        $newfield.Type = Get-FieldTypeByFieldValue -Value $field.Value;
+        $newfield.Type = Get-FieldTypeByFieldValue -Value $field.Value
         
         $newfield.Value = $field.Value
         $newfields.Add($field.Key, $newfield)
@@ -689,7 +689,7 @@ function Set-CrmRecord{
         foreach($field in $Fields.GetEnumerator())
         {  
             $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
-            $newfield.Type = Get-FieldTypeByFieldValue -Value $field.Value;
+            $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
         
             $newfield.Value = $field.Value
             $newfields.Add($field.Key, $newfield)
@@ -1108,9 +1108,9 @@ function Add-CrmActivityToCrmRecord{
 			foreach($field in $Fields.GetEnumerator())
 			{  
 				$newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
-                $newfield.Type = Get-FieldTypeByFieldValue -Value $field.Value;
-                $newfield.Value = $field.Value;
-                $newfields.Add($field.Key, $newfield);
+                $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
+                $newfield.Value = $field.Value
+                $newfields.Add($field.Key, $newfield)
             }
 		}
 
