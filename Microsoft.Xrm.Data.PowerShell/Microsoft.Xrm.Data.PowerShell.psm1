@@ -262,7 +262,7 @@ function New-CrmRecord{
     {  
         $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
         
-        $newfield.Type = Get-FieldTypeByFieldValue -Value $field.Value
+        $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
         
         $newfield.Value = $field.Value
         $newfields.Add($field.Key, $newfield)
