@@ -208,6 +208,40 @@ function Connect-CrmOnPremDiscovery{
     }
 }
 
+function MapFieldTypeByFieldValue {
+    PARAM(
+        [Parameter(Mandatory=$true)]
+        [object]$Value
+    )
+
+    $valueTypeToCrmTypeMapping = @{
+        "Boolean" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmBoolean;
+        "DateTime" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDateTime;
+        "Decimal" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDecimal;
+        "Single" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmFloat;
+        "Money" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw;
+        "Int32" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmNumber;
+        "EntityReference" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw;
+        "OptionSetValue" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw;
+        "String" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::String;
+        "Guid" =  [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::UniqueIdentifier;
+    }
+
+    # default is RAW
+    $crmDataType = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
+
+    if($Value -ne $null) {
+
+        $valueType = $Value.GetType().Name
+        
+        if($valueTypeToCrmTypeMapping.ContainsKey($valueType)) {
+            $crmDataType = $valueTypeToCrmTypeMapping[$valueType]
+        }   
+    }
+
+    return $crmDatatype
+}
+
 function New-CrmRecord{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
@@ -228,53 +262,7 @@ function New-CrmRecord{
     {  
         $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
         
-        switch($field.Value.GetType().Name)
-        {
-            "Boolean" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmBoolean
-                break              
-            }
-            "DateTime" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDateTime
-                break
-            }
-            "Decimal" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDecimal
-                break
-            }
-            "Single" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmFloat
-                break
-            }
-            "Money" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-                break
-            }
-            "Int32" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmNumber
-                break
-            }
-            "EntityReference" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-                break
-            }
-			"Guid" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-                break
-            }
-            "OptionSetValue" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-                break
-            }
-            "String" {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::String
-                break
-            }
-			default {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-                break
-            }
-        }
+        $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
         
         $newfield.Value = $field.Value
         $newfields.Add($field.Key, $newfield)
@@ -701,52 +689,7 @@ function Set-CrmRecord{
         foreach($field in $Fields.GetEnumerator())
         {  
             $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
-            if($field.Value -eq $null)
-            {
-                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-            }
-			else
-			{
-				switch($field.Value.GetType().Name)
-				{
-				    "Boolean" {
-				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmBoolean
-				        break             
-				    }
-				    "DateTime" {
-				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDateTime
-				        break
-				    }
-				    "Decimal" {
-				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDecimal
-				        break
-				    }
-				    "Single" {
-				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmFloat
-				        break
-				    }
-				    "Money" {
-				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-				        break
-				    }
-				    "Int32" {
-				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmNumber
-				        break
-				    }
-				    "EntityReference" {
-				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-				        break
-				    }
-				    "OptionSetValue" {
-				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-				        break
-				    }
-				    "String" {
-				        $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::String
-				        break
-				   }
-				}
-			}
+            $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
         
             $newfield.Value = $field.Value
             $newfields.Add($field.Key, $newfield)
@@ -1165,50 +1108,10 @@ function Add-CrmActivityToCrmRecord{
 			foreach($field in $Fields.GetEnumerator())
 			{  
 				$newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
-        
-				switch($field.Value.GetType().Name)
-				{
-				"Boolean" {
-				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmBoolean
-				    break              
-				}
-				"DateTime" {
-				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDateTime
-				    break
-				}
-				"Decimal" {
-				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDecimal
-				    break
-				}
-				"Single" {
-				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmFloat
-				    break
-				}
-				"Money" {
-				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-				    break
-				}
-				"Int32" {
-				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmNumber
-				    break
-				}
-				"EntityReference" {
-				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-				    break
-				}
-				"OptionSetValue" {
-				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-				    break
-				}
-				"String" {
-				    $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::String
-				    break
-				}
-			}
-        
-            $newfield.Value = $field.Value
-            $newfields.Add($field.Key, $newfield)
-        }
+                $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
+                $newfield.Value = $field.Value
+                $newfields.Add($field.Key, $newfield)
+            }
 		}
 
 		try
