@@ -242,6 +242,53 @@ function MapFieldTypeByFieldValue {
     return $crmDatatype
 }
 
+function GuessPrimaryKeyField() {
+    PARAM(
+        [Parameter(Mandatory=$true)]
+        [object]$EntityLogicalName
+    )
+
+    $standardActivityEntities = @(
+        "opportunityclose",
+        "socialactivity",
+        "campaignresponse",
+        "letter","orderclose",
+        "appointment",
+        "recurringappointmentmaster",
+        "fax",
+        "email",
+        "activitypointer",
+        "incidentresolution",
+        "bulkoperation",
+        "quoteclose",
+        "task",
+        "campaignactivity",
+        "serviceappointment",
+        "phonecall"
+    )
+
+    # Some Entity has different pattern for id name.
+    if($EntityLogicalName -eq "usersettings")
+    {
+        $primaryKeyField = "systemuserid"
+    }
+    elseif($EntityLogicalName -eq "systemform")
+    {
+        $primaryKeyField = "formid"
+    }
+    elseif($EntityLogicalName -in $standardActivityEntities)
+    {
+        $primaryKeyField = "activityid"
+    }
+    else 
+    {
+        # default
+        $primaryKeyField = $EntityLogicalName + "id"
+    }
+    
+    $primaryKeyField
+}
+
 function New-CrmRecord{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
@@ -368,7 +415,11 @@ function Set-CrmRecord{
         [parameter(Mandatory=$true, Position=3, ParameterSetName="Fields")]
         [hashtable]$Fields,
 		[parameter(Mandatory=$false)]
-        [switch]$Upsert
+        [switch]$Upsert,
+        [parameter(Mandatory=$false)]
+        [AllowNull()]
+        [AllowEmptyString()]
+        [string]$PrimaryKeyField
     )
 
 	$conn = VerifyCrmConnectionParam $conn
@@ -381,23 +432,15 @@ function Set-CrmRecord{
     {
         $entityLogicalName = $EntityLogicalName
     }
-        
-    # Some Entity has different pattern for id name.
-    if($entityLogicalName -eq "usersettings")
+    
+    # 'PrimaryKeyField' is an options parameter and is used for custom activity entities
+    if(-not [string]::IsNullOrEmpty($PrimaryKeyField)) 
     {
-        $primaryKeyField = "systemuserid"
-    }
-    elseif($entityLogicalName -eq "systemform")
-    {
-        $primaryKeyField = "formid"
-    }
-    elseif($entityLogicalName -in ("opportunityclose","socialactivity","campaignresponse","letter","orderclose","appointment","recurringappointmentmaster","fax","email","activitypointer","incidentresolution","bulkoperation","quoteclose","task","campaignactivity","serviceappointment","phonecall"))
-    {
-        $primaryKeyField = "activityid"
+         $primaryKeyField = $PrimaryKeyField;
     }
     else
     {
-        $primaryKeyField = $entityLogicalName + "id"
+        $primaryKeyField = GuessPrimaryKeyField -EntityLogicalName $entityLogicalName;
     }
 
     # If upsert specified
