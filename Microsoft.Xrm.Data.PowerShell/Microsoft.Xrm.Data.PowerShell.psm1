@@ -436,11 +436,11 @@ function Set-CrmRecord{
     # 'PrimaryKeyField' is an options parameter and is used for custom activity entities
     if(-not [string]::IsNullOrEmpty($PrimaryKeyField)) 
     {
-         $primaryKeyField = $PrimaryKeyField;
+         $primaryKeyField = $PrimaryKeyField
     }
     else
     {
-        $primaryKeyField = GuessPrimaryKeyField -EntityLogicalName $entityLogicalName;
+        $primaryKeyField = GuessPrimaryKeyField -EntityLogicalName $entityLogicalName
     }
 
     # If upsert specified
