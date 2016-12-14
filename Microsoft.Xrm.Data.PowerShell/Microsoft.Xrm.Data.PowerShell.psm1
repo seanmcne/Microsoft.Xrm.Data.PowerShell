@@ -4297,7 +4297,7 @@ function Set-CrmSystemSettings {
     
     $updateFields = @{}
 
-    $attributesMetadata = Get-CrmEntityAttributes -EntityLogicalName organization
+    $attributesMetadata = Get-CrmEntityAttributes -conn $conn -EntityLogicalName organization
         
     $defaultEmailSettings = @{}        
 
