@@ -123,6 +123,43 @@ function Connect-CrmOnline{
     }    
 }
 
+function Connect-CrmOnlineOAuth {
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+    [CmdletBinding()]
+    PARAM(
+        [parameter(Mandatory=$false)]
+        [PSCredential]$Credential, 
+        [Parameter(Mandatory=$true)]
+        [ValidatePattern('https://([\w-]+).crm([0-9]*).dynamics.com')]
+        [string]$ServerUrl,
+        [Parameter(Mandatory=$true)]
+        [string]$ClientId
+    )
+    
+    if ($Credential -eq $null) { $Credential = Get-Credential }
+    
+    $ADALCredential = New-Object Microsoft.IdentityModel.Clients.ActiveDirectory.UserCredential($Credential.UserName, $Credential.Password)
+
+    try {
+        Write-Verbose "Acquiring ADAL access token..." 
+        $authContext = New-Object Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext("https://login.windows.net/common")
+        $authResult = $authContext.AcquireToken($ServerUrl, $ClientId, $ADALCredential)
+    
+        $webProxy = New-Object Microsoft.Xrm.Sdk.WebServiceClient.OrganizationWebProxyClient(($ServerUrl + "/XrmServices/2011/Organization.svc/web"), $false)
+        $webProxy.HeaderToken = $authResult.AccessToken
+        Write-Verbose "OrganizationWebProxyClient created."
+    
+        $global:conn =  New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient($webProxy)
+        Write-Verbose "CrmServiceClient created from OrganizationWebProxyClient."
+
+        return $global:conn
+    }
+    catch
+    {
+        throw $_
+    }    
+}
+
 function Connect-CrmOnPremDiscovery{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
