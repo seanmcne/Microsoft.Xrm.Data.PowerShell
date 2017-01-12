@@ -1186,27 +1186,45 @@ function Invoke-CrmRecordWorkflow{
     PARAM(
         [parameter(Mandatory=$false)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
-        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord")]
+
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecordWithWorkflowId")]
+        [parameter(ParameterSetName="CrmRecordWithWorkflowName")]
         [PSObject]$CrmRecord,
-        [parameter(Mandatory=$true, Position=1, ParameterSetName="Id")]
-        [Alias("Id")]
-        [string]$StringId,
-        [parameter(Mandatory=$true, Position=2)]
-        [string]$WorkflowName
+
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecordIdWithWorkflowId")]
+        [parameter(ParameterSetName="CrmRecordIdWithWorkflowName")]
+        [Alias("Id", "StringId")]
+        [string]$EntityId,
+
+        [parameter(Mandatory=$true, Position=2, ParameterSetName="CrmRecordIdWithWorkflowName")]
+        [parameter(ParameterSetName="CrmRecordWithWorkflowName")]
+        [string]$WorkflowName, 
+
+        [parameter(Mandatory=$true, Position=2, ParameterSetName="CrmRecordIdWithWorkflowId")]
+        [parameter(ParameterSetName="CrmRecordWithWorkflowId")]
+        [string]$WorkflowId
     )
 	$conn = VerifyCrmConnectionParam $conn
     if($CrmRecord -ne $null)
     {        
         $Id = $CrmRecord.($CrmRecord.logicalname + "id")
     }
-    else
+    elseif($EntityId -ne $null)
     {
-        $Id = [guid]::Parse($StringId)
+        $Id = [guid]::Parse($EntityId)
     }
-
     try
     {
-        $result = $conn.ExecuteWorkflowOnEntity($WorkflowName, $Id, [Guid]::Empty)
+        $result = $null 
+        if($WorkflowId -ne $null){
+            $execWFReq = New-Object Microsoft.Crm.Sdk.Messages.ExecuteWorkflowRequest
+            $execWFReq.EntityId = $Id
+            $execWFReq.WorkflowId=$WorkflowId
+            $result = $conn.ExecuteCrmOrganizationRequest($execWFReq) 
+        }
+        elseif($WorkflowName -ne $null){
+            $result = $conn.ExecuteWorkflowOnEntity($WorkflowName, $Id, [Guid]::Empty)
+        }
 		if($result -eq $null)
         {
             throw $conn.LastCrmException
