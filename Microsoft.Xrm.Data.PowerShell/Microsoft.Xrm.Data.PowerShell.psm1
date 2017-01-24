@@ -3700,6 +3700,82 @@ function Get-CrmUserSettings{
     return Get-CrmRecord -conn $conn -EntityLogicalName usersettings -Id $UserId -Fields $Fields
 }
 
+<#
+.Synopsis
+   Grants a security principal (user or team) access to the specified record.
+.DESCRIPTION
+   The Grant-CrmRecordAccess cmdlet lets you grant a security principal (user or team) access to the specified record. The operation will create access rights if none already exist, or be additive to any existing access rights already granted. That is, if a principal has pre-existing access rights to a record, any new access rights specified in executing this cmdlet are granted and no existing rights are removed.
+
+   Note that the append right requires both AppendAccess and AppendToAccess to be specified.
+.EXAMPLE
+   Grant-CrmRecordAccess -conn $conn -CrmRecord $contact -Principal $team -AccessMask AppendAccess,AppendToAccess,ReadAccess,WriteAccess
+
+   This example grants a team append, read, and write access to a contact record.
+.EXAMPLE
+   $contact | Grant-CrmRecordAccess -Principal $team -AccessMask ReadAccess,WriteAccess,DeleteAccess
+
+   This example pipes a contact to Grant-CrmRecordAccess and grants a team read, write, and delete access to it.
+#>
+function Grant-CrmRecordAccess {
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+    [OutputType([void])]
+    [CmdletBinding()]
+    PARAM(
+        # A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
+        [parameter(Mandatory=$false, Position=0)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+
+        # The record object to grant access to, obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use EntityLogicalName/Id.
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord", ValueFromPipeline=$true)]
+        [PSObject[]]$CrmRecord,
+
+        # The logical name of an entity to grant access to, i.e. account, contact, lead, etc.
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="NameWithId")]
+        [string]$EntityLogicalName,
+
+        # The Id of a record to grant access to.
+        [parameter(Mandatory=$true, Position=2, ParameterSetName="NameWithId")]
+        [guid]$Id,
+
+        # The principal (user or team) being granted access rights to the record. Use New-CrmEntityReference <Parameters> to generate it.
+        [parameter(Mandatory=$true, Position=3)]
+        [Microsoft.Xrm.Sdk.EntityReference]$Principal,
+
+        # The access rights to grant the principal over the record. Assign multiple values to generate the full value, e.g. AppendAccess,ReadAccess,WriteAccess.
+        [parameter(Mandatory=$true, Position=4)]
+        [Microsoft.Crm.Sdk.Messages.AccessRights]$AccessMask
+    )
+    begin
+    {
+        $conn = VerifyCrmConnectionParam $conn
+
+        if ($EntityLogicalName) {
+            $CrmRecord += [PSCustomObject] @{
+                logicalname = $EntityLogicalName
+                "$($EntityLogicalName)id" = $Id
+            }
+        }
+    }
+    process
+    {
+        foreach ($record in $CrmRecord) {
+            try {
+                $request = [Microsoft.Crm.Sdk.Messages.GrantAccessRequest]::new()
+                $request.Target = New-CrmEntityReference -EntityLogicalName $record.logicalname -Id $record.($record.logicalname + "id")
+                $principalAccess = [Microsoft.Crm.Sdk.Messages.PrincipalAccess]::new()
+                $principalAccess.Principal = $Principal
+                $principalAccess.AccessMask = $AccessMask
+                $request.PrincipalAccess = $principalAccess
+                
+                [Microsoft.Crm.Sdk.Messages.GrantAccessResponse]$conn.Execute($request) | Out-Null
+            }
+            catch {
+                Write-Error $_
+            }   
+        }
+    }
+}
+
 function Import-CrmSolutionTranslation{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
 
@@ -3988,6 +4064,73 @@ function Remove-CrmUserManager{
     {
         throw $conn.LastCrmException
     } 
+}
+
+<#
+.Synopsis
+   Revokes (removes) access rights on the target record for the specified security principal (user or team).
+.DESCRIPTION
+   The Revoke-CrmRecordAccess cmdlet lets you remove a security principal's (user or team) previously granted access to a specified record.
+.EXAMPLE
+   Revoke-CrmRecordAccess -conn $conn -CrmRecord $contact -Principal $team
+
+   This example revokes a team's access rights to a contact record.
+.EXAMPLE
+   $contact | Revoke-CrmRecordAccess -Principal $team
+
+   This example pipes a contact to Revoke-CrmRecordAccess and removes a team's access rights to the contact.
+#>
+function Revoke-CrmRecordAccess {
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+    [OutputType([void])]
+    [CmdletBinding()]
+    PARAM(
+        # A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
+        [parameter(Mandatory=$false, Position=0)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+
+        # The record object to revoke access to, obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use EntityLogicalName/Id.
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord", ValueFromPipeline=$true)]
+        [PSObject[]]$CrmRecord,
+
+        # The logical name of an entity to revoke access to, i.e. account, contact, lead, etc.
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="NameWithId")]
+        [string]$EntityLogicalName,
+
+        # The Id of a record to revoke access to.
+        [parameter(Mandatory=$true, Position=2, ParameterSetName="NameWithId")]
+        [guid]$Id,
+
+        # The principal (user or team) whose access rights are to be revoked from the record. Use New-CrmEntityReference <Parameters> to generate it.
+        [parameter(Mandatory=$true, Position=3)]
+        [Microsoft.Xrm.Sdk.EntityReference]$Revokee
+    )
+    begin
+    {
+        $conn = VerifyCrmConnectionParam $conn
+
+        if ($EntityLogicalName) {
+            $CrmRecord += [PSCustomObject] @{
+                logicalname = $EntityLogicalName
+                "$($EntityLogicalName)id" = $Id
+            }
+        }
+    }
+    process
+    {
+        foreach ($record in $CrmRecord) {
+            try {
+                $request = [Microsoft.Crm.Sdk.Messages.RevokeAccessRequest]::new()
+                $request.Target = New-CrmEntityReference -EntityLogicalName $record.logicalname -Id $record.($record.logicalname + "id")
+                $request.Revokee = $Revokee
+                
+                [Microsoft.Crm.Sdk.Messages.RevokeAccessResponse]$conn.Execute($request) | Out-Null
+            }
+            catch {
+                Write-Error $_
+            }   
+        }
+    }
 }
 
 function Set-CrmSolutionVersionNumber {
@@ -4536,6 +4679,82 @@ function Set-CrmUserSettings{
     {
         throw
     }    
+}
+
+<#
+.Synopsis
+   Sets a security principal's (user or team) access to the specified record.
+.DESCRIPTION
+   The Set-CrmRecordAccess cmdlet sets a security principal's (user or team) access to the specified record. The operation creates access rights if none exist, or replaces existing access rights. That is, if a principal has been granted pre-existing access rights to a record, any access rights specified in executing this cmdlet are granted and any existing access rights not specified are removed.
+  
+   Note that the append right requires both AppendAccess and AppendToAccess to be specified.
+.EXAMPLE
+   Set-CrmRecordAccess -conn $conn -CrmRecord $contact -Principal $team -AccessMask AppendAccess,AppendToAccess,ReadAccess,WriteAccess
+
+   This example grants a team append, read, and write access to a contact record. Any other access rights previously assigned would be revoked.
+.EXAMPLE
+   $contact | Set-CrmRecordAccess -Principal $team -AccessMask ReadAccess,WriteAccess,DeleteAccess
+
+   This example pipes a contact to Set-CrmRecordAccess and grants a team read, write, and delete access to it.
+#>
+function Set-CrmRecordAccess {
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+    [OutputType([void])]
+    [CmdletBinding()]
+    PARAM(
+        # A connection to your CRM organization. Use $conn = Get-CrmConnection <Parameters> to generate it.
+        [parameter(Mandatory=$false, Position=0)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+
+        # The record object to grant access to, obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use EntityLogicalName/Id.
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord", ValueFromPipeline=$true)]
+        [PSObject[]]$CrmRecord,
+
+        # The logical name of an entity to grant access to, i.e. account, contact, lead, etc.
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="NameWithId")]
+        [string]$EntityLogicalName,
+
+        # The Id of a record to grant access to.
+        [parameter(Mandatory=$true, Position=2, ParameterSetName="NameWithId")]
+        [guid]$Id,
+
+        # The principal (user or team) being granted access rights to the record. Use New-CrmEntityReference <Parameters> to generate it.
+        [parameter(Mandatory=$true, Position=3)]
+        [Microsoft.Xrm.Sdk.EntityReference]$Principal,
+
+        # The access rights to grant the principal over the record. Assign multiple values to generate the full value, e.g. AppendAccess,ReadAccess,WriteAccess.
+        [parameter(Mandatory=$true, Position=4)]
+        [Microsoft.Crm.Sdk.Messages.AccessRights]$AccessMask
+    )
+    begin
+    {
+        $conn = VerifyCrmConnectionParam $conn
+
+        if ($EntityLogicalName) {
+            $CrmRecord += [PSCustomObject] @{
+                logicalname = $EntityLogicalName
+                "$($EntityLogicalName)id" = $Id
+            }
+        }
+    }
+    process
+    {
+        foreach ($record in $CrmRecord) {
+            try {
+                $request = [Microsoft.Crm.Sdk.Messages.ModifyAccessRequest]::new()
+                $request.Target = New-CrmEntityReference -EntityLogicalName $record.logicalname -Id $record.($record.logicalname + "id")
+                $principalAccess = [Microsoft.Crm.Sdk.Messages.PrincipalAccess]::new()
+                $principalAccess.Principal = $Principal
+                $principalAccess.AccessMask = $AccessMask
+                $request.PrincipalAccess = $principalAccess
+                
+                [Microsoft.Crm.Sdk.Messages.ModifyAccessResponse]$conn.Execute($request) | Out-Null
+            }
+            catch {
+                Write-Error $_
+            }   
+        }
+    }
 }
 
 ### Get CRM Types object ###
