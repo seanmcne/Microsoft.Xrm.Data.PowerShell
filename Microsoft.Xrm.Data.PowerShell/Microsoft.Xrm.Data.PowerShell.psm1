@@ -3043,6 +3043,7 @@ function Get-CrmRecords{
         [parameter(Mandatory=$false, Position=2)][alias("FieldName")]
         [string]$FilterAttribute,
         [parameter(Mandatory=$false, Position=3)][alias("Op")]
+        [ValidateSet('eq','neq','ne','gt','ge','le','lt','like','not-like','in','not-in','between','not-between','null','not-null','yesterday','today','tomorrow','last-seven-days','next-seven-days','last-week','this-week','next-week','last-month','this-month','next-month','on','on-or-before','on-or-after','last-year','this-year','next-year','last-x-hours','next-x-hours','last-x-days','next-x-days','last-x-weeks','next-x-weeks','last-x-months','next-x-months','olderthan-x-months','olderthan-x-years','olderthan-x-weeks','olderthan-x-days','olderthan-x-hours','olderthan-x-minutes','last-x-years','next-x-years','eq-userid','ne-userid','eq-userteams','eq-useroruserteams','eq-useroruserhierarchy','eq-useroruserhierarchyandteams','eq-businessid','ne-businessid','eq-userlanguage','this-fiscal-year','this-fiscal-period','next-fiscal-year','next-fiscal-period','last-fiscal-year','last-fiscal-period','last-x-fiscal-years','last-x-fiscal-periods','next-x-fiscal-years','next-x-fiscal-periods','in-fiscal-year','in-fiscal-period','in-fiscal-period-and-year','in-or-before-fiscal-period-and-year','in-or-after-fiscal-period-and-year','begins-with','not-begin-with','ends-with','not-end-with','under','eq-or-under','not-under','above','eq-or-above')]
         [string]$FilterOperator,
         [parameter(Mandatory=$false, Position=4)][alias("Value", "FieldValue")]
         [string]$FilterValue,
@@ -3067,7 +3068,7 @@ function Get-CrmRecords{
 
     if( ($Fields -eq "*") -OR ($Fields -eq "%") )
     {
-        Write-Warning 'PERFORMANCE: All attributes were requested'
+        Write-Verbose 'PERFORMANCE: All attributes were requested'
         $fetchAttributes = "<all-attributes/>"
     }
     elseif ($Fields)
@@ -3087,12 +3088,15 @@ function Get-CrmRecords{
     }
 
     #if any of the values are missing, but they're not *ALL* missing 
-    if( (!$FilterAttribute -OR !$FilterOperator -OR !$FilterValue) -AND ($FilterAttribute -Or $FilterOperator -Or $FilterValue) -And !($FilterAttribute -And $FilterOperator -And $FilterValue))
-    {
-        #TODO: convert this to a parameter set to avoid this extra logic
+	if(
+		($FilterAttribute -and !$FilterOperator) -or 
+		(!$FilterAttribute -and $FilterOperator) -or
+		($FilterValue -and (!$FilterOperator -or !$FilterAttribute)) 
+	){
+		#TODO: convert this to a parameter set to avoid this extra logic
         Write-Error "One of the `$FilterAttribute `$FilterOperator `$FilterValue parameters is empty, to query all records exclude all filter parameters."
         return
-    }
+	}
     
     if($FilterAttribute -and $FilterOperator -and $FilterValue)
     {
@@ -3111,9 +3115,25 @@ function Get-CrmRecords{
     </fetch>
 "@
     }
+    elseif($FilterAttribute -and $FilterOperator){
+         # Escape XML charactors
+        $FilterValue = [System.Security.SecurityElement]::Escape($FilterValue)
+        Write-Verbose "Using the supplied single filter of $FilterAttribute '$FilterOperator' and NO value"
+        $fetch = 
+@"
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
+        <entity name="{0}">
+            {1}
+            <filter type='and'>
+                <condition attribute='{2}' operator='{3}' />
+            </filter>
+        </entity>
+    </fetch>
+"@
+    }
     else
     {
-        Write-Warning "PERFORMANCE: `$FilterAttribute `$FilterOperator `$FilterValue were not supplied, fetching all records with NO filter."
+        Write-Verbose "PERFORMANCE: `$FilterAttribute `$FilterOperator `$FilterValue were not supplied, fetching all records with NO filter."
         $fetch = 
 @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -3127,7 +3147,7 @@ function Get-CrmRecords{
     
     if($AllRows)
     {
-        Write-Warning "PERFORMANCE: All rows were requested instead of the first 5000"
+        Write-Verbose "PERFORMANCE: All rows were requested instead of the first 5000"
         $results = Get-CrmRecordsByFetch -conn $conn -Fetch $fetch -AllRows
     }
     else
