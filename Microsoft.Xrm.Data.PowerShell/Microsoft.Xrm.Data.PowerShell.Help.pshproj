@@ -11357,8 +11357,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
     <CmdletObject verb="Grant" noun="CrmRecordAccess">
       <Name>Grant-CrmRecordAccess</Name>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Grant access privilege to a crm record.</Synopsis>
+        <Description>The Grant-CrmRecordAccess cmdlet lets you grant a security principal (user or team) access to the specified record. The operation will create access rights if none already exist, or be additive to any existing access rights already granted. That is, if a principal has pre-existing access rights to a record, any new access rights specified in executing this cmdlet are granted and no existing rights are removed. Note that the append right requires both AppendAccess and AppendToAccess to be specified.</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -11383,7 +11383,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="PSObject[]" varLen="true" required="true" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="false" isPos="true" pos="1" globbing="false">
@@ -11393,7 +11394,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>The record object to grant access to, obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use EntityLogicalName/Id.        </Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="EntityReference" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="3" globbing="false">
@@ -11403,7 +11404,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>The principal (user or team) being granted access rights to the record. Use New-CrmEntityReference &lt;Parameters&gt; to generate it.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="AccessRights" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="4" globbing="false">
@@ -11413,7 +11414,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>The access rights to grant the principal over the record. Assign multiple values to generate the full value, e.g. AppendAccess,ReadAccess,WriteAccess.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="ActionPreference" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -11448,7 +11449,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>The logical name of an entity to grant access to, i.e. account, contact, lead, etc.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Guid" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
@@ -11458,11 +11459,24 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>The Id of a record to grant access to.</Description>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
-      <Examples />
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Grant-CrmRecordAccess -conn $conn -CrmRecord $contact -Principal $team -AccessMask AppendAccess,AppendToAccess,ReadAccess,WriteAccess</Cmd>
+          <Description>This example grants a team append, read, and write access to a contact record.</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>$contact | Grant-CrmRecordAccess -conn $conn -Principal $team -AccessMask ReadAccess,WriteAccess,DeleteAccess</Cmd>
+          <Description>This example pipes a contact to Grant-CrmRecordAccess and grants a team read, write, and delete access to it.</Description>
+          <Output />
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
@@ -11494,7 +11508,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
@@ -11708,8 +11723,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
     <CmdletObject verb="Revoke" noun="CrmRecordAccess">
       <Name>Revoke-CrmRecordAccess</Name>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Revokes (removes) access rights on the target record for the specified security principal (user or team).</Synopsis>
+        <Description>The Revoke-CrmRecordAccess cmdlet lets you remove a security principal's (user or team) previously granted access to a specified record.</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -11734,7 +11749,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="PSObject[]" varLen="true" required="true" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="false" isPos="true" pos="1" globbing="false">
@@ -11744,7 +11760,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>The record object to revoke access to, obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use EntityLogicalName/Id.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="EntityReference" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="3" globbing="false">
@@ -11754,7 +11770,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>The principal (user or team) whose access rights are to be revoked from the record. Use New-CrmEntityReference &lt;Parameters&gt; to generate it.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="ActionPreference" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -11789,7 +11805,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description> # The logical name of an entity to revoke access to, i.e. account, contact, lead, etc.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Guid" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
@@ -11799,11 +11815,25 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description># The Id of a record to revoke access to.</Description>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
-      <Examples />
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Revoke-CrmRecordAccess -conn $conn -CrmRecord $contact -Principal $team
+</Cmd>
+          <Description>This example revokes a team's access rights to a contact record.</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>$contact | Revoke-CrmRecordAccess -conn $conn -Principal $team</Cmd>
+          <Description>This example pipes a contact to Revoke-CrmRecordAccess and removes a team's access rights to the contact.</Description>
+          <Output />
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
@@ -11811,8 +11841,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
     <CmdletObject verb="Set" noun="CrmRecordAccess">
       <Name>Set-CrmRecordAccess</Name>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Sets a security principal's (user or team) access to the specified record.</Synopsis>
+        <Description>The Set-CrmRecordAccess cmdlet sets a security principal's (user or team) access to the specified record. The operation creates access rights if none exist, or replaces existing access rights. That is, if a principal has been granted pre-existing access rights to a record, any access rights specified in executing this cmdlet are granted and any existing access rights not specified are removed. Note that the append right requires both AppendAccess and AppendToAccess to be specified.</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -11837,7 +11867,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="PSObject[]" varLen="true" required="true" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="false" isPos="true" pos="1" globbing="false">
@@ -11847,7 +11877,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>The record object to grant access to, obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use EntityLogicalName/Id.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="EntityReference" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="3" globbing="false">
@@ -11857,7 +11887,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>The principal (user or team) being granted access rights to the record. Use New-CrmEntityReference &lt;Parameters&gt; to generate it.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="AccessRights" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="4" globbing="false">
@@ -11867,7 +11897,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>The access rights to grant the principal over the record. Assign multiple values to generate the full value, e.g. AppendAccess,ReadAccess,WriteAccess.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="ActionPreference" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -11902,7 +11932,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>The logical name of an entity to grant access to, i.e. account, contact, lead, etc.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Guid" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
@@ -11912,11 +11942,25 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>The Id of a record to grant access to.</Description>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
-      <Examples />
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Set-CrmRecordAccess -conn $conn -CrmRecord $contact -Principal $team -AccessMask AppendAccess,AppendToAccess,ReadAccess,WriteAccess
+</Cmd>
+          <Description>This example grants a team append, read, and write access to a contact record. Any other access rights previously assigned would be revoked.</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>$contact | Set-CrmRecordAccess -conn $conn -Principal $team -AccessMask ReadAccess,WriteAccess,DeleteAccess</Cmd>
+          <Description>This example pipes a contact to Set-CrmRecordAccess and grants a team read, write, and delete access to it.</Description>
+          <Output />
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
