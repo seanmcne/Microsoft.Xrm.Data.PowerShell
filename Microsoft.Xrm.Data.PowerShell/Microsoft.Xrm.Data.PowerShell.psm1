@@ -2179,6 +2179,52 @@ function Publish-CrmEntity{
     return $result
 }
 
+#PublishTheme  
+function Publish-CrmTheme{
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+ [CmdletBinding()]
+    PARAM( 
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="ThemeName")]
+        [string]$ThemeName,
+		[parameter(Mandatory=$true, Position=1, ParameterSetName="ThemeId")]
+        [guid]$ThemeId
+    )
+
+	$conn = VerifyCrmConnectionParam $conn  
+
+    try
+    {
+		if($ThemeName -ne "")
+		{
+			$themes = Get-CrmRecords -conn $conn -EntityLogicalName theme -FilterAttribute name -FilterOperator eq -FilterValue $ThemeName -WarningAction SilentlyContinue
+			if($themes.CrmRecords.Count -eq 0)
+			{
+				Write-Warning "No Theme found"
+				return
+			}
+			else
+			{
+				$ThemeId = $themes.CrmRecords[0].themeid
+			}
+		}
+        $req = New-Object Microsoft.Crm.Sdk.Messages.PublishThemeRequest
+		$req.target = New-CrmEntityReference -EntityLogicalName "theme" -Id $ThemeId
+		$result = $conn.ExecuteCrmOrganizationRequest($req, $null)
+		if(!$result)
+        {
+            throw $conn.LastCrmException
+        }
+    }
+    catch
+    {
+        throw $conn.LastCrmException
+    }
+
+    return $result
+}
+
 #ResetLocalMetadataCache  
 function Remove-CrmEntityMetadataCache{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
