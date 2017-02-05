@@ -1442,12 +1442,16 @@ function Get-CrmRecordsByFetch{
     try
     {
         Write-Debug "Getting data from CRM"
+		$xml = [xml]$Fetch
+		if($xml.fetch.count -ne 0 -and $TopCount -eq 0)
+		{
+			$TopCount = $xml.fetch.count
+		}
         $records = $conn.GetEntityDataByFetchSearch($Fetch, $TopCount, $PageNumber, $PageCookie, [ref]$PagingCookie, [ref]$NextPage, [Guid]::Empty)
         if($conn.LastCrmException -ne $null)
         {
             throw $conn.LastCrmException
         }
-        $xml = [xml]$Fetch
         $logicalname = $xml.SelectSingleNode("/fetch/entity").Name
         #if there are zero results returned 
         if($records.Count -eq 0)
