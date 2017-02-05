@@ -4179,6 +4179,31 @@ function Remove-CrmUserManager{
     } 
 }
 
+function Revoke-CrmEmailAddress{
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+
+    [CmdletBinding()]
+    PARAM(
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="UserId")]
+        [string]$UserId,
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="QueueId")]
+        [string]$QueueId
+    )
+
+	$conn = VerifyCrmConnectionParam $conn
+
+    if($UserId -ne "")
+    {
+        Set-CrmRecord -conn $conn -EntityLogicalName systemuser -Id $UserId -Fields @{"emailrouteraccessapproval"=(New-CrmOptionSetValue 3)}
+    }
+    else
+    {
+        Set-CrmRecord -conn $conn -EntityLogicalName queue -Id $QueueId -Fields @{"emailrouteraccessapproval"=(New-CrmOptionSetValue 3)}
+    }
+}
+
 <#
 .Synopsis
    Revokes (removes) access rights on the target record for the specified security principal (user or team).
