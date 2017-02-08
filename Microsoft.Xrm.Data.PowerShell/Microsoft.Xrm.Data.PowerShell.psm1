@@ -3585,10 +3585,13 @@ function Get-CrmUserMailbox{
     <attribute name="enabledforincomingemail" />
     <attribute name="enabledforact" />
     <attribute name="emailaddress" />
+    <attribute name="emailrouteraccessapproval" />
+    <attribute name="isemailaddressapprovedbyo365admin" />
     <attribute name="processanddeleteemails" />
     <attribute name="processinglastattemptedon" />
     <attribute name="actstatus" />
     <attribute name="actdeliverymethod" />
+    <attribute name="testemailconfigurationscheduled" />
     <attribute name="allowemailconnectortousecredentials" />
     <filter type="and">
       <condition attribute="regardingobjectid" operator="eq" value="{$UserId}" />
@@ -4654,6 +4657,18 @@ function Set-CrmUserMailbox {
         [int]$OutgoingEmailDeliveryMethod,
         [parameter(Mandatory=$false, ParameterSetName="Custom")]
         [int]$ACTDeliveryMethod,
+        [parameter(Mandatory=$false, ParameterSetName="Custom")]
+        [int]$EmailRouterAccessApproval,
+        [parameter(Mandatory=$false, ParameterSetName="Custom")]
+        [bool]$IsEmailAddressApprovedByO365Admin,
+        [parameter(Mandatory=$false, ParameterSetName="Custom")]
+        [bool]$TestEmailConfigurationScheduled,
+        [parameter(Mandatory=$false, ParameterSetName="Custom")]
+        [bool]$EnabledForACT,
+        [parameter(Mandatory=$false, ParameterSetName="Custom")]
+        [bool]$EnabledForIncomingEmail,
+        [parameter(Mandatory=$false, ParameterSetName="Custom")]
+        [bool]$EnabledForOutgoingEmail,
         [parameter(Mandatory=$false, ParameterSetName="Default")]
         [switch]$ApplyDefaultEmailSettings
     )
@@ -4675,6 +4690,7 @@ function Set-CrmUserMailbox {
         $updateFields.Add("incomingemaildeliverymethod", (New-CrmOptionSetValue $xml.ChildNodes.IncomingEmailDeliveryMethod))
         $updateFields.Add("outgoingemaildeliverymethod", (New-CrmOptionSetValue $xml.ChildNodes.OutgoingEmailDeliveryMethod))
         $updateFields.Add("actdeliverymethod", (New-CrmOptionSetValue $xml.ChildNodes.ACTDeliveryMethod))
+        $updateFields.Add("emailrouteraccessapproval", (New-CrmOptionSetValue $xml.ChildNodes.EmailRouterAccessApproval))
     }
     foreach($parameter in $MyInvocation.BoundParameters.GetEnumerator())
     {   
@@ -4686,7 +4702,7 @@ function Set-CrmUserMailbox {
         {
             $updateFields.Add($parameter.Key.ToLower(), (New-CrmEntityReference emailserverprofile $parameter.Value))
         }
-        elseif($parameter.Key -in ("IncomingEmailDeliveryMethod","OutgoingEmailDeliveryMethod","ACTDeliveryMethod"))
+        elseif($parameter.Key -in ("IncomingEmailDeliveryMethod","OutgoingEmailDeliveryMethod","ACTDeliveryMethod","EmailRouterAccessApproval"))
         {
             $updateFields.Add($parameter.Key.ToLower(), (New-CrmOptionSetValue $parameter.Value))
         }
