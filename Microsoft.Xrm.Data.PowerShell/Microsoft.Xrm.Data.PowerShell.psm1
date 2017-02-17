@@ -105,12 +105,27 @@ function Connect-CrmOnline{
         [PSCredential]$Credential, 
         [Parameter(Mandatory=$true)]
         [ValidatePattern('https://([\w-]+).crm([0-9]*).dynamics.com')]
-        [string]$ServerUrl
+        [string]$ServerUrl, 
+		[Parameter(Mandatory=$false,ValueFromPipeline)]
+        [ValidateScript({
+            try {
+                [System.Guid]::Parse($_) | Out-Null
+                $true
+            } catch {
+                $false
+            }
+        })]
+        [string]$ClientId
     )
    
     $userName = $Credential.UserName
     $password = $Credential.GetNetworkCredential().Password
     $connectionString = "AuthType=Office365;Username=$userName; Password=$password;Url=$ServerUrl"
+
+	if($ClientId -ne $null -and $ClientId -ne ""){
+		Write-Verbose "ClientId detected - adding ClientId of $ClientId to the connection string"
+		$connectionString += ";ClientId=$ClientId"
+	}
 
     try
     {
