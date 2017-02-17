@@ -2764,12 +2764,33 @@ function Export-CrmSolution{
 
 		if($conn.ConnectedOrgVersion.Major -ge 7)
 		{
-			$exportRequest.ExportSales                            =$ExportSales
+			$exportRequest.ExportSales = $ExportSales
 		}
 
         Write-Verbose 'ExportSolutionRequests may take several minutes to complete execution.'
+
+        $currentTimeout = $conn.OrganizationServiceProxy.Timeout.TotalSeconds
+
+        Write-Verbose "Current Timeout is $currentTimeout seconds"
+        
+		$timeSpan = New-Object System.TimeSpan -ArgumentList 0,0,300
+
+	    $conn.OrganizationServiceProxy.Timeout = $timeSpan
+        
+		Write-Verbose "Temporarily setting Timeout to $timeSpan seconds"
         
         $response = [Microsoft.Crm.Sdk.Messages.ExportSolutionResponse]($conn.ExecuteCrmOrganizationRequest($exportRequest))
+
+		if($response -eq $null){
+			if($conn.LastCrmException -eq ""){
+				throw "The result was null, please double check the command"
+			}
+			else{
+				throw $conn.LastCrmException
+			}
+		}
+
+	    $conn.OrganizationServiceProxy.Timeout = $currentTimeout
 
 		Write-Verbose 'Using solution file to path: $path'
 
