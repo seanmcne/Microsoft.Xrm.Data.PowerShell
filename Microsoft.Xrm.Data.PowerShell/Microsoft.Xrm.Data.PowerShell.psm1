@@ -110,7 +110,7 @@ function Connect-CrmOnline{
    
     $userName = $Credential.UserName
     $password = $Credential.GetNetworkCredential().Password
-    $connectionString = "AuthType=Office365;Username=$userName; Password=$password;Url=$ServerUrl"
+    $connectionString = "AuthType=Office365;RequireNewInstance=True;Username=$userName;Password=$password;Url=$ServerUrl"
 
     try
     {
