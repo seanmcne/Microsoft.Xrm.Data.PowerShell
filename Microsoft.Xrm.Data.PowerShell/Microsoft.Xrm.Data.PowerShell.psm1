@@ -40,8 +40,6 @@ function Connect-CrmOnlineDiscovery{
         [parameter(Mandatory=$false)]
         [PSCredential]$Credential, 
         [Parameter(Mandatory=$false)]
-        [switch]$UseCTP,
-        [Parameter(Mandatory=$false)]
         [switch]$InteractiveMode
     )
         
@@ -55,10 +53,6 @@ function Connect-CrmOnlineDiscovery{
     else
     {
         $onlineType = "Office365"
-        if($UseCTP)
-        {
-            $onlineType = "LiveID"
-        }
         if($Credential -eq $null -And !$Interactive)
         {
             $Credential = Get-Credential
