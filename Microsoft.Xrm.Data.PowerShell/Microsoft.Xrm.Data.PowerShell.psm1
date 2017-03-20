@@ -99,12 +99,27 @@ function Connect-CrmOnline{
         [PSCredential]$Credential, 
         [Parameter(Mandatory=$true)]
         [ValidatePattern('https://([\w-]+).crm([0-9]*).dynamics.com')]
-        [string]$ServerUrl
+        [string]$ServerUrl, 
+		[Parameter(Mandatory=$false,ValueFromPipeline)]
+        [ValidateScript({
+            try {
+                [System.Guid]::Parse($_) | Out-Null
+                $true
+            } catch {
+                $false
+            }
+        })]
+        [string]$ClientId
     )
    
     $userName = $Credential.UserName
     $password = $Credential.GetNetworkCredential().Password
     $connectionString = "AuthType=Office365;RequireNewInstance=True;Username=$userName;Password=$password;Url=$ServerUrl"
+
+	if($ClientId -ne $null -and $ClientId -ne ""){
+		Write-Verbose "ClientId detected - adding ClientId of $ClientId to the connection string"
+		$connectionString += ";ClientId=$ClientId"
+	}
 
     try
     {
@@ -2758,12 +2773,21 @@ function Export-CrmSolution{
 
 		if($conn.ConnectedOrgVersion.Major -ge 7)
 		{
-			$exportRequest.ExportSales                            =$ExportSales
+			$exportRequest.ExportSales = $ExportSales
 		}
 
         Write-Verbose 'ExportSolutionRequests may take several minutes to complete execution.'
-        
+
         $response = [Microsoft.Crm.Sdk.Messages.ExportSolutionResponse]($conn.ExecuteCrmOrganizationRequest($exportRequest))
+
+		if($response -eq $null){
+			if($conn.LastCrmException -eq ""){
+				throw "The result was null, please double check the command"
+			}
+			else{
+				throw $conn.LastCrmException
+			}
+		}
 
 		Write-Verbose 'Using solution file to path: $path'
 
