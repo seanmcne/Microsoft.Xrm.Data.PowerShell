@@ -1216,15 +1216,38 @@ function Invoke-CrmRecordWorkflow{
     try
     {
         $result = $null 
-        if($WorkflowId -ne $null){
+        if($WorkflowName -ne $null){
+		        $fetch = @"
+<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false">
+  <entity name="workflow">
+    <attribute name="workflowid" />
+    <attribute name="name" />
+    <attribute name="primaryentity" />
+    <attribute name="type" />
+    <order attribute="name" descending="false" />
+    <filter type="and">
+	  <condition attribute="name" operator="eq" value="$WorkflowName" />
+      <condition attribute="statecode" operator="eq" value="1" />
+      <condition attribute="type" operator="eq" value="1" />
+      <condition attribute="rendererobjecttypecode" operator="null" />
+      <condition attribute="category" operator="eq" value="0" />
+    </filter>
+  </entity>
+</fetch>
+"@
+			$workflowResult = (Get-CrmRecordsByFetch -Fetch $fetch -TopCount 1)
+			if($workflowResult.NextPage){
+				throw "Duplicate workflow detected, try executing the workflow by its ID"
+			}
+			$WorkflowId = $workflowResult.CrmRecords[0].workflowid
+        }
+		if($WorkflowId -ne $null){
             $execWFReq = New-Object Microsoft.Crm.Sdk.Messages.ExecuteWorkflowRequest
             $execWFReq.EntityId = $Id
             $execWFReq.WorkflowId=$WorkflowId
             $result = $conn.ExecuteCrmOrganizationRequest($execWFReq) 
         }
-        elseif($WorkflowName -ne $null){
-            $result = $conn.ExecuteWorkflowOnEntity($WorkflowName, $Id, [Guid]::Empty)
-        }
+		else{ throw "Duplicate workflow detected, try executing the workflow by its ID"}
 		if($result -eq $null)
         {
             throw $conn.LastCrmException
