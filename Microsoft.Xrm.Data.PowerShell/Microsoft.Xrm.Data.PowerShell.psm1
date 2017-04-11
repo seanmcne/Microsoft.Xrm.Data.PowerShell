@@ -1867,7 +1867,7 @@ function Import-CrmSolutionAsync{
 		$secondsSpentPolling = 0
         $pollingDelaySeconds = 5
 		$transientFailureCount = 0; 
-        Write-Information "Import of file completed, waiting on completion of AsyncOperationId: $importId"
+        Write-Verbose "Import of file completed, waiting on completion of AsyncOperationId: $importId"
 
 		try{
 			while($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds){
@@ -1971,7 +1971,7 @@ function Import-CrmSolution{
 				-ImportAsHoldingSolution:$ImportAsHoldingSolution `
 				-BlockUntilImportComplete:$true; 
 
-			Write-Information "Solution import using async completed - asyncoperationid = $($result.AsyncJobId)"; 
+			Write-Verbose "Solution import using async completed - asyncoperationid = $($result.AsyncJobId)"; 
 			return $result; 
 		}
 
