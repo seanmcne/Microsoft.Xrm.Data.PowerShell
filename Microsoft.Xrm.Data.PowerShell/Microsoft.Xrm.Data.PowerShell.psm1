@@ -3958,15 +3958,14 @@ function Invoke-CrmAction {
         [string]
         $Name,
 
-        [Parameter(ValueFromPipeline)]
+        [Parameter(Position=2)]
+        [hashtable]
+        $Parameters,
+
+        [Parameter(ValueFromPipeline, Position=3)]
         [ValidateNotNullOrEmpty()]
         [Microsoft.Xrm.Sdk.EntityReference]
         $Target,
-
-        [Parameter(Position=2)]
-        [ValidateNotNullOrEmpty()]
-        [hashtable]
-        $Parameters,
 
         [Parameter(ParameterSetName="Raw")]
         [switch]

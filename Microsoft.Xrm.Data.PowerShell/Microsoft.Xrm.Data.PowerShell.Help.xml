@@ -24798,19 +24798,19 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="named">
-				<maml:name>Target</maml:name>
-				<maml:description>
-					<maml:para>The &#39;Target&#39; input argument that is implicitly used when calling a bound action. This parameter should not be used when invoking an unbound action.</maml:para>
-				</maml:description>
-				<command:parameterValue required="true" variableLength="false">EntityReference</command:parameterValue>
-			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
 				<maml:name>Parameters</maml:name>
 				<maml:description>
 					<maml:para>The input arguments to the action.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Hashtable</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="3">
+				<maml:name>Target</maml:name>
+				<maml:description>
+					<maml:para>The &#39;Target&#39; input argument that is implicitly used when calling a bound action. This parameter should not be used when invoking an unbound action.</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">EntityReference</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 				<maml:name>Raw</maml:name>
@@ -24846,18 +24846,6 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="named">
-			<maml:name>Target</maml:name>
-			<maml:description>
-				<maml:para>The &#39;Target&#39; input argument that is implicitly used when calling a bound action. This parameter should not be used when invoking an unbound action.</maml:para>
-			</maml:description>
-			<command:parameterValue required="true" variableLength="false">EntityReference</command:parameterValue>
-			<dev:type>
-				<maml:name>EntityReference</maml:name>
-				<maml:uri/>
-			</dev:type>
-			<dev:defaultValue></dev:defaultValue>
-		</command:parameter>
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
 			<maml:name>Parameters</maml:name>
 			<maml:description>
@@ -24866,6 +24854,18 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 			<command:parameterValue required="true" variableLength="false">Hashtable</command:parameterValue>
 			<dev:type>
 				<maml:name>Hashtable</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="3">
+			<maml:name>Target</maml:name>
+			<maml:description>
+				<maml:para>The &#39;Target&#39; input argument that is implicitly used when calling a bound action. This parameter should not be used when invoking an unbound action.</maml:para>
+			</maml:description>
+			<command:parameterValue required="true" variableLength="false">EntityReference</command:parameterValue>
+			<dev:type>
+				<maml:name>EntityReference</maml:name>
 				<maml:uri/>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
@@ -24891,7 +24891,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 				<maml:description/>
 			</dev:type>
 			<maml:description>
-<maml:para />
+				<maml:para>
+</maml:para>
 			</maml:description>
 		</command:inputType>
 	</command:inputTypes>
@@ -24903,7 +24904,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 				<maml:description/>
 			</dev:type>
 			<maml:description>
-				<maml:para>By default a [hashtable] is returned when the response includes output arguments, and $null is returned when there aren&#39;t any output arguments.</maml:para>
+				<maml:para>
+By default a [hashtable] is returned when the response includes output arguments, and $null is returned when there aren&#39;t any output arguments.</maml:para>
 			</maml:description>
 		</command:returnValue>
 		<command:returnValue>
@@ -24913,8 +24915,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 				<maml:description/>
 			</dev:type>
 			<maml:description>
-				<maml:para>Use the -Raw switch to always return the original unparsed [Microsoft.Xrm.Sdk.OrganizationResponse].
-    </maml:para>
+				<maml:para>
+Use the -Raw switch to always return the original unparsed [Microsoft.Xrm.Sdk.OrganizationResponse].</maml:para>
 			</maml:description>
 		</command:returnValue>
 	</command:returnValues>
