@@ -1866,7 +1866,9 @@ function Import-CrmSolutionAsync{
         $isProcessing = $true
 		$secondsSpentPolling = 0
         $pollingDelaySeconds = 5
-		$transientFailureCount = 0; 
+		$transientFailureCount = 0  
+		$importManifest = $null
+
         Write-Verbose "Import of file completed, waiting on completion of AsyncOperationId: $importId"
 
 		try{
@@ -1875,7 +1877,18 @@ function Import-CrmSolutionAsync{
 				Start-Sleep -Seconds $pollingDelaySeconds
 				#check the import job for success/fail/inProgress
 				try{
-					$import = Get-CrmRecord -conn $conn -EntityLogicalName asyncoperation -Id $importId -Fields statuscode
+					if($importManifest -eq $null){
+						Write-Verbose "Manifest is null, checking job with data to get the manifest"
+						$import = Get-CrmRecord -conn $conn -EntityLogicalName asyncoperation -Id $importId -Fields statuscode,solutionname,data,completedon,startedon,progress
+						$importManifest = ([xml]($import).data).importexportxml.solutionManifests.solutionManifest
+						$managedsolution = $importManifest.Managed
+						Write-Verbose "Managed? $managedsolution"
+					}
+					else{
+						Write-Verbose "Checking job"
+						$import = Get-CrmRecord -conn $conn -EntityLogicalName asyncoperation -Id $importId -Fields statuscode,data
+					}
+					
 				} catch {
 					if($transientFailureCount -gt 5){
 						$transientFailureCount++
@@ -1907,7 +1920,22 @@ function Import-CrmSolutionAsync{
 			}
 			#User provided timeout and exit function with an error
 			if($secondsSpentPolling -gt $MaxWaitTimeInSeconds){
+				Write-Verbose "Exiting due to $secondsSpentPolling greater than $MaxWaitTimeInSeconds - Don't forget to publish when the process has completed entirely."
 				throw "Import-CrmSolutionAsync exited due to exceeding the maximum timeout of $MaxWaitTimeInSeconds."
+			}
+            if($importManifest.Managed -ne 1)
+            {
+                if($PublishChanges){
+                    Write-Verbose "PublishChanges set, executing: Publish-CrmAllCustomization using the same connection."
+                    Publish-CrmAllCustomization -conn $conn
+                }
+                else{
+                    Write-Output "Import Complete, don't forget to publish customizations."
+                }
+            }
+			else{
+				#managed
+                Write-Output "Import of managed solution complete."
 			}
 			#at this point we appear to have imported successfully 
 			return $asyncResponse; 
