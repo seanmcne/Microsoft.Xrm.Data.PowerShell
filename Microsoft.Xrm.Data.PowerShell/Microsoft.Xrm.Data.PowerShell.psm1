@@ -1809,7 +1809,7 @@ function Import-CrmSolutionAsync{
         [parameter(Mandatory=$false, Position=5)]
         [switch]$PublishChanges,
 		[parameter(Mandatory=$false, Position=6)]
-        [int64]$MaxWaitTimeInSeconds = 900,
+        [int64]$MaxWaitTimeInSeconds,
 		[parameter(Mandatory=$false, Position=7)]
         [switch]$ImportAsHoldingSolution, 
 		[parameter(Mandatory=$false, Position=8)]
@@ -1824,12 +1824,24 @@ function Import-CrmSolutionAsync{
         {
             throw [System.IO.FileNotFoundException] "$SolutionFilePath not found."
         }
-        Write-Host "Importing solution file $SolutionFilePath into: $($conn.CrmConnectOrgUriActual)" 
+		
+        Write-Output  "Importing solution file  $SolutionFilePath into: $($conn.CrmConnectOrgUriActual)" 
         Write-Verbose "OverwriteCustomizations: $OverwriteUnManagedCustomizations"
-        Write-Verbose "SkipDependancyCheck: $SkipDependancyOnProductUpdateCheckOnInstall"
+        Write-Verbose "SkipDependancyCheck:     $SkipDependancyOnProductUpdateCheckOnInstall"
 		Write-Verbose "ImportAsHoldingSolution: $ImportAsHoldingSolution"
-        Write-Verbose "Maximum seconds to poll for successful completion: $MaxWaitTimeInSeconds"
-        Write-Verbose "Getting file contents"
+        Write-Verbose "Maximum seconds to poll: $MaxWaitTimeInSeconds"
+        Write-Verbose "Block and wait?          $BlockUntilImportComplete"
+
+        if($BlockUntilImportComplete -eq $false -and ($MaxWaitTimeInSeconds -gt 0 -or $MaxWaitTimeInSeconds -eq -1)){
+			Write-Warning "MaxWaitTimeInSeconds is $MaxWaitTimeInSeconds, we assume the user wants to block until complete."
+			Write-Warning "To avoid this warning in the future please specify the switch: -BlockUntilImportComplete"
+			$BlockUntilImportComplete = $true
+		}
+		if($BlockUntilImportComplete -eq $false -and $PublishChanges -eq $true){
+			Write-Warning "PublishChanges will be ignored because BlockUntilImportComplete is $BlockUntilImportComplete"
+			$PublishChanges = $false; 
+		}
+
 		$data = [System.IO.File]::ReadAllBytes($SolutionFilePath)
 		
 		$request = New-Object Microsoft.Crm.Sdk.Messages.ImportSolutionRequest
@@ -1866,45 +1878,26 @@ function Import-CrmSolutionAsync{
         $isProcessing = $true
 		$secondsSpentPolling = 0
         $pollingDelaySeconds = 5
-		$transientFailureCount = 0  
-		$importManifest = $null
-
+		$transientFailureCount = 0; 
         Write-Verbose "Import of file completed, waiting on completion of AsyncOperationId: $importId"
 
 		try{
-			while($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds){
+			while(($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds) -or ($isProcessing -and $MaxWaitTimeInSeconds -eq -1)){
 				#delay
 				Start-Sleep -Seconds $pollingDelaySeconds
 				#check the import job for success/fail/inProgress
 				try{
-					if($importManifest -eq $null){
-						Write-Verbose "Manifest is null, checking job with data to get the manifest"
-						$import = Get-CrmRecord -conn $conn -EntityLogicalName asyncoperation -Id $importId -Fields statuscode,solutionname,data,completedon,startedon,progress
-						$importManifest = ([xml]($import).data).importexportxml.solutionManifests.solutionManifest
-						$managedsolution = $importManifest.Managed
-						Write-Verbose "Managed? $managedsolution"
-					}
-					else{
-						Write-Verbose "Checking job"
-						$import = Get-CrmRecord -conn $conn -EntityLogicalName asyncoperation -Id $importId -Fields statuscode,data
-					}
-					
+					$import = Get-CrmRecord -conn $conn -EntityLogicalName asyncoperation -Id $importId -Fields statuscode
 				} catch {
-					if($transientFailureCount -gt 5){
-						$transientFailureCount++
-						#this is for a bug where the service will throw a 401 on retrieve of importjob during an import under certain conditions 
-						Write-Error "Import Job status check FAILED 5 times this could be due to a bug where the service returns a 401. Throwing lastException:"; 
-						throw $conn.LastCrmException
-					}
 					$transientFailureCount++; 
-					Write-Verbose "Import Job status check FAILED this could be due to a bug where the service returns a 401. We'll allow up to 5 failures before aborting."; 
+					Write-Verbose "Import Job status check did not succeed:  $($_.Exception)"
 				}
 				$status = $import.statuscode_Property.value.Value; 
 				#Check for import completion - https://msdn.microsoft.com/en-us/library/gg309288.aspx
 				if($status -lt 30){
 					$isProcessing = $true
 					$secondsSpentPolling = ([Int]((Get-Date) - $pollingStart).TotalSeconds)
-					Write-Host "$($import.statuscode) - $($secondsSPentPolling.ToString("000")) seconds of max: $MaxWaitTimeInSeconds"
+					Write-Output "$($secondsSPentPolling.ToString("000")) sec of: $MaxWaitTimeInSeconds - ImportStatus: $($import.statuscode)"
 				}
 				elseif($status -eq 31 -or $status -eq 32 ){
 					$isProcessing = $false
@@ -1912,40 +1905,33 @@ function Import-CrmSolutionAsync{
 					break; 
 				}
 				elseif($status -eq 30){
-					Write-Verbose "Processing Completed at: $($import.completedon)" 
-                    Write-Verbose "Don't forget to publish customizations."
 					$isProcessing = $false
+					Write-Verbose "Processing Completed at: $($import.completedon)" 
+					if($PublishChanges){
+						Write-Verbose "PublishChanges set, executing: Publish-CrmAllCustomization using the same connection."
+						Publish-CrmAllCustomization -conn $conn
+						return $asyncResponse
+					}
+					else{
+						Write-Output "Import Complete, don't forget to publish customizations."
+						return $asyncResponse
+					}
 					break; 
 				}
 			}
 			#User provided timeout and exit function with an error
 			if($secondsSpentPolling -gt $MaxWaitTimeInSeconds){
-				Write-Verbose "Exiting due to $secondsSpentPolling greater than $MaxWaitTimeInSeconds - Don't forget to publish when the process has completed entirely."
-				throw "Import-CrmSolutionAsync exited due to exceeding the maximum timeout of $MaxWaitTimeInSeconds."
-			}
-            if($importManifest.Managed -ne 1)
-            {
-                if($PublishChanges){
-                    Write-Verbose "PublishChanges set, executing: Publish-CrmAllCustomization using the same connection."
-                    Publish-CrmAllCustomization -conn $conn
-                }
-                else{
-                    Write-Output "Import Complete, don't forget to publish customizations."
-                }
-            }
-			else{
-				#managed
-                Write-Output "Import of managed solution complete."
+				Write-Warning "Import-CrmSolutionAsync exited due to exceeding the maximum timeout of $MaxWaitTimeInSeconds. The import will continue in CRM async until it either succeeds or fails."
 			}
 			#at this point we appear to have imported successfully 
 			return $asyncResponse; 
 		} Catch {
-			Write-Error "AsyncOperation with ID: $importId has encountered an exception: $_"
+			throw "AsyncOperation with ID: $importId has encountered an exception: $_"
 		}
     }
     catch
     {
-        Write-Error $_.Exception
+        throw $_.Exception
     }    
 }
 
@@ -1988,8 +1974,8 @@ function Import-CrmSolution{
         Write-Verbose "Maximum seconds to poll for successful completion: $MaxWaitTimeInSeconds"
 
 		if($AsyncOperationImportMethod){
-			Write-Verbose "Option to import using Aync method flagged!"
-			Write-Verbose "Due to this option you may not be able to debug problems - set this flag to false to debug imports"
+			Write-Warning "Option to import using Aync method flagged! With this option you may not be able to debug problems easily."
+			Write-Warning "To import async going forward use the Import-CrmSolutionAsync cmdlet instead."
 			$result = Import-CrmSolutionAsync `
 				-Conn $conn `
 				-SolutionFilePath $SolutionFilePath `
