@@ -5037,8 +5037,7 @@ function VerifyCrmConnectionParam {
         $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
         if($connobj.Value -eq $null)
         {
-            Write-Warning 'You need to create Connect to CRM Organization. Use Get-CrmConnection to create it.'
-            break
+            throw 'A connection to CRM is required, use Get-CrmConnection or one of the other connection functions to connect.'
         }
         else
         {
