@@ -3608,6 +3608,7 @@ function Get-CrmUserMailbox{
     <attribute name="actstatus" />
     <attribute name="actdeliverymethod" />
     <attribute name="allowemailconnectortousecredentials" />
+	<attribute name="testemailconfigurationscheduled" />
     <filter type="and">
       <condition attribute="regardingobjectid" operator="eq" value="{$UserId}" />
     </filter>
@@ -3640,7 +3641,18 @@ function Get-CrmUserMailbox{
         }
         Add-Member -InputObject $psobj -MemberType NoteProperty -Name $name -Value $value  
     }
-
+	if($psobj.testemailconfigurationscheduled -eq 'Yes')
+	{
+		$psobj.testemailconfigurationscheduled = $true
+	}
+	else 
+	{
+		$psobj.testemailconfigurationscheduled = $false
+	}
+	Add-Member -InputObject $psobj -NotePropertyMembers @{
+	mailboxid = $record.mailboxid;
+	userid = $UserId;
+	}
     return $psobj
 }
 
