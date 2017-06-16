@@ -3624,7 +3624,7 @@ function Get-CrmUserMailbox{
         
     foreach($att in $record.original.GetEnumerator())
     {
-        if(($att.Key.Contains("Property")) -or ($att.Key -eq "mailboxid"))
+        if(($att.Key.Contains("Property")))
         {
             continue
         }
@@ -3649,10 +3649,7 @@ function Get-CrmUserMailbox{
 	{
 		$psobj.testemailconfigurationscheduled = $false
 	}
-	Add-Member -InputObject $psobj -NotePropertyMembers @{
-	mailboxid = $record.mailboxid;
-	userid = $UserId;
-	}
+	Add-Member -InputObject $psobj -NotePropertyMembers @{UserId = $UserId;}
     return $psobj
 }
 
