@@ -3641,14 +3641,6 @@ function Get-CrmUserMailbox{
         }
         Add-Member -InputObject $psobj -MemberType NoteProperty -Name $name -Value $value  
     }
-	if($psobj.testemailconfigurationscheduled -eq 'Yes')
-	{
-		$psobj.testemailconfigurationscheduled = $true
-	}
-	else 
-	{
-		$psobj.testemailconfigurationscheduled = $false
-	}
 	Add-Member -InputObject $psobj -NotePropertyMembers @{UserId = $UserId;}
     return $psobj
 }
