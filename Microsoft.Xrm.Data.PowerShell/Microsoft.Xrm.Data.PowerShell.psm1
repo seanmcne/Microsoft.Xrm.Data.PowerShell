@@ -3961,6 +3961,73 @@ function Invoke-CrmWhoAmI{
     return $result
 }
 
+function Invoke-CrmAction {
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+    [OutputType([hashtable])]
+    [OutputType([Microsoft.Xrm.Sdk.OrganizationResponse], ParameterSetName="Raw")]
+    param (
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]
+        $conn,
+
+        [Parameter(
+            Position=1,
+            Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Name,
+
+        [Parameter(Position=2)]
+        [hashtable]
+        $Parameters,
+
+        [Parameter(ValueFromPipeline, Position=3)]
+        [ValidateNotNullOrEmpty()]
+        [Microsoft.Xrm.Sdk.EntityReference]
+        $Target,
+
+        [Parameter(ParameterSetName="Raw")]
+        [switch]
+        $Raw
+    )
+    begin
+    {
+        $conn = VerifyCrmConnectionParam $conn
+    }
+    process
+    {
+        $request = [Microsoft.Xrm.Sdk.OrganizationRequest]::new($Name)
+
+        if($Target) {
+            $request.Parameters.Add("Target", $Target) 
+        }
+
+        if($Parameters) {
+            foreach($parameter in $Parameters.GetEnumerator()) {
+                $request.Parameters.Add($parameter.Name, $parameter.Value)
+            }
+        }
+
+        try {
+            $response = $conn.Execute($request)
+        
+            if($Raw) {
+                Write-Output $response
+            } elseif ($response.Results -and $response.Results.Count -gt 0) {
+                $outputArguments = @{}
+                foreach($outputArgument in $response.Results) {
+                    $outputArguments.Add($outputArgument.Key, $outputArgument.Value)
+                }
+                Write-Output $outputArguments
+            } else {
+                Write-Output $null
+            }
+        }
+        catch {
+            Write-Error $_
+        }
+    }
+}
+
 function Publish-CrmCustomization{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
 
