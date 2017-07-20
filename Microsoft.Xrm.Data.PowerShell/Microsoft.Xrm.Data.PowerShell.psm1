@@ -1184,24 +1184,24 @@ function Invoke-CrmRecordWorkflow{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
-        [parameter(Mandatory=$false, Position=0)]
+        [parameter(Mandatory=$false)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
 
-        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecordWithWorkflowId", ValueFromPipeline=$true)]
-        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecordWithWorkflowName", ValueFromPipeline=$true)]
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecordWithWorkflowId")]
+        [parameter(ParameterSetName="CrmRecordWithWorkflowName")]
         [PSObject]$CrmRecord,
 
         [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecordIdWithWorkflowId")]
-        [parameter(Mandatory=$true, Position=1,ParameterSetName="CrmRecordIdWithWorkflowName")]
+        [parameter(ParameterSetName="CrmRecordIdWithWorkflowName")]
         [Alias("Id", "StringId")]
         [string]$EntityId,
 
         [parameter(Mandatory=$true, Position=2, ParameterSetName="CrmRecordIdWithWorkflowName")]
-        [parameter(Mandatory=$true, Position=2, ParameterSetName="CrmRecordWithWorkflowName")]
+        [parameter(ParameterSetName="CrmRecordWithWorkflowName")]
         [string]$WorkflowName, 
 
         [parameter(Mandatory=$true, Position=2, ParameterSetName="CrmRecordIdWithWorkflowId")]
-        [parameter(Mandatory=$true, Position=2, ParameterSetName="CrmRecordWithWorkflowId")]
+        [parameter(ParameterSetName="CrmRecordWithWorkflowId")]
         [string]$WorkflowId
     )
 	$conn = VerifyCrmConnectionParam $conn
@@ -1211,14 +1211,7 @@ function Invoke-CrmRecordWorkflow{
     }
     elseif($EntityId -ne $null)
     {
-		try
-		{
-			$Id = [guid]::Parse($EntityId)
-		}
-		catch [System.FormatException]
-		{
-			throw "Paremeter EntityId Format is not a GUID, if you're passing in a CrmRecord use the -CrmRecord parameter"
-		}
+        $Id = [guid]::Parse($EntityId)
     }
     try
     {
@@ -1243,9 +1236,6 @@ function Invoke-CrmRecordWorkflow{
 </fetch>
 "@
 			$workflowResult = (Get-CrmRecordsByFetch -Fetch $fetch -TopCount 1)
-			if($workflowResult.Count -eq 0){
-				throw "Workflow with name $workflowName was not found"
-			}
 			if($workflowResult.NextPage){
 				throw "Duplicate workflow detected, try executing the workflow by its ID"
 			}
@@ -1257,9 +1247,7 @@ function Invoke-CrmRecordWorkflow{
             $execWFReq.WorkflowId=$WorkflowId
             $result = $conn.ExecuteCrmOrganizationRequest($execWFReq) 
         }
-		else{ 
-			throw "Workflow ID is Null"
-		}
+		else{ throw "Duplicate workflow detected, try executing the workflow by its ID"}
 		if($result -eq $null)
         {
             throw $conn.LastCrmException
@@ -1267,12 +1255,7 @@ function Invoke-CrmRecordWorkflow{
     }
     catch
     {
-        if ($conn.LastCrmException -eq $null) { 
-            throw $_
-        } 
-		else { 
-            throw $conn.LastCrmException
-        }
+        throw $conn.LastCrmException
     }
     return $result
 }
