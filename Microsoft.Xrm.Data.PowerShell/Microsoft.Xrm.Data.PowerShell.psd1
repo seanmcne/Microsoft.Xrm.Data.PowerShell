@@ -69,7 +69,7 @@ RequiredAssemblies = @("Microsoft.Crm.Sdk.Proxy.dll", "Microsoft.IdentityModel.C
 #TypesToProcess = @()
 
 # Format files (.ps1xml) to be loaded when importing this module
-#FormatsToProcess = @("Microsoft.Xrm.Data.Powershell.format.ps1xml")
+FormatsToProcess = @('Microsoft.Xrm.Data.PowerShell.Format.ps1xml')
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
 NestedModules = @('Microsoft.Xrm.Tooling.CrmConnector.Powershell')

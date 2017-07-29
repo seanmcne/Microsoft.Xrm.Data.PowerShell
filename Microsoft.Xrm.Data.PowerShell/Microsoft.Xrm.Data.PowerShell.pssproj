@@ -30,6 +30,7 @@
     <Content Include="Microsoft.IdentityModel.Clients.ActiveDirectory.dll" />
     <Content Include="Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll" />
     <Content Include="Microsoft.Xrm.Sdk.Deployment.dll" />
+    <Content Include="Microsoft.Xrm.Data.PowerShell.Format.ps1xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Microsoft.Crm.Sdk.Proxy.dll" />
