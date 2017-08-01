@@ -11,28 +11,6 @@
 # (ii) to include a valid copyright notice on Your software product in which the Sample Code is embedded; 
 # and (iii) to indemnify, hold harmless, and defend Us and Our suppliers from and against any claims or lawsuits, including attorneys’ fees, that arise or result from the use or distribution of the Sample Code 
 
-<#
-.Synopsis
-   A means of running multiple instances of a cmdlet/function/scriptblock
-.DESCRIPTION
-   This function allows you to provide a cmdlet, function or script block with a set of data to allow multithreading.
-.EXAMPLE
-   $sb = [scriptblock] {param($system) gwmi win32_operatingsystem -ComputerName $system | select csname,caption}
-   $servers = Get-Content servers.txt
-   $rtn = Invoke-Async -Set $server -SetParam system  -ScriptBlock $sb
-.EXAMPLE
-   $servers = Get-Content servers.txt
-   $rtn = Invoke-Async -Set $servers -SetParam computername -Params @{count=1} -Cmdlet Test-Connection -ThreadCount 50 
-.INPUTS
-   
-.OUTPUTS
-   Determined by the provided cmdlet, function or scriptblock.
-.NOTES
-    This can often times eat up a lot of memory due in part to how some cmdlets work. Test-Connection is a good example of this. 
-    Although it is not a good idea to manually run the garbage collector it might be needed in some cases and can be run like so:
-    [gc]::Collect()
-#>
-
 function Connect-CrmOnlineDiscovery{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
@@ -399,6 +377,7 @@ function Get-CrmRecord{
 
     Add-Member -InputObject $psobj -MemberType NoteProperty -Name "original" -Value $record
     Add-Member -InputObject $psobj -MemberType NoteProperty -Name "logicalname" -Value $EntityLogicalName
+	Add-Member -InputObject $psobj -MemberType NoteProperty -Name "EntityReference" -Value (New-CrmEntityReference -EntityLogicalName $EntityLogicalName -Id $Id)
 
     return $psobj
 }
@@ -1522,42 +1501,43 @@ function Get-CrmRecordsByFetch{
             foreach($record in $records.Values)
             {   
                 $psobj = New-Object -TypeName System.Management.Automation.PSObject
-                
                 if($recordslist.Count -eq 0)
                 {
-                    $atts = $xml.GetElementsByTagName('attribute');
+                    $atts = $xml.GetElementsByTagName('attribute')
                     foreach($att in $atts)
                     {
-                        if($att.ParentNode.HasAttribute('alias'))
-                        {
+                        if($att.ParentNode.HasAttribute('alias')){
                             $attName = $att.ParentNode.GetAttribute('alias') + "." + $att.name
                         }
-                        else
-                        {
+                        else{
                             $attName = $att.name
                         }
                         Add-Member -InputObject $psobj -MemberType NoteProperty -Name $attName -Value $null
                         Add-Member -InputObject $psobj -MemberType NoteProperty -Name ($attName + "_Property") -Value $null
                     }
-                   
                     foreach($att in $record.GetEnumerator())
                     {
-                        if(!($psobj | gm).Name.Contains($att.Key))
-                        {
-                            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $null
-                        }
+						#BUG where ReturnProperty_Id is returned as "ReturnProperty_Id " <-- with a trailing space
+						$keyName = $att.Key
+						if($keyName -eq "ReturnProperty_Id "){
+							$keyName = "ReturnProperty_Id"
+						}
 
+                        if(!($psobj | gm).Name.Contains($keyName))
+                        {
+                            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $null
+                        }
                         if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference])
                         {
-                            $psobj.($att.Key) = $att.Value.Name
+                            $psobj.($keyName) = $att.Value.Name
                         }
 				    	elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue])
 				    	{
-				    		$psobj.($att.Key) = $att.Value.Value
+				    		$psobj.($keyName) = $att.Value.Value
 				    	}
                         else
                         {
-                            $psobj.($att.Key) = $att.Value
+                            $psobj.($keyName) = $att.Value
                         }
                     }  
                 }
@@ -1565,22 +1545,32 @@ function Get-CrmRecordsByFetch{
                 {
                     foreach($att in $record.GetEnumerator())
                     {
+						#BUG where ReturnProperty_Id is returned as "ReturnProperty_Id " <-- with a trailing space
+						$keyName = $att.Key
+						if($keyName -eq "ReturnProperty_Id "){
+							$keyName = "ReturnProperty_Id"
+						}
+
                         if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference])
                         {
-                            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value.Name
+                            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $att.Value.Name
                         }
 				    	elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue])
 				    	{
-				    		Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value.Value
+				    		Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $att.Value.Value
 				    	}
                         else
                         {
-                            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value
+                            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $att.Value
                         }
                     }  
                 }
                 Add-Member -InputObject $psobj -MemberType NoteProperty -Name "original" -Value $record
                 Add-Member -InputObject $psobj -MemberType NoteProperty -Name "logicalname" -Value $logicalname
+				#adding Dynamic EntityReference
+				if($psobj."ReturnProperty_Id" -ne $null -and $psobj."ReturnProperty_EntityName" -ne $null){
+					Add-Member -InputObject $psobj -MemberType NoteProperty -Name "EntityReference" -Value (New-CrmEntityReference -EntityLogicalName $psobj."ReturnProperty_EntityName" -Id $psobj."ReturnProperty_Id")
+				}
                 $recordslist.Add($psobj)
             }
             #IF we have multiple pages!
@@ -2378,7 +2368,7 @@ function Set-CrmRecordState{
 		{
 			$EntityLogicalName = $CrmRecord.logicalname
 		    #$Id = $CrmRecord.($EntityLogicalName + "id")
-			$Id = $CrmRecord.'ReturnProperty_Id '
+			$Id = $CrmRecord.'ReturnProperty_Id'
 		}
 
         # Try to parse into int
