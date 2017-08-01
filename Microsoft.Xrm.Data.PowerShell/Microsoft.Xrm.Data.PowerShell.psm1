@@ -1498,8 +1498,7 @@ function Get-CrmRecordsByFetch{
         elseif($records.Count -gt 0)
         {
             Write-Debug "Records Found!"
-            foreach($record in $records.Values)
-            {   
+            foreach($record in $records.Values){   
                 $psobj = New-Object -TypeName System.Management.Automation.PSObject
                 if($recordslist.Count -eq 0){
                     $atts = $xml.GetElementsByTagName('attribute')
@@ -1533,8 +1532,7 @@ function Get-CrmRecordsByFetch{
 						}
 					}  
                 }
-                else
-                {
+                else{
                     foreach($att in $record.GetEnumerator()){
 						#BUG where ReturnProperty_Id is returned as "ReturnProperty_Id " <-- with a trailing space
 						$keyName = $att.Key
