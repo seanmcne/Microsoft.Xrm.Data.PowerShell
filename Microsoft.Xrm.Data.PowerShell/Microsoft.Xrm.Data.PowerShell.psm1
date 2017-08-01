@@ -1502,16 +1502,16 @@ function Get-CrmRecordsByFetch{
                 $psobj = New-Object -TypeName System.Management.Automation.PSObject
                 if($recordslist.Count -eq 0){
                     $atts = $xml.GetElementsByTagName('attribute')
-                    foreach($att in $atts){
-                        if($att.ParentNode.HasAttribute('alias')){
-                            $attName = $att.ParentNode.GetAttribute('alias') + "." + $att.name
-                        }
-                        else{
-                            $attName = $att.name
-                        }
-                        Add-Member -InputObject $psobj -MemberType NoteProperty -Name $attName -Value $null
-                        Add-Member -InputObject $psobj -MemberType NoteProperty -Name ($attName + "_Property") -Value $null
-                    }
+					foreach($att in $atts){
+						if($att.ParentNode.HasAttribute('alias')){
+							$attName = $att.ParentNode.GetAttribute('alias') + "." + $att.name
+						}
+						else{
+							$attName = $att.name
+						}
+						Add-Member -InputObject $psobj -MemberType NoteProperty -Name $attName -Value $null
+						Add-Member -InputObject $psobj -MemberType NoteProperty -Name ($attName + "_Property") -Value $null
+					}
                     foreach($att in $record.GetEnumerator()){
 						#BUG where ReturnProperty_Id is returned as "ReturnProperty_Id " <-- with a trailing space
 						$keyName = $att.Key
@@ -1550,8 +1550,8 @@ function Get-CrmRecordsByFetch{
                         }
                     }  
                 }
-                Add-Member -InputObject $psobj -MemberType NoteProperty -Name "original" -Value $record
-                Add-Member -InputObject $psobj -MemberType NoteProperty -Name "logicalname" -Value $logicalname
+				Add-Member -InputObject $psobj -MemberType NoteProperty -Name "original" -Value $record
+				Add-Member -InputObject $psobj -MemberType NoteProperty -Name "logicalname" -Value $logicalname
 				#adding Dynamic EntityReference
 				if($psobj."ReturnProperty_Id" -ne $null -and $psobj."ReturnProperty_EntityName" -ne $null){
 					Add-Member -InputObject $psobj -MemberType NoteProperty -Name "EntityReference" -Value (New-CrmEntityReference -EntityLogicalName $psobj."ReturnProperty_EntityName" -Id $psobj."ReturnProperty_Id")
