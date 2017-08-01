@@ -1519,21 +1519,16 @@ function Get-CrmRecordsByFetch{
 						if($keyName -eq "ReturnProperty_Id "){
 							$keyName = "ReturnProperty_Id"
 						}
-
-						if(!($psobj | gm).Name.Contains($keyName))
-						{
+						if(!($psobj | gm).Name.Contains($keyName)){
 							Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $null
 						}
-						if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference])
-						{
+						if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference]){
 							$psobj.($keyName) = $att.Value.Name
 						}
-						elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue])
-						{
+						elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue]){
 							$psobj.($keyName) = $att.Value.Value
 						}
-						else
-						{
+						else{
 							$psobj.($keyName) = $att.Value
 						}
 					}  
@@ -1546,7 +1541,6 @@ function Get-CrmRecordsByFetch{
 						if($keyName -eq "ReturnProperty_Id "){
 							$keyName = "ReturnProperty_Id"
 						}
-
                         if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference]){
                             Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $att.Value.Name
                         }
