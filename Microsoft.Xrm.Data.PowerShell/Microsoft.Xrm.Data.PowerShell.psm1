@@ -195,87 +195,6 @@ function Connect-CrmOnPremDiscovery{
     }
 }
 
-function MapFieldTypeByFieldValue {
-    PARAM(
-        [Parameter(Mandatory=$true)]
-        [object]$Value
-    )
-
-    $valueTypeToCrmTypeMapping = @{
-        "Boolean" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmBoolean;
-        "DateTime" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDateTime;
-        "Decimal" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDecimal;
-        "Single" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmFloat;
-        "Money" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw;
-        "Int32" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmNumber;
-        "EntityReference" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw;
-        "OptionSetValue" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw;
-        "String" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::String;
-        "Guid" =  [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::UniqueIdentifier;
-    }
-
-    # default is RAW
-    $crmDataType = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
-
-    if($Value -ne $null) {
-
-        $valueType = $Value.GetType().Name
-        
-        if($valueTypeToCrmTypeMapping.ContainsKey($valueType)) {
-            $crmDataType = $valueTypeToCrmTypeMapping[$valueType]
-        }   
-    }
-
-    return $crmDatatype
-}
-
-function GuessPrimaryKeyField() {
-    PARAM(
-        [Parameter(Mandatory=$true)]
-        [object]$EntityLogicalName
-    )
-
-    $standardActivityEntities = @(
-        "opportunityclose",
-        "socialactivity",
-        "campaignresponse",
-        "letter","orderclose",
-        "appointment",
-        "recurringappointmentmaster",
-        "fax",
-        "email",
-        "activitypointer",
-        "incidentresolution",
-        "bulkoperation",
-        "quoteclose",
-        "task",
-        "campaignactivity",
-        "serviceappointment",
-        "phonecall"
-    )
-
-    # Some Entity has different pattern for id name.
-    if($EntityLogicalName -eq "usersettings")
-    {
-        $primaryKeyField = "systemuserid"
-    }
-    elseif($EntityLogicalName -eq "systemform")
-    {
-        $primaryKeyField = "formid"
-    }
-    elseif($EntityLogicalName -in $standardActivityEntities)
-    {
-        $primaryKeyField = "activityid"
-    }
-    else 
-    {
-        # default
-        $primaryKeyField = $EntityLogicalName + "id"
-    }
-    
-    $primaryKeyField
-}
-
 function New-CrmRecord{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
@@ -386,7 +305,6 @@ function Get-CrmRecord{
 New-Alias -Name Update-CrmRecord -Value Set-CrmRecord
 
 #UpdateEntity 
-
 function Set-CrmRecord{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
 
@@ -748,7 +666,6 @@ function Set-CrmRecord{
 }
 
 #DeleteEntity 
-
 function Remove-CrmRecord{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
@@ -790,9 +707,7 @@ function Remove-CrmRecord{
     }
 }
 
-### Other Cmdlets from Xrm Tooling ###
 #AddEntityToQueue 
-
 function Move-CrmRecordToQueue{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
@@ -834,7 +749,6 @@ function Move-CrmRecordToQueue{
 }
 
 #AssignEntityToUser
-
 function Set-CrmRecordOwner{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
@@ -897,7 +811,6 @@ function Set-CrmRecordOwner{
 }
 
 #CloseActivity 
-
 function Set-CrmActivityRecordToCloseState{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
@@ -936,7 +849,6 @@ function Set-CrmActivityRecordToCloseState{
 }
 
 #CreateAnnotation 
-
 function Add-CrmNoteToCrmRecord{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
@@ -985,7 +897,6 @@ function Add-CrmNoteToCrmRecord{
 }
 
 #CreateEntityAssociation
-
 function Add-CrmRecordAssociation{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
@@ -3674,9 +3585,6 @@ function Get-CrmUserMailbox{
     return $psobj
 }
 
-<#LEFT OFF HERE#> 
-# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
-
 function Get-CrmUserPrivileges{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
 
@@ -4933,7 +4841,7 @@ function Set-CrmRecordAccess {
     }
 }
 
-### Get CRM Types object ###
+### CRM Types ###
 function New-CrmMoney{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
@@ -4977,7 +4885,7 @@ function New-CrmEntityReference{
     return $crmEntityReference
 }
 
-### Performance Test cmdlets ###
+### Performance Tests ###
 function Test-CrmViewPerformance{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
@@ -5143,6 +5051,86 @@ function VerifyCrmConnectionParam {
     }
 	return $conn
 }
+function MapFieldTypeByFieldValue {
+    PARAM(
+        [Parameter(Mandatory=$true)]
+        [object]$Value
+    )
+
+    $valueTypeToCrmTypeMapping = @{
+        "Boolean" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmBoolean;
+        "DateTime" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDateTime;
+        "Decimal" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmDecimal;
+        "Single" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmFloat;
+        "Money" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw;
+        "Int32" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmNumber;
+        "EntityReference" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw;
+        "OptionSetValue" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw;
+        "String" = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::String;
+        "Guid" =  [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::UniqueIdentifier;
+    }
+
+    # default is RAW
+    $crmDataType = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
+
+    if($Value -ne $null) {
+
+        $valueType = $Value.GetType().Name
+        
+        if($valueTypeToCrmTypeMapping.ContainsKey($valueType)) {
+            $crmDataType = $valueTypeToCrmTypeMapping[$valueType]
+        }   
+    }
+
+    return $crmDatatype
+}
+function GuessPrimaryKeyField() {
+    PARAM(
+        [Parameter(Mandatory=$true)]
+        [object]$EntityLogicalName
+    )
+
+    $standardActivityEntities = @(
+        "opportunityclose",
+        "socialactivity",
+        "campaignresponse",
+        "letter","orderclose",
+        "appointment",
+        "recurringappointmentmaster",
+        "fax",
+        "email",
+        "activitypointer",
+        "incidentresolution",
+        "bulkoperation",
+        "quoteclose",
+        "task",
+        "campaignactivity",
+        "serviceappointment",
+        "phonecall"
+    )
+
+    # Some Entity has different pattern for id name.
+    if($EntityLogicalName -eq "usersettings")
+    {
+        $primaryKeyField = "systemuserid"
+    }
+    elseif($EntityLogicalName -eq "systemform")
+    {
+        $primaryKeyField = "formid"
+    }
+    elseif($EntityLogicalName -in $standardActivityEntities)
+    {
+        $primaryKeyField = "activityid"
+    }
+    else 
+    {
+        # default
+        $primaryKeyField = $EntityLogicalName + "id"
+    }
+    
+    $primaryKeyField
+}
+
 ## Taken from CRM SDK sample code
 ## https://msdn.microsoft.com/en-us/library/microsoft.crm.sdk.messages.retrieveentityribbonresponse.compressedentityxml.aspx
 function UnzipCrmRibbon {
