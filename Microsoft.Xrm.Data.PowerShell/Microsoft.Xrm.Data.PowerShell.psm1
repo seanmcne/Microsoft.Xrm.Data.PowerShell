@@ -606,7 +606,7 @@ function Set-CrmRecord{
                 {
                     continue
                 }
-                elseif($crmFieldValue -eq $originalRecord[$crmFieldKey].Name)
+                elseif($crmFieldValue -eq $originalRecord[$crmFieldKey])
                 {
                     continue
                 }
