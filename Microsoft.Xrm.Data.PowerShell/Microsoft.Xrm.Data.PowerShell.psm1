@@ -1501,11 +1501,9 @@ function Get-CrmRecordsByFetch{
             foreach($record in $records.Values)
             {   
                 $psobj = New-Object -TypeName System.Management.Automation.PSObject
-                if($recordslist.Count -eq 0)
-                {
+                if($recordslist.Count -eq 0){
                     $atts = $xml.GetElementsByTagName('attribute')
-                    foreach($att in $atts)
-                    {
+                    foreach($att in $atts){
                         if($att.ParentNode.HasAttribute('alias')){
                             $attName = $att.ParentNode.GetAttribute('alias') + "." + $att.name
                         }
@@ -1515,52 +1513,47 @@ function Get-CrmRecordsByFetch{
                         Add-Member -InputObject $psobj -MemberType NoteProperty -Name $attName -Value $null
                         Add-Member -InputObject $psobj -MemberType NoteProperty -Name ($attName + "_Property") -Value $null
                     }
-                    foreach($att in $record.GetEnumerator())
-                    {
+                    foreach($att in $record.GetEnumerator()){
 						#BUG where ReturnProperty_Id is returned as "ReturnProperty_Id " <-- with a trailing space
 						$keyName = $att.Key
 						if($keyName -eq "ReturnProperty_Id "){
 							$keyName = "ReturnProperty_Id"
 						}
 
-                        if(!($psobj | gm).Name.Contains($keyName))
-                        {
-                            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $null
-                        }
-                        if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference])
-                        {
-                            $psobj.($keyName) = $att.Value.Name
-                        }
-				    	elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue])
-				    	{
-				    		$psobj.($keyName) = $att.Value.Value
-				    	}
-                        else
-                        {
-                            $psobj.($keyName) = $att.Value
-                        }
-                    }  
+						if(!($psobj | gm).Name.Contains($keyName))
+						{
+							Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $null
+						}
+						if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference])
+						{
+							$psobj.($keyName) = $att.Value.Name
+						}
+						elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue])
+						{
+							$psobj.($keyName) = $att.Value.Value
+						}
+						else
+						{
+							$psobj.($keyName) = $att.Value
+						}
+					}  
                 }
                 else
                 {
-                    foreach($att in $record.GetEnumerator())
-                    {
+                    foreach($att in $record.GetEnumerator()){
 						#BUG where ReturnProperty_Id is returned as "ReturnProperty_Id " <-- with a trailing space
 						$keyName = $att.Key
 						if($keyName -eq "ReturnProperty_Id "){
 							$keyName = "ReturnProperty_Id"
 						}
 
-                        if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference])
-                        {
+                        if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference]){
                             Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $att.Value.Name
                         }
-				    	elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue])
-				    	{
+				    	elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue]){
 				    		Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $att.Value.Value
 				    	}
-                        else
-                        {
+                        else{
                             Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $att.Value
                         }
                     }  
