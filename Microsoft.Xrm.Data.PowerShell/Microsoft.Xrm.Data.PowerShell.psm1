@@ -3613,7 +3613,6 @@ function Get-CrmUserMailbox{
 						Throw "The user $UserId has more than one mailbox: $idString"
 					}
 		Default {
-					$record[0].psobject.TypeNames.Insert(0,'Microsoft.Xrm.Data.PowerShell.UserMailbox')
 					return $record}
 	}
     
