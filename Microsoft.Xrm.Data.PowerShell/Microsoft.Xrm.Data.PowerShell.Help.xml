@@ -3288,6 +3288,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 				<maml:name>TargetVersion</maml:name>
 				<maml:description>
 					<maml:para>Specify TargetVersion of exporting solution.
+Examples of Valid versions: 7.0.0.0, 7.1.0.0, 8.0.0.0, 8.1.0.0, 8.2.0.0
+See https://msdn.microsoft.com/en-us/library/dn689055.aspx for more details.
 </maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
@@ -3444,6 +3446,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 			<maml:name>TargetVersion</maml:name>
 			<maml:description>
 				<maml:para>Specify TargetVersion of exporting solution.
+Examples of Valid versions: 7.0.0.0, 7.1.0.0, 8.0.0.0, 8.1.0.0, 8.2.0.0
+See https://msdn.microsoft.com/en-us/library/dn689055.aspx for more details.
 </maml:para>
 			</maml:description>
 			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
