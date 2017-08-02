@@ -3289,8 +3289,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 				<maml:description>
 					<maml:para>Specify TargetVersion of exporting solution.
 Examples of Valid versions: 7.0.0.0, 7.1.0.0, 8.0.0.0, 8.1.0.0, 8.2.0.0
-See https://msdn.microsoft.com/en-us/library/dn689055.aspx for more details.
-</maml:para>
+See https://msdn.microsoft.com/en-us/library/dn689055.aspx for more details.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
@@ -3447,8 +3446,7 @@ See https://msdn.microsoft.com/en-us/library/dn689055.aspx for more details.
 			<maml:description>
 				<maml:para>Specify TargetVersion of exporting solution.
 Examples of Valid versions: 7.0.0.0, 7.1.0.0, 8.0.0.0, 8.1.0.0, 8.2.0.0
-See https://msdn.microsoft.com/en-us/library/dn689055.aspx for more details.
-</maml:para>
+See https://msdn.microsoft.com/en-us/library/dn689055.aspx for more details.</maml:para>
 			</maml:description>
 			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			<dev:type>
@@ -18732,14 +18730,6 @@ nav_oppts
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
-				<maml:name>ShowDisplayName</maml:name>
-				<maml:description>
-					<maml:para>When you specify the ShowDisplayName switch, you see DisplayName for all fields, otherwise you see SchemaName.
-</maml:para>
-				</maml:description>
-				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-			</command:parameter>
 		</command:syntaxItem>
 	</command:syntax>
 	<command:parameters>
@@ -18765,19 +18755,6 @@ nav_oppts
 			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			<dev:type>
 				<maml:name>String</maml:name>
-				<maml:uri/>
-			</dev:type>
-			<dev:defaultValue></dev:defaultValue>
-		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
-			<maml:name>ShowDisplayName</maml:name>
-			<maml:description>
-				<maml:para>When you specify the ShowDisplayName switch, you see DisplayName for all fields, otherwise you see SchemaName.
-</maml:para>
-			</maml:description>
-			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-			<dev:type>
-				<maml:name>SwitchParameter</maml:name>
 				<maml:uri/>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
