@@ -606,7 +606,7 @@ function Set-CrmRecord{
                 {
                     continue
                 }
-                elseif($crmFieldValue -eq $originalRecord[$crmFieldKey].Name)
+                elseif($crmFieldValue -eq $originalRecord[$crmFieldKey])
                 {
                     continue
                 }
@@ -1238,27 +1238,68 @@ function Invoke-CrmRecordWorkflow{
     PARAM(
         [parameter(Mandatory=$false)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
-        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord")]
+
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecordWithWorkflowId")]
+        [parameter(ParameterSetName="CrmRecordWithWorkflowName")]
         [PSObject]$CrmRecord,
-        [parameter(Mandatory=$true, Position=1, ParameterSetName="Id")]
-        [Alias("Id")]
-        [string]$StringId,
-        [parameter(Mandatory=$true, Position=2)]
-        [string]$WorkflowName
+
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecordIdWithWorkflowId")]
+        [parameter(ParameterSetName="CrmRecordIdWithWorkflowName")]
+        [Alias("Id", "StringId")]
+        [string]$EntityId,
+
+        [parameter(Mandatory=$true, Position=2, ParameterSetName="CrmRecordIdWithWorkflowName")]
+        [parameter(ParameterSetName="CrmRecordWithWorkflowName")]
+        [string]$WorkflowName, 
+
+        [parameter(Mandatory=$true, Position=2, ParameterSetName="CrmRecordIdWithWorkflowId")]
+        [parameter(ParameterSetName="CrmRecordWithWorkflowId")]
+        [string]$WorkflowId
     )
 	$conn = VerifyCrmConnectionParam $conn
     if($CrmRecord -ne $null)
     {        
         $Id = $CrmRecord.($CrmRecord.logicalname + "id")
     }
-    else
+    elseif($EntityId -ne $null)
     {
-        $Id = [guid]::Parse($StringId)
+        $Id = [guid]::Parse($EntityId)
     }
-
     try
     {
-        $result = $conn.ExecuteWorkflowOnEntity($WorkflowName, $Id, [Guid]::Empty)
+        $result = $null 
+        if($WorkflowName -ne $null){
+		        $fetch = @"
+<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false">
+  <entity name="workflow">
+    <attribute name="workflowid" />
+    <attribute name="name" />
+    <attribute name="primaryentity" />
+    <attribute name="type" />
+    <order attribute="name" descending="false" />
+    <filter type="and">
+	  <condition attribute="name" operator="eq" value="$WorkflowName" />
+      <condition attribute="statecode" operator="eq" value="1" />
+      <condition attribute="type" operator="eq" value="1" />
+      <condition attribute="rendererobjecttypecode" operator="null" />
+      <condition attribute="category" operator="eq" value="0" />
+    </filter>
+  </entity>
+</fetch>
+"@
+			$workflowResult = (Get-CrmRecordsByFetch -Fetch $fetch -TopCount 1)
+			if($workflowResult.NextPage){
+				throw "Duplicate workflow detected, try executing the workflow by its ID"
+			}
+			$WorkflowId = $workflowResult.CrmRecords[0].workflowid
+        }
+		if($WorkflowId -ne $null){
+            $execWFReq = New-Object Microsoft.Crm.Sdk.Messages.ExecuteWorkflowRequest
+            $execWFReq.EntityId = $Id
+            $execWFReq.WorkflowId=$WorkflowId
+            $result = $conn.ExecuteCrmOrganizationRequest($execWFReq) 
+        }
+		else{ throw "Duplicate workflow detected, try executing the workflow by its ID"}
 		if($result -eq $null)
         {
             throw $conn.LastCrmException
@@ -1809,7 +1850,7 @@ function Import-CrmSolutionAsync{
         [parameter(Mandatory=$false, Position=5)]
         [switch]$PublishChanges,
 		[parameter(Mandatory=$false, Position=6)]
-        [int64]$MaxWaitTimeInSeconds = 900,
+        [int64]$MaxWaitTimeInSeconds,
 		[parameter(Mandatory=$false, Position=7)]
         [switch]$ImportAsHoldingSolution, 
 		[parameter(Mandatory=$false, Position=8)]
@@ -1824,12 +1865,24 @@ function Import-CrmSolutionAsync{
         {
             throw [System.IO.FileNotFoundException] "$SolutionFilePath not found."
         }
-        Write-Host "Importing solution file $SolutionFilePath into: $($conn.CrmConnectOrgUriActual)" 
+		
+        Write-Output  "Importing solution file  $SolutionFilePath into: $($conn.CrmConnectOrgUriActual)" 
         Write-Verbose "OverwriteCustomizations: $OverwriteUnManagedCustomizations"
-        Write-Verbose "SkipDependancyCheck: $SkipDependancyOnProductUpdateCheckOnInstall"
+        Write-Verbose "SkipDependancyCheck:     $SkipDependancyOnProductUpdateCheckOnInstall"
 		Write-Verbose "ImportAsHoldingSolution: $ImportAsHoldingSolution"
-        Write-Verbose "Maximum seconds to poll for successful completion: $MaxWaitTimeInSeconds"
-        Write-Verbose "Getting file contents"
+        Write-Verbose "Maximum seconds to poll: $MaxWaitTimeInSeconds"
+        Write-Verbose "Block and wait?          $BlockUntilImportComplete"
+
+        if($BlockUntilImportComplete -eq $false -and ($MaxWaitTimeInSeconds -gt 0 -or $MaxWaitTimeInSeconds -eq -1)){
+			Write-Warning "MaxWaitTimeInSeconds is $MaxWaitTimeInSeconds, we assume the user wants to block until complete."
+			Write-Warning "To avoid this warning in the future please specify the switch: -BlockUntilImportComplete"
+			$BlockUntilImportComplete = $true
+		}
+		if($BlockUntilImportComplete -eq $false -and $PublishChanges -eq $true){
+			Write-Warning "PublishChanges will be ignored because BlockUntilImportComplete is $BlockUntilImportComplete"
+			$PublishChanges = $false; 
+		}
+
 		$data = [System.IO.File]::ReadAllBytes($SolutionFilePath)
 		
 		$request = New-Object Microsoft.Crm.Sdk.Messages.ImportSolutionRequest
@@ -1870,28 +1923,22 @@ function Import-CrmSolutionAsync{
         Write-Verbose "Import of file completed, waiting on completion of AsyncOperationId: $importId"
 
 		try{
-			while($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds){
+			while(($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds) -or ($isProcessing -and $MaxWaitTimeInSeconds -eq -1)){
 				#delay
 				Start-Sleep -Seconds $pollingDelaySeconds
 				#check the import job for success/fail/inProgress
 				try{
 					$import = Get-CrmRecord -conn $conn -EntityLogicalName asyncoperation -Id $importId -Fields statuscode
 				} catch {
-					if($transientFailureCount -gt 5){
-						$transientFailureCount++
-						#this is for a bug where the service will throw a 401 on retrieve of importjob during an import under certain conditions 
-						Write-Error "Import Job status check FAILED 5 times this could be due to a bug where the service returns a 401. Throwing lastException:"; 
-						throw $conn.LastCrmException
-					}
 					$transientFailureCount++; 
-					Write-Verbose "Import Job status check FAILED this could be due to a bug where the service returns a 401. We'll allow up to 5 failures before aborting."; 
+					Write-Verbose "Import Job status check did not succeed:  $($_.Exception)"
 				}
 				$status = $import.statuscode_Property.value.Value; 
 				#Check for import completion - https://msdn.microsoft.com/en-us/library/gg309288.aspx
 				if($status -lt 30){
 					$isProcessing = $true
 					$secondsSpentPolling = ([Int]((Get-Date) - $pollingStart).TotalSeconds)
-					Write-Host "$($import.statuscode) - $($secondsSPentPolling.ToString("000")) seconds of max: $MaxWaitTimeInSeconds"
+					Write-Output "$($secondsSPentPolling.ToString("000")) sec of: $MaxWaitTimeInSeconds - ImportStatus: $($import.statuscode)"
 				}
 				elseif($status -eq 31 -or $status -eq 32 ){
 					$isProcessing = $false
@@ -1899,25 +1946,33 @@ function Import-CrmSolutionAsync{
 					break; 
 				}
 				elseif($status -eq 30){
-					Write-Verbose "Processing Completed at: $($import.completedon)" 
-                    Write-Verbose "Don't forget to publish customizations."
 					$isProcessing = $false
+					Write-Verbose "Processing Completed at: $($import.completedon)" 
+					if($PublishChanges){
+						Write-Verbose "PublishChanges set, executing: Publish-CrmAllCustomization using the same connection."
+						Publish-CrmAllCustomization -conn $conn
+						return $asyncResponse
+					}
+					else{
+						Write-Output "Import Complete, don't forget to publish customizations."
+						return $asyncResponse
+					}
 					break; 
 				}
 			}
 			#User provided timeout and exit function with an error
 			if($secondsSpentPolling -gt $MaxWaitTimeInSeconds){
-				throw "Import-CrmSolutionAsync exited due to exceeding the maximum timeout of $MaxWaitTimeInSeconds."
+				Write-Warning "Import-CrmSolutionAsync exited due to exceeding the maximum timeout of $MaxWaitTimeInSeconds. The import will continue in CRM async until it either succeeds or fails."
 			}
 			#at this point we appear to have imported successfully 
 			return $asyncResponse; 
 		} Catch {
-			Write-Error "AsyncOperation with ID: $importId has encountered an exception: $_"
+			throw "AsyncOperation with ID: $importId has encountered an exception: $_"
 		}
     }
     catch
     {
-        Write-Error $_.Exception
+        throw $_.Exception
     }    
 }
 
@@ -1960,8 +2015,8 @@ function Import-CrmSolution{
         Write-Verbose "Maximum seconds to poll for successful completion: $MaxWaitTimeInSeconds"
 
 		if($AsyncOperationImportMethod){
-			Write-Verbose "Option to import using Aync method flagged!"
-			Write-Verbose "Due to this option you may not be able to debug problems - set this flag to false to debug imports"
+			Write-Warning "Option to import using Aync method flagged! With this option you may not be able to debug problems easily."
+			Write-Warning "To import async going forward use the Import-CrmSolutionAsync cmdlet instead."
 			$result = Import-CrmSolutionAsync `
 				-Conn $conn `
 				-SolutionFilePath $SolutionFilePath `
@@ -3933,6 +3988,73 @@ function Invoke-CrmWhoAmI{
     }    
 
     return $result
+}
+
+function Invoke-CrmAction {
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+    [OutputType([hashtable])]
+    [OutputType([Microsoft.Xrm.Sdk.OrganizationResponse], ParameterSetName="Raw")]
+    param (
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]
+        $conn,
+
+        [Parameter(
+            Position=1,
+            Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Name,
+
+        [Parameter(Position=2)]
+        [hashtable]
+        $Parameters,
+
+        [Parameter(ValueFromPipeline, Position=3)]
+        [ValidateNotNullOrEmpty()]
+        [Microsoft.Xrm.Sdk.EntityReference]
+        $Target,
+
+        [Parameter(ParameterSetName="Raw")]
+        [switch]
+        $Raw
+    )
+    begin
+    {
+        $conn = VerifyCrmConnectionParam $conn
+    }
+    process
+    {
+        $request = [Microsoft.Xrm.Sdk.OrganizationRequest]::new($Name)
+
+        if($Target) {
+            $request.Parameters.Add("Target", $Target) 
+        }
+
+        if($Parameters) {
+            foreach($parameter in $Parameters.GetEnumerator()) {
+                $request.Parameters.Add($parameter.Name, $parameter.Value)
+            }
+        }
+
+        try {
+            $response = $conn.Execute($request)
+        
+            if($Raw) {
+                Write-Output $response
+            } elseif ($response.Results -and $response.Results.Count -gt 0) {
+                $outputArguments = @{}
+                foreach($outputArgument in $response.Results) {
+                    $outputArguments.Add($outputArgument.Key, $outputArgument.Value)
+                }
+                Write-Output $outputArguments
+            } else {
+                Write-Output $null
+            }
+        }
+        catch {
+            Write-Error $_
+        }
+    }
 }
 
 function Publish-CrmCustomization{
