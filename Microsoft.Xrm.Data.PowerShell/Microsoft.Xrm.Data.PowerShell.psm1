@@ -3633,9 +3633,7 @@ function Get-CrmUserMailbox{
         [parameter(Mandatory=$false)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
         [parameter(Mandatory=$true, Position=1)]
-        [string]$UserId,
-        [parameter(Mandatory=$false)]
-        [switch]$ShowDisplayName
+        [string]$UserId
     )
 
 	$conn = VerifyCrmConnectionParam $conn
@@ -3643,26 +3641,7 @@ function Get-CrmUserMailbox{
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
     <entity name="mailbox">
-    <attribute name="name" />
-    <attribute name="ownerid" />
-    <attribute name="mailboxid" />
-    <attribute name="emailserverprofile" />
-    <attribute name="processemailreceivedafter" />
-    <attribute name="outgoingemailstatus" />
-    <attribute name="outgoingemaildeliverymethod" />
-    <attribute name="testmailboxaccesscompletedon" />
-    <attribute name="isforwardmailbox" />
-    <attribute name="incomingemailstatus" />
-    <attribute name="incomingemaildeliverymethod" />
-    <attribute name="enabledforoutgoingemail" />
-    <attribute name="enabledforincomingemail" />
-    <attribute name="enabledforact" />
-    <attribute name="emailaddress" />
-    <attribute name="processanddeleteemails" />
-    <attribute name="processinglastattemptedon" />
-    <attribute name="actstatus" />
-    <attribute name="actdeliverymethod" />
-    <attribute name="allowemailconnectortousecredentials" />
+	<all-attributes />
     <filter type="and">
       <condition attribute="regardingobjectid" operator="eq" value="{$UserId}" />
     </filter>
@@ -3670,33 +3649,28 @@ function Get-CrmUserMailbox{
 </fetch>
 "@
 
-    $record = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords[0]
-
-    $attributes = Get-CrmEntityAttributes -conn $conn -EntityLogicalName mailbox
-
-    $psobj = New-Object -TypeName System.Management.Automation.PSObject
-        
-    foreach($att in $record.original.GetEnumerator())
-    {
-        if(($att.Key.Contains("Property")) -or ($att.Key -eq "mailboxid"))
-        {
-            continue
-        }
-        
-        $value = $record.($att.Key)
-
-        if($ShowDisplayName -and (($attributes | where {$_.LogicalName -eq $att.Key}).Displayname.UserLocalizedLabel -ne $null))
-        {
-            $name = ($attributes | where {$_.LogicalName -eq $att.Key}).Displayname.UserLocalizedLabel.Label 
-        }
-        else
-        {
-            $name = ($attributes | where {$_.LogicalName -eq $att.Key}).SchemaName
-        }
-        Add-Member -InputObject $psobj -MemberType NoteProperty -Name $name -Value $value  
-    }
-
-    return $psobj
+    $record = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords
+	switch ($record.count)
+	{
+		{$_ -eq 0} {Throw "The user $UserId has no mailbox."}
+		{$_ -ge 2} {
+						foreach( $id in $record.mailboxid)
+						{
+							if(!$idString)
+							{
+								[string]$idString = $id
+							}
+							else
+							{
+								[string]$idString = "$idString,$id"
+							}
+						}
+						Throw "The user $UserId has more than one mailbox: $idString"
+					}
+		Default {
+					return $record}
+	}
+    
 }
 
 <#LEFT OFF HERE#> 
