@@ -1996,7 +1996,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
       <Examples>
         <Example>
           <Name>Example 1</Name>
-          <Cmd>Get-CrmEntityAllMetadata -conn $conn -OnlyPublished $True EntityFilters all</Cmd>
+          <Cmd>Get-CrmEntityAllMetadata -conn $conn -OnlyPublished $True -EntityFilters all</Cmd>
           <Description>This example retrieves all published Metadata.</Description>
           <Output>ActivityTypeMask                  : 0
 Attributes                        : {, , Microsoft.Xrm.Sdk.Metadata.AttributeTypeDisplayName, ...}
@@ -2023,6 +2023,21 @@ DisplayCollectionName             : Microsoft.Xrm.Sdk.Label
 DisplayName                       : Microsoft.Xrm.Sdk.Label
 EntityHelpUrlEnabled              : False
 ...</Output>
+        </Example>
+        <Example>
+          <Name>Example 3</Name>
+          <Cmd>Get-CrmEntityAllMetadata -conn $conn -EntityFilters Entity | select -property @{N='LogicalName';E={$_.logicalname}}, @{N='DisplayName';E={$_.DisplayCollectionName.UserLocalizedLabel.Label}} | sort DisplayName</Cmd>
+          <Description>This samples get Entity metadata and list its logicalname and display name as table.</Description>
+          <Output>LogicalName                                  DisplayName                                           
+-----------                                  -----------     
+cardtype                                     Action Card Type                                      
+actioncardusersettings                       Action Card User Settings                             
+actioncard                                   Action Cards                                          
+actioncarduserstate                          ActionCardUserStates                                  
+activitypointer                              Activities                                            
+activityparty                                Activity Parties                                      
+customeraddress                              Addresses                                             
+advancedsimilarityrule                       Advanced Similarity Rules          </Output>
         </Example>
       </Examples>
       <RelatedLinks />
