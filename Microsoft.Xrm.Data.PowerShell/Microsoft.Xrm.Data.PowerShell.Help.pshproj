@@ -4993,6 +4993,7 @@ ExtensionData :</Output>
       <Name>New-CrmRecord</Name>
       <Syntax>
         <string>New-CrmRecord [-conn &lt;CrmServiceClient&gt;] [-EntityLogicalName] &lt;String&gt; [-Fields] &lt;Hashtable&gt;</string>
+        <string>New-CrmRecord [-conn &lt;CrmServiceClient&gt;] [-CrmRecord] &lt;PSObject&gt;</string>
       </Syntax>
       <GeneralHelp>
         <Synopsis>Creates a new CRM record by specifying field name/value set, and returns record guid.</Synopsis>
@@ -5010,7 +5011,8 @@ You can use Get-CrmEntityAttributeMetadata cmdlet and check AttributeType to see
         <ReturnTypeDescription />
       </GeneralHelp>
       <ParamSets>
-        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="conn EntityLogicalName Fields Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="NameAndFields" Params="conn EntityLogicalName Fields Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="CrmRecord" Params="conn CrmRecord Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
       </ParamSets>
       <Parameters>
         <ParameterDescription type="CrmServiceClient" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -5042,6 +5044,16 @@ You can use Get-CrmEntityAttributeMetadata cmdlet and check AttributeType to see
           <Aliases />
           <Description>A List of field name/value pair. Use @{"field logical name"="value"} syntax to create Fields, and make sure you specify correct type of value for the field. 
 You can use Get-CrmEntityAttributeMetadata cmdlet and check AttributeType to see the field type. In addition, for CRM specific types, you can use New-CrmMoney, New-CrmOptionSetValue or New-CrmEntityReference cmdlets.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
+          <Name>CrmRecord</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>A record object which is obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use EntityLogicalName/Fields</Description>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
@@ -5084,6 +5096,16 @@ PS C:\&gt;$childId = New-CrmRecord account @{"name"="child account name";"parent
           <Output>Guid
 ----
 59bd1c45-2b17-e511-80dc-c4346bc4fc6c</Output>
+        </Example>
+        <Example>
+          <Name>Example 5</Name>
+          <Cmd>PS C:\&gt;$account = Get-CrmRecord -conn $conn -EntityLogicalName account -Id $accountid -Fields *
+
+PS C:\&gt;New-CrmRecord -conn $conn -CrmRecord $account</Cmd>
+          <Description>This example get record by Get-CrmRecord, then pass it to New-CrmRecord to create another record.</Description>
+          <Output>Guid                                
+----                                
+d6960250-d178-e711-80ff-c4346bdc42d1</Output>
         </Example>
       </Examples>
       <RelatedLinks />

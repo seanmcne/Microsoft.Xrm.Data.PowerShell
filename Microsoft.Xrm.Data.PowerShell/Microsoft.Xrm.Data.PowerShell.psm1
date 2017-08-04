@@ -201,26 +201,61 @@ function New-CrmRecord{
     PARAM(
         [parameter(Mandatory=$false)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
-        [parameter(Mandatory=$true, Position=1)]
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="NameAndFields")]
         [string]$EntityLogicalName,
-        [parameter(Mandatory=$true, Position=2)]
-        [hashtable]$Fields
+        [parameter(Mandatory=$true, Position=2, ParameterSetName="NameAndFields")]
+        [hashtable]$Fields,
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord")]
+        [PSObject]$CrmRecord
     )
 
 	$conn = VerifyCrmConnectionParam $conn
 
     $newfields = New-Object 'System.Collections.Generic.Dictionary[[String], [Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper]]'
     
-    foreach($field in $Fields.GetEnumerator())
-    {  
-        $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
-        
-        $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
-        
-        $newfield.Value = $field.Value
-        $newfields.Add($field.Key, $newfield)
+    if($CrmRecord -ne $null)
+    {
+        $EntityLogicalName = $CrmRecord.ReturnProperty_EntityName
+        $atts = Get-CrmEntityAttributes -conn $conn -EntityLogicalName $EntityLogicalName
+        foreach($crmFieldKey in ($CrmRecord | Get-Member -MemberType NoteProperty).Name)
+        {
+            if($crmFieldKey.EndsWith("_Property"))
+            {
+                if($CrmRecord.ReturnProperty_Id -eq $CrmRecord.$crmFieldKey.Value)
+                {
+                    continue;
+                }               
+                elseif(($atts | ? logicalname -eq $CrmRecord.$crmFieldKey.Key).IsValidForCreate)
+                {
+                    # Some fields cannot be created even though it is set as IsValidForCreate
+                    if($CrmRecord.$crmFieldKey.Key.Contains("addressid"))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
+            
+                        $newfield.Type = MapFieldTypeByFieldValue -Value $CrmRecord.$crmFieldKey.Value                 
+                        $newfield.Value = $CrmRecord.$crmFieldKey.Value
+                        $newfields.Add($CrmRecord.$crmFieldKey.Key, $newfield)
+                    }
+                }
+            }
+        }  
     }
-
+    else
+    {
+        foreach($field in $Fields.GetEnumerator())
+        {  
+            $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
+            
+            $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
+            
+            $newfield.Value = $field.Value
+            $newfields.Add($field.Key, $newfield)
+        }
+    }
     try
     {        
         $result = $conn.CreateNewRecord($EntityLogicalName, $newfields, $null, $false, [Guid]::Empty)
@@ -277,7 +312,8 @@ function Get-CrmRecord{
     }
         
     $psobj = New-Object -TypeName System.Management.Automation.PSObject
-        
+    $meta = Get-CrmEntityMetadata -conn $conn -EntityLogicalName $EntityLogicalName
+
     foreach($att in $record.GetEnumerator())
     {
         if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference])
@@ -296,8 +332,11 @@ function Get-CrmRecord{
 
     Add-Member -InputObject $psobj -MemberType NoteProperty -Name "original" -Value $record
     Add-Member -InputObject $psobj -MemberType NoteProperty -Name "logicalname" -Value $EntityLogicalName
-	Add-Member -InputObject $psobj -MemberType NoteProperty -Name "EntityReference" -Value (New-CrmEntityReference -EntityLogicalName $EntityLogicalName -Id $Id)
-
+    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "EntityReference" -Value (New-CrmEntityReference -EntityLogicalName $EntityLogicalName -Id $Id)
+    # Add same additional fields to match Get-CrmRecords functions
+    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "ReturnProperty_EntityName" -Value $EntityLogicalName
+    Add-Member -InputObject $psobj -MemberType NoteProperty -Name "ReturnProperty_Id" -Value $record.($meta.PrimaryIdAttribute)
+	
     return $psobj
 }
 
