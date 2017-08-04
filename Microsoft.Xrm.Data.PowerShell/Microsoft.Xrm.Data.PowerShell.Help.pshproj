@@ -1626,7 +1626,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
           </Attributes>
           <Aliases />
           <Description>Specify TargetVersion of exporting solution.
-</Description>
+Examples of Valid versions: 7.0.0.0, 7.1.0.0, 8.0.0.0, 8.1.0.0, 8.2.0.0
+See https://msdn.microsoft.com/en-us/library/dn689055.aspx for more details.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -8919,7 +8920,7 @@ nav_oppts
     <CmdletObject verb="Get" noun="CrmUserMailbox">
       <Name>Get-CrmUserMailbox</Name>
       <Syntax>
-        <string>Get-CrmUserMailbox [-conn &lt;CrmServiceClient&gt;] [-UserId] &lt;String&gt; [-ShowDisplayName]</string>
+        <string>Get-CrmUserMailbox [-conn &lt;CrmServiceClient&gt;] [-UserId] &lt;String&gt;</string>
       </Syntax>
       <GeneralHelp>
         <Synopsis>Retrieves CRM user's mailbox.
@@ -8935,7 +8936,7 @@ nav_oppts
         <ReturnTypeDescription />
       </GeneralHelp>
       <ParamSets>
-        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="conn UserId ShowDisplayName Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="conn UserId Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
       </ParamSets>
       <Parameters>
         <ParameterDescription type="CrmServiceClient" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -8957,17 +8958,6 @@ nav_oppts
           </Attributes>
           <Aliases />
           <Description>An Id (guid) of CRM User.
-</Description>
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
-          <Name>ShowDisplayName</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description>When you specify the ShowDisplayName switch, you see DisplayName for all fields, otherwise you see SchemaName.
 </Description>
           <DefaultValue />
         </ParameterDescription>
