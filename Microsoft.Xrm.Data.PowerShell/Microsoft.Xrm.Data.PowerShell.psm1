@@ -76,7 +76,7 @@ function Connect-CrmOnline{
         [parameter(Mandatory=$true)]
         [PSCredential]$Credential, 
         [Parameter(Mandatory=$true)]
-        [ValidatePattern('https://([\w-]+).crm([0-9]*).dynamics.com')]
+        [ValidatePattern('([\w-]+).crm([0-9]*).dynamics.com')]
         [string]$ServerUrl, 
 		[Parameter(Mandatory=$false,ValueFromPipeline)]
         [ValidateScript({
@@ -89,7 +89,11 @@ function Connect-CrmOnline{
         })]
         [string]$ClientId
     )
-   
+	if($ServerUrl.StartsWith("https://","CurrentCultureIgnoreCase") -ne $true){
+		Write-Verbose "ServerUrl is missing https, fixing URL: https://$ServerUrl"
+		$ServerUrl = "https://" + $ServerUrl
+	}
+	Write-Verbose "Connecting to ServerUrl: $ServerUrl"
     $userName = $Credential.UserName
     $password = $Credential.GetNetworkCredential().Password
     $connectionString = "AuthType=Office365;RequireNewInstance=True;Username=$userName;Password=$password;Url=$ServerUrl"
