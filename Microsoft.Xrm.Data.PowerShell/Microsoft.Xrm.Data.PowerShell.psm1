@@ -89,10 +89,11 @@ function Connect-CrmOnline{
         })]
         [string]$ClientId
     )
-	if($ServerUrl.StartsWith('https://') -ne $true){
+	if($ServerUrl.StartsWith("https://","CurrentCultureIgnoreCase") -ne $true){
 		Write-Verbose "ServerUrl is missing https, fixing URL: https://$ServerUrl"
 		$ServerUrl = "https://" + $ServerUrl
 	}
+	Write-Verbose "Connecting to ServerUrl: $ServerUrl"
     $userName = $Credential.UserName
     $password = $Credential.GetNetworkCredential().Password
     $connectionString = "AuthType=Office365;RequireNewInstance=True;Username=$userName;Password=$password;Url=$ServerUrl"
