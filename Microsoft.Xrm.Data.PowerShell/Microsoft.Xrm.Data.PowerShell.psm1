@@ -283,7 +283,9 @@ function Get-CrmRecord{
         [parameter(Mandatory=$true, Position=2)]
         [guid]$Id,
         [parameter(Mandatory=$true, Position=3)]
-        [string[]]$Fields
+        [string[]]$Fields,
+        [parameter(Mandatory=$false, Position=4)]
+        [switch]$IncludeNullValue
     )
 
 	$conn = VerifyCrmConnectionParam $conn
@@ -312,23 +314,51 @@ function Get-CrmRecord{
     }
         
     $psobj = New-Object -TypeName System.Management.Automation.PSObject
-    $meta = Get-CrmEntityMetadata -conn $conn -EntityLogicalName $EntityLogicalName
+    $meta = Get-CrmEntityMetadata -conn $conn -EntityLogicalName $EntityLogicalName -EntityFilters Attributes
 
-    foreach($att in $record.GetEnumerator())
+    if($IncludeNullValue)
     {
-        if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference])
+        if($Fields -eq "*")
         {
-            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value.Name
-        }
-		elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue])
-        {
-			Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value.Value
+            # Add all fields first
+            foreach($attName in $meta.Attributes | ? IsValidForRead -eq $true | select LogicalName | sort LogicalName)
+            {
+                Add-Member -InputObject $psobj -MemberType NoteProperty -Name $attName.LogicalName -Value $null
+				Add-Member -InputObject $psobj -MemberType NoteProperty -Name ($attName.LogicalName + "_Property") -Value $null
+			}
         }
         else
         {
-            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $att.Key -Value $att.Value
+            foreach($attName in $Fields)
+            {
+                Add-Member -InputObject $psobj -MemberType NoteProperty -Name $attName -Value $null
+				Add-Member -InputObject $psobj -MemberType NoteProperty -Name ($attName + "_Property") -Value $null
+            }
         }
-    }  
+    }
+        
+    foreach($att in $record.GetEnumerator())
+    {       
+	    $keyName = $att.Key
+	    
+	    if(!($psobj | gm).Name.Contains($keyName))
+        {
+            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $null
+        }
+
+	    if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference])
+        {
+	        $psobj.($keyName) = $att.Value.Name
+	    }
+	    elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue])
+        {
+	    	$psobj.($keyName) = $att.Value.Value
+	    }
+	    else
+        {
+	    	$psobj.($keyName) = $att.Value
+	    }                
+    }   
 
     Add-Member -InputObject $psobj -MemberType NoteProperty -Name "original" -Value $record
     Add-Member -InputObject $psobj -MemberType NoteProperty -Name "logicalname" -Value $EntityLogicalName
@@ -402,7 +432,7 @@ function Set-CrmRecord{
                 {
                     $retrieveFields.Add(($CrmRecord.$crmFieldKey).Key)
                 }
-                elseif(($crmFieldKey -eq "original") -or ($crmFieldKey -eq "logicalname") `
+                elseif(($crmFieldKey -eq "original") -or ($crmFieldKey -eq "logicalname") -or ($crmFieldKey -eq "EntityReference")`
                   -or ($crmFieldKey -like "ReturnProperty_*"))
                 {
                     continue
@@ -467,7 +497,7 @@ function Set-CrmRecord{
         foreach($crmFieldKey in ($CrmRecord | Get-Member -MemberType NoteProperty).Name)
         {
             $crmFieldValue = $CrmRecord.($crmFieldKey)
-            if(($crmFieldKey -eq "original") -or ($crmFieldKey -eq "logicalname") `
+            if(($crmFieldKey -eq "original") -or ($crmFieldKey -eq "logicalname") -or ($crmFieldKey -eq "EntityReference")`
               -or ($crmFieldKey -like "*_Property") -or ($crmFieldKey -like "ReturnProperty_*"))
             {
                 continue
@@ -563,7 +593,15 @@ function Set-CrmRecord{
             }
             else
             {
-                switch($CrmRecord.($crmFieldKey + "_Property").Value.GetType().Name)
+                if($CrmRecord.($crmFieldKey + "_Property") -ne $null)
+                {
+                    $type = $CrmRecord.($crmFieldKey + "_Property").Value.GetType().Name
+                }
+                else
+                {
+                    $type = $crmFieldValue.GetType().Name
+                }
+                switch($type)
                 {
                     "Boolean" {
                         $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::CrmBoolean
