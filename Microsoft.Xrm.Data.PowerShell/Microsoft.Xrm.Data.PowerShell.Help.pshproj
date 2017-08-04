@@ -2963,7 +2963,7 @@ PS C:\&gt;$optionset.Options | % {[string]$_.Value + ":" + $_.Label.LocalizedLab
     <CmdletObject verb="Get" noun="CrmRecord">
       <Name>Get-CrmRecord</Name>
       <Syntax>
-        <string>Get-CrmRecord [-conn &lt;CrmServiceClient&gt;] [-EntityLogicalName] &lt;String&gt; [-Id] &lt;Guid&gt; [-Fields] &lt;String[]&gt;</string>
+        <string>Get-CrmRecord [-conn &lt;CrmServiceClient&gt;] [-EntityLogicalName] &lt;String&gt; [-Id] &lt;Guid&gt; [-Fields] &lt;String[]&gt; [[-IncludeNullValue] &lt;SwitchParameter&gt;]</string>
       </Syntax>
       <GeneralHelp>
         <Synopsis>Retrieves a CRM record by specifying EntityLogicalName, record's Id (guid) and field names.
@@ -2984,7 +2984,7 @@ You can use Get-CrmEntityAttributes cmdlet to see all fields logicalname. The re
         <ReturnTypeDescription />
       </GeneralHelp>
       <ParamSets>
-        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="conn EntityLogicalName Id Fields Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="conn EntityLogicalName Id Fields IncludeNullValue Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
       </ParamSets>
       <Parameters>
         <ParameterDescription type="CrmServiceClient" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -3027,13 +3027,23 @@ You can use Get-CrmEntityAttributes cmdlet to see all fields logicalname. The re
           <Description>A List of field logicalnames. Use "fieldname1, fieldname2, fieldname3" syntax to specify Fields, or use "*" to retrieve all fields (not recommended for performance reason.)</Description>
           <DefaultValue />
         </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="4" globbing="false">
+          <Name>IncludeNullValue</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Sepcify when you want to include fields even if it has null value. By default, all the fields doesn't include value won't be returned.</Description>
+          <DefaultValue />
+        </ParameterDescription>
       </Parameters>
       <Examples>
         <Example>
           <Name>Example 1</Name>
           <Cmd>Get-CrmRecord -conn $conn -EntityLogicalName account -Id be02caab-6c16-e511-80d6-c4346bc43dc0 -Fields name,accountnumber
 </Cmd>
-          <Description>This example retrieves an account record with name and accountnumber fields</Description>
+          <Description>This example retrieves an account record with name and accountnumber fields. If the value of the field is null, then it won't be returned.</Description>
           <Output>name_Property      : [name, A. Datum Corporation (sample)]
 name               : A. Datum Corporation (sample)
 accountid_Property : [accountid, be02caab-6c16-e511-80d6-c4346bc43dc0]
@@ -3071,6 +3081,23 @@ emailaddress1_Property               : [emailaddress1, someone9@example.com]
 emailaddress1                        : someone9@example.com
 ......
 </Output>
+        </Example>
+        <Example>
+          <Name>Example 4</Name>
+          <Cmd>Get-CrmRecord -conn $conn -EntityLogicalName account -Id be02caab-6c16-e511-80d6-c4346bc43dc0 -Fields name,accountnumber,websiteurl -IncludeNullValue
+</Cmd>
+          <Description>This example retrieves an account record with specified fields even if some of them are null value.</Description>
+          <Output>name_Property      : [name, A. Datum Corporation (sample)]
+name               : A. Datum Corporation (sample)
+accountid_Property : [accountid, be02caab-6c16-e511-80d6-c4346bc43dc0]
+accountid          : be02caab-6c16-e511-80d6-c4346bc43dc0
+accountnumber             : 
+accountnumber_Property    : 
+websiteurl                : 
+websiteurl_Property       : 
+original           : {[name_Property, [name, A. Datum Corporation (sample)]], [name, A. Datum Corporation (sample)], [accountid_Property, [accountid, 
+                    be02caab-6c16-e511-80d6-c4346bc43dc0]], [accountid, be02caab-6c16-e511-80d6-c4346bc43dc0]}
+logicalname        : account</Output>
         </Example>
       </Examples>
       <RelatedLinks />
