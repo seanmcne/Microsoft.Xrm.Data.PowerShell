@@ -7889,6 +7889,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
       <Syntax>
         <string>Set-CrmUserMailbox [-conn &lt;CrmServiceClient&gt;] [-UserId] &lt;String&gt; [-EmailAddress &lt;String&gt;] [-EmailServerProfile &lt;Guid&gt;] [-IncomingEmailDeliveryMethod &lt;Int32&gt;] [-OutgoingEmailDeliveryMethod &lt;Int32&gt;] [-ACTDeliveryMethod &lt;Int32&gt;]</string>
         <string>Set-CrmUserMailbox [-conn &lt;CrmServiceClient&gt;] [-UserId] &lt;String&gt; [-EmailAddress &lt;String&gt;] [-ApplyDefaultEmailSettings]</string>
+        <string>Set-CrmUserMailbox [-conn &lt;CrmServiceClient&gt;] [-UserId] &lt;String&gt; [-EmailAddress &lt;String&gt;] [-StateCode &lt;String&gt;] [-StatusCode &lt;String&gt;] [-ScheduleTest] [-MarkedAsPrimaryForExchangeSync] [-ApproveEmail]</string>
       </Syntax>
       <GeneralHelp>
         <Synopsis>Updates CRM user's mailibox.
@@ -7906,6 +7907,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
       <ParamSets>
         <CommandParameterSetInfo2 Name="Custom" Params="conn UserId EmailAddress EmailServerProfile IncomingEmailDeliveryMethod OutgoingEmailDeliveryMethod ACTDeliveryMethod Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
         <CommandParameterSetInfo2 Name="Default" Params="conn UserId EmailAddress ApplyDefaultEmailSettings Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="Status" Params="conn UserId EmailAddress StateCode StatusCode ScheduleTest MarkedAsPrimaryForExchangeSync ApproveEmail Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
       </ParamSets>
       <Parameters>
         <ParameterDescription type="CrmServiceClient" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -7993,7 +7995,58 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Specify this to apply the organization default settings</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>StateCode</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>StateCode value for a record. You can retrieve values by using Get-CrmEntityOptionSet &lt;EntityLogicalName&gt; statecode | % {$_.Items}
+</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>StatusCode</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>StatusCode value for a record. You can retrieve values by using Get-CrmEntityOptionSet &lt;EntityLogicalName&gt; statuscode | % {$_.Items}</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>ScheduleTest</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Specify this to schedule test for the mailbox</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>MarkedAsPrimaryForExchangeSync</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Specify this to mark the mailbox as primary mailbox to sync with Exchange Online</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>ApproveEmail</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Specify this to approve the emailaddress.</Description>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
@@ -8036,6 +8089,12 @@ When omitting conn parameter, cmdlets automatically finds it.</Description>
 </Cmd>
           <Description>This example updates mailbox email settings to default settings, which is in System Settings by omitting -conn parameter.
 When omitting conn parameter, cmdlets automatically finds it.</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 6</Name>
+          <Cmd>Set-CrmUserMailbox -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d  -StateCode Active -StatusCode Active -ScheduleTest -MarkedAsPrimaryForExchangeSync -ApproveEmail</Cmd>
+          <Description>This example activates mailbox, approve emailaddress, schedule test and set the mailbox as primary for sync with Exchange Online.</Description>
           <Output />
         </Example>
       </Examples>
@@ -10150,6 +10209,200 @@ Output                         True</Output>
     ------------     ------- -------------
     new_ContactBound {}      System.Runtime.Serialization.ExtensionDataObject
     new_ContactBound {}      System.Runtime.Serialization.ExtensionDataObject</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks />
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Set" noun="CrmQueueMailbox">
+      <Name>Set-CrmQueueMailbox</Name>
+      <Syntax>
+        <string>Set-CrmQueueMailbox [-conn &lt;CrmServiceClient&gt;] [-QueueId] &lt;String&gt; [-EmailAddress &lt;String&gt;] [-EmailServerProfile &lt;Guid&gt;] [-IncomingEmailDeliveryMethod &lt;Int32&gt;] [-OutgoingEmailDeliveryMethod &lt;Int32&gt;]</string>
+        <string>Set-CrmQueueMailbox [-conn &lt;CrmServiceClient&gt;] [-QueueId] &lt;String&gt; [-EmailAddress &lt;String&gt;] [-ApplyDefaultEmailSettings]</string>
+        <string>Set-CrmQueueMailbox [-conn &lt;CrmServiceClient&gt;] [-QueueId] &lt;String&gt; [-EmailAddress &lt;String&gt;] [-StateCode &lt;String&gt;] [-StatusCode &lt;String&gt;] [-ScheduleTest] [-MarkedAsPrimaryForExchangeSync] [-ApproveEmail]</string>
+      </Syntax>
+      <GeneralHelp>
+        <Synopsis />
+        <Description />
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType />
+        <ReturnUrl />
+        <ReturnTypeDescription />
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="Custom" Params="conn QueueId EmailAddress EmailServerProfile IncomingEmailDeliveryMethod OutgoingEmailDeliveryMethod Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="Default" Params="conn QueueId EmailAddress ApplyDefaultEmailSettings Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="Status" Params="conn QueueId EmailAddress StateCode StatusCode ScheduleTest MarkedAsPrimaryForExchangeSync ApproveEmail Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+      </ParamSets>
+      <Parameters>
+        <ParameterDescription type="CrmServiceClient" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>conn</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.
+</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
+          <Name>QueueId</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>An Id of queue.
+</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>EmailAddress</Name>
+          <Attributes>
+            <string>System.Management.Automation.ValidatePatternAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>An EmailAddress of the queue. 
+</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="Guid" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>EmailServerProfile</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Change "Server Profile" setting of Synchronization Method. This parameter accepts Email Server Profile record's guid. To get all profiles, use Get-CrmEmailServerProfiles command and use ProfileId.
+</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>IncomingEmailDeliveryMethod</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Change "Incoming Email" setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox incomingemaildeliverymethod | % Items command and use PickListItemId.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>OutgoingEmailDeliveryMethod</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Change "Outgoing Email" setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox outgoingemaildeliverymethod | % Items command and use PickListItemId.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>ApplyDefaultEmailSettings</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Specify this to apply the organization default settings</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>StateCode</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>StateCode value for a record. You can retrieve values by using Get-CrmEntityOptionSet &lt;EntityLogicalName&gt; statecode | % {$_.Items}
+</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>StatusCode</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>StatusCode value for a record. You can retrieve values by using Get-CrmEntityOptionSet &lt;EntityLogicalName&gt; statuscode | % {$_.Items}</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>ScheduleTest</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Specify this to schedule test for the mailbox</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>MarkedAsPrimaryForExchangeSync</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Specify this to mark the mailbox as primary mailbox to sync with Exchange Online</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>ApproveEmail</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Specify this to approve the emailaddress.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Set-CrmQueueMailbox -conn $conn -QueueId f9d40920-7a43-4f51-9749-0549c4caf67d -IncomingEmailDeliveryMethod 0</Cmd>
+          <Description>This example updates "Incoming Email" setting to "None".</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Set-CrmQueueMailbox -conn $conn -QueueId f9d40920-7a43-4f51-9749-0549c4caf67d -EmailServerProfile 1b2d4b03-831e-e511-80e1-c4346bc44d24</Cmd>
+          <Description>This example updates "Server Profile" setting to specified Profile.</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 3</Name>
+          <Cmd>Set-CrmQueueMailbox -conn $conn -QueueId f9d40920-7a43-4f51-9749-0549c4caf67d -ApplyDefaultEmailSettings</Cmd>
+          <Description>This example updates mailbox email settings to default settings, which is in System Settings.</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 4</Name>
+          <Cmd>Set-CrmQueueMailbox -QueueId f9d40920-7a43-4f51-9749-0549c4caf67d -IncomingEmailDeliveryMethod 0</Cmd>
+          <Description>This example disables "Incoming Email" setting to "None" by omitting -conn parameter.
+When omitting conn parameter, cmdlets automatically finds it.</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 5</Name>
+          <Cmd>Set-CrmQueueMailbox -QueueId f9d40920-7a43-4f51-9749-0549c4caf67d -ApplyDefaultEmailSettings</Cmd>
+          <Description>This example updates mailbox email settings to default settings, which is in System Settings by omitting -conn parameter. When omitting conn parameter, cmdlets automatically finds it.</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 6</Name>
+          <Cmd>Set-CrmQueueMailbox -conn $conn -QueueId f9d40920-7a43-4f51-9749-0549c4caf67d  -StateCode Active -StatusCode Active -ScheduleTest -MarkedAsPrimaryForExchangeSync -ApproveEmail</Cmd>
+          <Description>This example activates mailbox, approve emailaddress, schedule test and set the mailbox as primary for sync with Exchange Online.</Description>
+          <Output />
         </Example>
       </Examples>
       <RelatedLinks />

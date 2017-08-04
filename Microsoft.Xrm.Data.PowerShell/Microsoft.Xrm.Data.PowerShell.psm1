@@ -4729,9 +4729,33 @@ function Set-CrmUserMailbox {
         [parameter(Mandatory=$false, ParameterSetName="Custom")]
         [int]$ACTDeliveryMethod,
         [parameter(Mandatory=$false, ParameterSetName="Default")]
-        [switch]$ApplyDefaultEmailSettings
+        [switch]$ApplyDefaultEmailSettings,
+        [parameter(Mandatory=$false, ParameterSetName="Status")]
+        [string]$StateCode,
+        [parameter(Mandatory=$false, ParameterSetName="Status")]
+        [string]$StatusCode,
+        [parameter(Mandatory=$false, ParameterSetName="Status")]
+        [switch]$ScheduleTest,
+        [parameter(Mandatory=$false, ParameterSetName="Status")]
+        [switch]$MarkedAsPrimaryForExchangeSync,
+        [parameter(Mandatory=$false, ParameterSetName="Status")]
+        [switch]$ApproveEmail
     )
 	$conn = VerifyCrmConnectionParam $conn
+
+    $fetch = @"
+<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
+  <entity name="mailbox">
+    <attribute name="mailboxid" />
+    <filter type="and">
+      <condition attribute="regardingobjectid" operator="eq" value="{$UserId}" />
+    </filter>
+  </entity>
+</fetch>
+"@
+
+    $Id = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords[0].MailboxId
+
     $updateFields = @{}
     if($ApplyDefaultEmailSettings)
     {
@@ -4750,6 +4774,18 @@ function Set-CrmUserMailbox {
         $updateFields.Add("outgoingemaildeliverymethod", (New-CrmOptionSetValue $xml.ChildNodes.OutgoingEmailDeliveryMethod))
         $updateFields.Add("actdeliverymethod", (New-CrmOptionSetValue $xml.ChildNodes.ACTDeliveryMethod))
     }
+    if($ScheduleTest)
+    {
+        $updateFields.Add("testemailconfigurationscheduled", $true)
+    }
+    if($MarkedAsPrimaryForExchangeSync)
+    {
+        $updateFields.Add("orgmarkedasprimaryforexchangesync", $true)
+    }
+    if($ApproveEmail)
+    {
+        Approve-CrmEmailAddress -conn $conn -UserId $UserId
+    }
     foreach($parameter in $MyInvocation.BoundParameters.GetEnumerator())
     {   
         if($parameter.Key -in ("UserId", "ApplyDefaultEmailSettings", "conn"))
@@ -4764,22 +4800,118 @@ function Set-CrmUserMailbox {
         {
             $updateFields.Add($parameter.Key.ToLower(), (New-CrmOptionSetValue $parameter.Value))
         }
+        elseif($parameter.Key -in ("StateCode","StatusCode"))
+        {
+            Set-CrmRecordState -conn $conn -EntityLogicalName mailbox -Id $Id -StateCode $StateCode -StatusCode $StatusCode
+        }
         else
         {
             $updateFields.Add($parameter.Key.ToLower(), $parameter.Value)
         }
     }
+
+    Set-CrmRecord -conn $conn -EntityLogicalName mailbox -Id $Id -Fields $updateFields
+}
+
+function Set-CrmQueueMailbox {
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+    [CmdletBinding()]
+    PARAM(
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1)]
+        [string]$QueueId,
+        [parameter(Mandatory=$false)]
+        [ValidatePattern('/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/')]
+        [string]$EmailAddress,
+        [parameter(Mandatory=$false, ParameterSetName="Custom")]        
+        [guid]$EmailServerProfile,
+        [parameter(Mandatory=$false, ParameterSetName="Custom")]
+        [int]$IncomingEmailDeliveryMethod,
+        [parameter(Mandatory=$false, ParameterSetName="Custom")]
+        [int]$OutgoingEmailDeliveryMethod,
+        [parameter(Mandatory=$false, ParameterSetName="Default")]
+        [switch]$ApplyDefaultEmailSettings,
+        [parameter(Mandatory=$false, ParameterSetName="Status")]
+        [string]$StateCode,
+        [parameter(Mandatory=$false, ParameterSetName="Status")]
+        [string]$StatusCode,
+        [parameter(Mandatory=$false, ParameterSetName="Status")]
+        [switch]$ScheduleTest,
+        [parameter(Mandatory=$false, ParameterSetName="Status")]
+        [switch]$MarkedAsPrimaryForExchangeSync,
+        [parameter(Mandatory=$false, ParameterSetName="Status")]
+        [switch]$ApproveEmail
+    )
+	$conn = VerifyCrmConnectionParam $conn
     $fetch = @"
-<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
-  <entity name="mailbox">
-    <attribute name="mailboxid" />
-    <filter type="and">
-      <condition attribute="regardingobjectid" operator="eq" value="{$UserId}" />
-    </filter>
-  </entity>
-</fetch>
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
+      <entity name="mailbox">
+        <attribute name="mailboxid" />
+        <filter type="and">
+          <condition attribute="regardingobjectid" operator="eq" value="{$QueueId}" />
+        </filter>
+      </entity>
+    </fetch>
 "@
+
     $Id = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords[0].MailboxId
+    
+    $updateFields = @{}
+    if($ApplyDefaultEmailSettings)
+    {
+        $fetch = @"
+        <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
+            <entity name="organization">
+                <attribute name="defaultemailserverprofileid" />       
+                <attribute name="defaultemailsettings" />            
+            </entity>
+        </fetch>
+"@
+        $record = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch).CrmRecords[0]
+        $updateFields.Add("emailserverprofile", $record.defaultemailserverprofileid_Property.Value)
+        $xml = [xml]$record.defaultemailsettings
+        $updateFields.Add("incomingemaildeliverymethod", (New-CrmOptionSetValue $xml.ChildNodes.IncomingEmailDeliveryMethod))
+        $updateFields.Add("outgoingemaildeliverymethod", (New-CrmOptionSetValue $xml.ChildNodes.OutgoingEmailDeliveryMethod))
+    }
+    if($ScheduleTest)
+    {
+        $updateFields.Add("testemailconfigurationscheduled", $true)
+    }
+    if($MarkedAsPrimaryForExchangeSync)
+    {
+        $updateFields.Add("orgmarkedasprimaryforexchangesync", $true)
+    }
+    if($ApproveEmail)
+    {
+        Approve-CrmEmailAddress -conn $conn -QueueId $QueueId
+    }
+
+    foreach($parameter in $MyInvocation.BoundParameters.GetEnumerator())
+    {   
+        if($parameter.Key -in ("UserId", "ApplyDefaultEmailSettings", "conn"))
+        {
+            continue;
+        }
+        if($parameter.Key -in ("EmailServerProfile"))
+        {
+            $updateFields.Add($parameter.Key.ToLower(), (New-CrmEntityReference emailserverprofile $parameter.Value))
+        }
+        elseif($parameter.Key -in ("IncomingEmailDeliveryMethod","OutgoingEmailDeliveryMethod"))
+        {
+            $updateFields.Add($parameter.Key.ToLower(), (New-CrmOptionSetValue $parameter.Value))
+        }
+        elseif($parameter.Key -in ("StateCode","StatusCode"))
+        {
+            Set-CrmRecordState -conn $conn -EntityLogicalName mailbox -Id $Id -StateCode $StateCode -StatusCode $StatusCode
+        }
+        else
+        {
+            $updateFields.Add($parameter.Key.ToLower(), $parameter.Value)
+        }
+    }
+
+    
     Set-CrmRecord -conn $conn -EntityLogicalName mailbox -Id $Id -Fields $updateFields
 }
 
