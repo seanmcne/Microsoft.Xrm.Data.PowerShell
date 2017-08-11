@@ -77,19 +77,24 @@ Task Build -Depends Test {
         #Update-Metadata -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -Value $Version -ErrorAction stop
 	$Copyright = "(C) $((get-date).year) Microsoft Corporation All rights reserved."
 	
+	#$vNum = (import-powershelldatafile $env:BHPSModuleManifest).ModuleVersion
+	#$manifestVersion = [System.Version]::Parse($vNum)
+	#$dateVersion = (Get-Date -format yy.Mdd.HHmm)
+	#$newBuildNumber = "$($manifestVersion.Major).$dateVersion"
+	
+	#set the build version in PoweShellGallery identical to the manifest
 	$vNum = (import-powershelldatafile $env:BHPSModuleManifest).ModuleVersion
 	$manifestVersion = [System.Version]::Parse($vNum)
-	$dateVersion = (Get-Date -format yy.Mdd.HHmm)
-	$newBuildNumber = "$($manifestVersion.Major).$dateVersion"
+	$newBuildNumber = "$($manifestVersion.Major).$($manifestVersion.Minor)"
 	Update-AppveyorBuild -Version $newBuildNumber
 	
 	Update-Metadata -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -Value $newBuildNumber -ErrorAction stop
 	Update-Metadata -Path $env:BHPSModuleManifest -PropertyName Copyright -Value $Copyright -ErrorAction stop
 	
 	#remove files that do not belong in the release
-	"Removing *.psproj from $ENV:BHModulePath..."
+	"Removing *.psproj and *.pshproj from $ENV:BHModulePath..."
 	try{
-		$Files = Get-ChildItem $ENV:BHModulePath -Include *.pssproj -Recurse
+		$Files = Get-ChildItem $ENV:BHModulePath -Include *.pssproj,*.pshproj -Recurse
 		foreach ($File in $Files){ 
 			"Deleting File $File"
 			Remove-Item $File | out-null 
