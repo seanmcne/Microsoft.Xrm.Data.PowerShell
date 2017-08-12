@@ -21,18 +21,18 @@ Note this method requires: Powershell Management Framework 5 or higher - details
 Type: Install-Module Microsoft.Xrm.Data.PowerShell -Scope CurrentUser
 
 ### Alternative: How to file copy or manually deploy this module
-1.Go to Releases(https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/releases) and Download Microsoft.Xrm.Data.Powershell.zip.
+1. Go to Releases(https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/releases) and Download Microsoft.Xrm.Data.Powershell.zip.
 2. Right click the downloaded zip file and click "Properties". 
 3. Check "Unblock" checkbox and click "OK", or simply click "Unblock" button depending on OS versions. 
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![Image of Unblock](https://i1.gallery.technet.s-msft.com/powershell-functions-for-16c5be31/image/file/142582/1/unblock.png)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![Image of Unblock](https://i1.gallery.technet.s-msft.com/powershell-functions-for-16c5be31/image/file/142582/1/unblock.png)
 
 4. Extract the zip file and copy "Microsoft.Xrm.Data.PowerShell" folder to one of the following folders:
   * %USERPROFILE%\Documents\WindowsPowerShell\Modules
   * %WINDIR%\System32\WindowsPowerShell\v1.0\Modules
 Following image shows this module copied to User Profile. If you want anyone to use the module on the computer, copy them to System Wide PowerShell module folder instead. If you do not have the folder, you can manually create them.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![Image of individual](https://i1.gallery.technet.s-msft.com/scriptcenter/powershell-functions-for-16c5be31/image/file/142578/1/individual.png)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![Image of individual](https://i1.gallery.technet.s-msft.com/scriptcenter/powershell-functions-for-16c5be31/image/file/142578/1/individual.png)
 
 5. As this module is not signed, you may need to change Execution Policy to load the module. You can do so by executing following command.
 ```PowerShell
