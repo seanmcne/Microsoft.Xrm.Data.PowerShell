@@ -1,5 +1,5 @@
 ## How to contribute
-Thanks for your interests and effort to contribute to this module!!! These are basic steps how to contribute:smile:
+Thanks for your interests and effort to contribute to this module!!! These are basic steps for how to contribute:smile:
 
 #### Start from addng an issue
 Regardleess you fix the issue or add new function, please add an issue first so that everyone can aware what's the current issues/challenges.
