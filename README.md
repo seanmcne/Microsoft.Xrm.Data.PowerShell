@@ -16,13 +16,13 @@ This module comes from Dynamics CRM SDK and it exposes two functions, Get-CrmOrg
 
 [Use PowerShell cmdlets for XRM tooling to connect to CRM](https://technet.microsoft.com/en-us/library/dn689040.aspx)
 
-### How to deploy from the PowerShell Gallery
+### How to deploy from the PowerShell Gallery (Preferred)
 Note this method requires: Powershell Management Framework 5 or higher - details: https://www.powershellgallery.com/ 
 
-##### Install the module via PSGallery (PowerShell Gallery) 
+##### Install the module via PowerShell Gallery 
 Type: Install-Module Microsoft.Xrm.Data.PowerShell -Scope CurrentUser
 
-### How to file copy or manually deploy this module
+### Alternative: How to file copy or manually deploy this module
 1.Go to Releases(https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/releases) and Download Microsoft.Xrm.Data.Powershell.zip.
 2. Right click the downloaded zip file and click "Properties". 
 3. Check "Unblock" checkbox and click "OK", or simply click "Unblock" button depending on OS versions. 
@@ -50,7 +50,7 @@ Import-Module Microsoft.Xrm.Data.Powershell
 ```
 *The module requires PowerShell v4.0.
 
-### How Microsoft.Xrm.Data.Powershell  works
+### How Microsoft.Xrm.Data.Powershell works
 Microsoft.Xrm.Data.Powershell module exposes many functions, but you can use Connect-CrmOnlineDiscovery, Connect-CrmOnPremDiscovery to connect to any CRM organization by using Discovery Service. Use Connect-CrmOnline function for Azure Automation. By executing these function, it creates $conn global variable. Any other functions which needs to connect to the CRM Organization takes connection parameter. You can explicitly specify the connection by using -conn parameter, but if you omit the connection, functions retrieve connection from global variable.
 
 Alternatively, you can create multiple connection objects and pass them into each function under the –conn parameter.
