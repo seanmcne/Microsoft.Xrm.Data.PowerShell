@@ -15,7 +15,7 @@ Once you fixed the issue or added new function, please make pull request.
 
 For the new function, please use the following template.
 
-- User <Verb>-Crm<Noun> to name function
+- Use {Verb}-Crm{Noun} to name function
 - Specify Mandatory and Position for parameters (and more if you need)
 - Leave $conn parameter as it is to make all the functions experience same
 - Please add enough help and examples
@@ -35,6 +35,7 @@ function Verb-CrmNoun{
 
  .PARAMETER Param1
  Param1 detail
+ 
  .PARAMETER Param2
  Param2 detail
  
@@ -50,9 +51,7 @@ function Verb-CrmNoun{
         [parameter(Mandatory=$false, Position=2)]
         [int]$Param2
     )
-
-	$conn = VerifyCrmConnectionParam $conn
-
-  ## Do work
+      $conn = VerifyCrmConnectionParam $conn
+      ## Do work
 }
 ```
