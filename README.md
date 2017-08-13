@@ -37,7 +37,7 @@ Following image shows this module copied to User Profile. If you want anyone to 
 ```PowerShell
  Set-ExecutionPolicy –ExecutionPolicy RemoteSigned –Scope CurrentUser
 ```
-&nbsp;&nbsp;&nbsp;&nbsp;*Refer to 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Refer to 
 [Set-ExecutionPolicy](https://technet.microsoft.com/en-us/library/ee176961.aspx) 
 for more information.*
 
@@ -46,7 +46,7 @@ for more information.*
 #Import Micrsoft.Xrm.Data.Powershell module 
 Import-Module Microsoft.Xrm.Data.Powershell
 ```
-**The module requires PowerShell v4.0.*
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* *The module requires PowerShell v4.0.*
 
 ### How Microsoft.Xrm.Data.Powershell works
 Microsoft.Xrm.Data.Powershell module exposes many functions, but you can use Connect-CrmOnlineDiscovery, Connect-CrmOnPremDiscovery to connect to any CRM organization by using Discovery Service. Use Connect-CrmOnline function for Azure Automation. By executing these function, it creates $conn global variable. Any other functions which needs to connect to the CRM Organization takes connection parameter. You can explicitly specify the connection by using -conn parameter, but if you omit the connection, functions retrieve connection from global variable.
