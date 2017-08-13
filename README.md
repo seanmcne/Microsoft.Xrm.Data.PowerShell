@@ -37,9 +37,10 @@ Following image shows this module copied to User Profile. If you want anyone to 
 ```PowerShell
  Set-ExecutionPolicy –ExecutionPolicy RemoteSigned –Scope CurrentUser
 ```
-Please refer to 
+&nbsp;&nbsp;&nbsp;&nbsp;*Refer to 
 [Set-ExecutionPolicy](https://technet.microsoft.com/en-us/library/ee176961.aspx) 
-for more information.
+for more information.*
+
 6. Open PowerShell and run following command to load the module.
 ``` powershell
 #Import Micrsoft.Xrm.Data.Powershell module 
