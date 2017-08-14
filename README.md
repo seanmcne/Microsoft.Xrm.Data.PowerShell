@@ -22,6 +22,18 @@ Note this method requires: Powershell Management Framework 5 or higher - details
 ```Powershell
 Install-Module Microsoft.Xrm.Data.PowerShell -Scope CurrentUser
 ```
+To Update to a newer release:
+```Powershell
+Update-Module Microsoft.Xrm.Data.PowerShell -Force
+```
+
+Troubleshooting: 
+1. Try adding the -verbose flag to your install and update module commands - this should give you more information
+2. As this module is not signed, you may need to change Execution Policy to load the module. You can do so by executing following command.
+```PowerShell
+ Set-ExecutionPolicy –ExecutionPolicy RemoteSigned –Scope CurrentUser
+```
+
 ### Alternative: How to file copy or manually deploy this module
 1. Go to Releases(https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/releases) and Download Microsoft.Xrm.Data.Powershell.zip.
 2. Right click the downloaded zip file and click "Properties". 
