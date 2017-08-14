@@ -6,6 +6,10 @@
 - [Install via PowerShell](/README.md#preferred-install-the-module-via-powershell-gallery)
 - [Install via a downloaded zip](/README.md#alternative-how-to-file-copy-or-manually-deploy-this-module)
 
+[How the module works](/README.md#how-microsoftxrmdatapowershell-works)
+[How to get a list of the commands](/README.md#how-to-get-command-details)
+[About the Authors](/README.md#about-authors)
+
 New releases of this can be  found on the [Release Page](https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/releases) or can be downloaded using OneGet (Install-Module) from the Powershell Gallery. 
 
 **Microsoft.Xrm.Data.Powershell** 
@@ -129,7 +133,7 @@ Get-Command *crm*
 ```PowerShell
 Get-Help New-CrmRecord -Detailed
 ```
-#### About Authors
+### About Authors
 This module is implemented by Sean McNellis and Kenichiro Nakamura.
  
 Sean McNellis, Sr. Premier Field Engineer, is based out of North America and works supporting Dynamics CRM customers.
