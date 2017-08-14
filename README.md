@@ -136,14 +136,11 @@ Get-Help New-CrmRecord -Detailed
 ### About Authors
 This module is implemented by Sean McNellis and Kenichiro Nakamura.
  
-Sean McNellis, Sr. Premier Field Engineer, is based out of North America and works supporting Dynamics CRM customers.
-
+[Sean McNellis](https://twitter.com/seanmcne), Sr. Premier Field Engineer, is based out of North America and works supporting Dynamics CRM customers.
 Kenichiro Nakamura, Sr. Premier Mission Critical Specialist, is based out of Japan and works supporting PMC customers.
  
 Blog (English): [http://blogs.msdn.com/CrmInTheField](http://blogs.msdn.com/CrmInTheField)
-
 Blog (Japanese): [http://blogs.msdn.com/CrmJapan](http://blogs.msdn.com/CrmJapan) 
-
-Twitter: @pfedynamics
+Twitter: [@pfedynamics](https://twitter.com/pfedynamics)
 
 Initial Release to GitHub. Refer to previous release information [here](https://gallery.technet.microsoft.com/PowerShell-functions-for-16c5be31).
