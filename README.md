@@ -3,7 +3,7 @@
 **Microsoft.Xrm.Data.Powershell.zip** contains one primary module, Microsoft.Xrm.Data.Powershell, but also relies on other included dll's such as Microsoft.Xrm.Tooling.CrmConnector.Powershell which we are loading as a secondary module (instead of a snap-in). 
 
 **Installation Options:**
-- [Install via PowerShell](/README.md#how-to-deploy-from-the-powershell-gallery-preferred)
+- [Install via PowerShell](/README.md#preferred-install-the-module-via-powershell-gallery)
 - [Install via a downloaded zip](/README.md#alternative-how-to-file-copy-or-manually-deploy-this-module)
 
 New releases of this can be  found on the [Release Page](https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/releases) or can be downloaded using OneGet (Install-Module) from the Powershell Gallery. 
@@ -16,7 +16,7 @@ This module builds from Microsoft.Xrm.Tooling.CrmConnector.Powershell, on top of
 
 This module comes from Dynamics CRM SDK and it exposes two functions, Get-CrmOrganizations and Get-CrmConnection. See the link for more detail. [Use PowerShell cmdlets for XRM tooling to connect to CRM](https://technet.microsoft.com/en-us/library/dn689040.aspx)
 
-#### Preferred: Install the module via PowerShell Gallery
+### Preferred: Install the module via PowerShell Gallery
 Note this method requires: Powershell Management Framework 5 or higher - details: https://www.powershellgallery.com/ 
 
 ```Powershell
