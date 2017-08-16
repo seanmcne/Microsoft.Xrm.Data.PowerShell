@@ -1,8 +1,14 @@
-
 # Microsoft.Xrm.Data.PowerShell
-
 ### Overview 
 **Microsoft.Xrm.Data.Powershell.zip** contains one primary module, Microsoft.Xrm.Data.Powershell, but also relies on other included dll's such as Microsoft.Xrm.Tooling.CrmConnector.Powershell which we are loading as a secondary module (instead of a snap-in). 
+
+**Installation Options:**
+- [Install via PowerShell](/README.md#preferred-install-the-module-via-powershell-gallery)
+- [Install via a downloaded zip](/README.md#alternative-how-to-file-copy-or-manually-deploy-this-module)
+
+[How the module works](/README.md#how-microsoftxrmdatapowershell-works)
+[How to get a list of the commands](/README.md#how-to-get-command-details)
+[About the Authors](/README.md#about-authors)
 
 New releases of this can be  found on the [Release Page](https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/releases) or can be downloaded using OneGet (Install-Module) from the Powershell Gallery. 
 
@@ -12,51 +18,63 @@ This module builds from Microsoft.Xrm.Tooling.CrmConnector.Powershell, on top of
 
 **Microsoft.Xrm.Tooling.CrmConnector.Powershell**
 
-This module comes from Dynamics CRM SDK and it exposes two functions, Get-CrmOrganizations and Get-CrmConnection. See the link for more detail.
+This module comes from Dynamics CRM SDK and it exposes two functions, Get-CrmOrganizations and Get-CrmConnection. See the link for more detail. [Use PowerShell cmdlets for XRM tooling to connect to CRM](https://technet.microsoft.com/en-us/library/dn689040.aspx)
 
-[Use PowerShell cmdlets for XRM tooling to connect to CRM](https://technet.microsoft.com/en-us/library/dn689040.aspx)
-
-###How to deploy from the PowerShell Gallery using OneGet
+### Preferred: Install the module via PowerShell Gallery
 Note this method requires: Powershell Management Framework 5 or higher - details: https://www.powershellgallery.com/ 
-#####Install the module via OneGet
-<p>Type: Install-Module Microsoft.Xrm.Data.PowerShell -Scope CurrentUser</p>
 
-#####Inspect the module 
-<p>Type: Save-Module Microsoft.Xrm.Data.PowerShell -Path <path></p>
+```Powershell
+Install-Module Microsoft.Xrm.Data.PowerShell -Scope CurrentUser
+```
+To Update to a newer release:
+```Powershell
+Update-Module Microsoft.Xrm.Data.PowerShell -Force
+```
 
-
-###How to file copy or manually deploy this module
-<p>1.Go to Releases(https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/releases) and Download Microsoft.Xrm.Data.Powershell.zip.
-<p>2. Right click the downloaded zip file and click "Properties". </p> 
-<p>3. Check "Unblock" checkbox and click "OK", or simply click "Unblock" button depending on OS versions. </p> 
-![Image of Unblock](https://i1.gallery.technet.s-msft.com/powershell-functions-for-16c5be31/image/file/142582/1/unblock.png)
-<p>4. Extract the zip file and copy "Microsoft.Xrm.Data.PowerShell" folder to one of the following folders:<br/>
-  * %USERPROFILE%\Documents\WindowsPowerShell\Modules<br/>
-  * %WINDIR%\System32\WindowsPowerShell\v1.0\Modules<br/>
-Following image shows this module copied to User Profile. If you want anyone to use the module on the computer, copy them to System Wide PowerShell module folder instead. If you do not have the folder, you can manually create them.</p> 
-![Image of individual](https://i1.gallery.technet.s-msft.com/scriptcenter/powershell-functions-for-16c5be31/image/file/142578/1/individual.png)
-<p>5. As this module is not signed, you may need to change Execution Policy to load the module. You can do so by executing following command. </p> 
+Troubleshooting: 
+1. Try adding the -verbose flag to your install and update module commands - this should give you more information
+2. As this module is not signed, you may need to change Execution Policy to load the module. You can do so by executing following command.
 ```PowerShell
  Set-ExecutionPolicy –ExecutionPolicy RemoteSigned –Scope CurrentUser
 ```
-Please refer to 
-[Set-ExecutionPolicy](https://technet.microsoft.com/en-us/library/ee176961.aspx) 
-for more information.
-<p>6. Open PowerShell and run following command to load the module. </p> 
+
+### Alternative: How to file copy or manually deploy this module
+1. Go to Releases(https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/releases) and Download Microsoft.Xrm.Data.Powershell.zip.
+2. Right click the downloaded zip file and click "Properties". 
+3. Check "Unblock" checkbox and click "OK", or simply click "Unblock" button depending on OS versions. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://i1.gallery.technet.s-msft.com/powershell-functions-for-16c5be31/image/file/142582/1/unblock.png" width="250">
+
+4. Extract the zip file and copy "Microsoft.Xrm.Data.PowerShell" folder to one of the following folders:
+  * %USERPROFILE%\Documents\WindowsPowerShell\Modules
+  * %WINDIR%\System32\WindowsPowerShell\v1.0\Modules
+Following image shows this module copied to User Profile. If you want anyone to use the module on the computer, copy them to System Wide PowerShell module folder instead. If you do not have the folder, you can manually create them.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://i1.gallery.technet.s-msft.com/scriptcenter/powershell-functions-for-16c5be31/image/file/142578/1/individual.png" width="275">
+
+5. As this module is not signed, you may need to change Execution Policy to load the module. You can do so by executing following command.
 ```PowerShell
-# Import Micrsoft.Xrm.Data.Powershell module 
+ Set-ExecutionPolicy –ExecutionPolicy RemoteSigned –Scope CurrentUser
+```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Refer to 
+[Set-ExecutionPolicy](https://technet.microsoft.com/en-us/library/ee176961.aspx) 
+for more information.*
+
+6. Open PowerShell and run following command to load the module.
+``` powershell
+#Import Micrsoft.Xrm.Data.Powershell module 
 Import-Module Microsoft.Xrm.Data.Powershell
 ```
-*The module requires PowerShell v4.0.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* *The module requires PowerShell v4.0.*
 
-###How Microsoft.Xrm.Data.Powershell  works
+### How Microsoft.Xrm.Data.Powershell works
 Microsoft.Xrm.Data.Powershell module exposes many functions, but you can use Connect-CrmOnlineDiscovery, Connect-CrmOnPremDiscovery to connect to any CRM organization by using Discovery Service. Use Connect-CrmOnline function for Azure Automation. By executing these function, it creates $conn global variable. Any other functions which needs to connect to the CRM Organization takes connection parameter. You can explicitly specify the connection by using -conn parameter, but if you omit the connection, functions retrieve connection from global variable.
 
 Alternatively, you can create multiple connection objects and pass them into each function under the –conn parameter.
 
-###Example
+### Example
 This example shows how to create connection and do CRUD operation as well as manipulate System Settings.
-<p>1. Run following command to connect to Dynamics CRM Organization via  the Xrm Tooling GUI.</p>
+1. Run following command to connect to Dynamics CRM Organization via  the Xrm Tooling GUI.
 ```PowerShell
 # Online
 Connect-CrmOnlineDiscovery -InteractiveMode
@@ -68,7 +86,7 @@ Connect-CrmOnline -Credential $cred -ServerUri "https://<org>.crm.dynamics.com"
 
 For Azure Automation, write all scripts inside inlinescript block as Runbook or use PowerShell type.
 
-<p>2. Run following command to test CRUD.</p>
+2. Run following command to test CRUD.
 ```PowerShell
 # Create an account and store record Guid to a variable 
 $accountId = New-CrmRecord -conn $conn -EntityLogicalName account -Fields @{"name"="Sample Account";"telephone1"="555-5555"} 
@@ -94,7 +112,7 @@ Get-CrmRecord -conn $conn -EntityLogicalName account -Id $accountId -Fields name
 # Delete the record 
 Remove-CrmRecord -conn $conn -CrmRecord $account
 ```
-<p>3. Run following command to manipulate SystemSettings.</p>
+3. Run following command to manipulate SystemSettings.
 ```PowerShell
 # Display the current setting 
 Get-CrmSystemSettings -conn $conn -ShowDisplayName 
@@ -105,24 +123,24 @@ Set-CrmSystemSettings -conn $conn -PricingDecimalPrecision 1
 # Display the current setting 
 Get-CrmSystemSettings -conn $conn -ShowDisplayName
 ```
-###How to get command details
+### How to get command details
 Each command has detail explanation.
-<p>1. Run following command to get all commands.</p>
+1. Run following command to get all commands.
 ```PowerShell
 Get-Command *crm*
 ```
-<p>2. Run following command to get help.</p>
+2. Run following command to get help.
 ```PowerShell
 Get-Help New-CrmRecord -Detailed
 ```
-####About Authors
+### About Authors
 This module is implemented by Sean McNellis and Kenichiro Nakamura.
  
-Sean McNellis, Sr. Premier Field Engineer, is based out of North America and works supporting Dynamics CRM customers.<br/>
+<a href="https://twitter.com/seanmcne" target="_blank">Sean McNellis</a>, Sr. Premier Field Engineer, is based out of North America and works supporting Dynamics CRM customers.
 Kenichiro Nakamura, Sr. Premier Mission Critical Specialist, is based out of Japan and works supporting PMC customers.
- 
-Blog (English): [http://blogs.msdn.com/CrmInTheField](http://blogs.msdn.com/CrmInTheField) <br/>
-Blog (Japanese): [http://blogs.msdn.com/CrmJapan](http://blogs.msdn.com/CrmJapan) <br/>
-Twitter: @pfedynamics
 
-Initial Release to GitHub. Refer to previous release information [here](https://gallery.technet.microsoft.com/PowerShell-functions-for-16c5be31).
+Blog (English): <a href="http://blogs.msdn.com/CrmInTheField" target="_blank">http://blogs.msdn.com/CrmInTheField</a>
+Blog (Japanese): <a href="http://blogs.msdn.com/CrmJapan" target="_blank">http://blogs.msdn.com/CrmJapan</a>
+Twitter: [@pfedynamics](https://twitter.com/pfedynamics)
+
+Refer to previous release information [here](https://gallery.technet.microsoft.com/PowerShell-functions-for-16c5be31).

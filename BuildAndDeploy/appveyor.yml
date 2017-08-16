@@ -1,7 +1,7 @@
 # See http://www.appveyor.com/docs/appveyor-yml for many more options
 #Publish to PowerShell Gallery with this key
-environment:
-  BHProjectPath: ..\
+#environment:
+#  BHProjectPath: ..\
 
 # Allow WMF5 (i.e. PowerShellGallery functionality)
 os: WMF 5
