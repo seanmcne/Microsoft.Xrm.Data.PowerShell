@@ -210,7 +210,9 @@ function New-CrmRecord{
         [parameter(Mandatory=$true, Position=2, ParameterSetName="NameAndFields")]
         [hashtable]$Fields,
         [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord")]
-        [PSObject]$CrmRecord
+        [PSObject]$CrmRecord,
+	[parameter(Mandatory=$false, Position=2, ParameterSetName="CrmRecord")]
+        [switch]$PreserveCrmRecordId
     )
 
 	$conn = VerifyCrmConnectionParam $conn
@@ -225,7 +227,7 @@ function New-CrmRecord{
         {
             if($crmFieldKey.EndsWith("_Property"))
             {
-                if($CrmRecord.ReturnProperty_Id -eq $CrmRecord.$crmFieldKey.Value)
+                if($CrmRecord.ReturnProperty_Id -eq $CrmRecord.$crmFieldKey.Value -and !$PreserveCrmRecordId)
                 {
                     continue;
                 }               
