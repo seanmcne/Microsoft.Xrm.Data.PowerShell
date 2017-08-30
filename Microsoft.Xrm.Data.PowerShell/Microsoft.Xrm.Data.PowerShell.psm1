@@ -73,12 +73,16 @@ function Connect-CrmOnline{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
-        [parameter(Mandatory=$true)]
+        [parameter(Position=1, Mandatory=$true)]
         [PSCredential]$Credential, 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Position=2,Mandatory=$true)]
         [ValidatePattern('([\w-]+).crm([0-9]*).dynamics.com')]
         [string]$ServerUrl, 
-		[Parameter(Mandatory=$false,ValueFromPipeline)]
+		[Parameter(Position=3,Mandatory=$false)]
+        [switch]$ForceDiscovery,
+		[Parameter(Position=4,Mandatory=$false)]
+        [switch]$ForceOAuth, 
+		[Parameter(Position=5,Mandatory=$false)]
         [ValidateScript({
             try {
                 [System.Guid]::Parse($_) | Out-Null
@@ -87,25 +91,54 @@ function Connect-CrmOnline{
                 $false
             }
         })]
-        [string]$ClientId
+        [string]$OAuthClientId,
+		[Parameter(Position=6,Mandatory=$false)]
+        [switch]$OAuthRedirectUri
     )
 	if($ServerUrl.StartsWith("https://","CurrentCultureIgnoreCase") -ne $true){
 		Write-Verbose "ServerUrl is missing https, fixing URL: https://$ServerUrl"
 		$ServerUrl = "https://" + $ServerUrl
 	}
-	Write-Verbose "Connecting to ServerUrl: $ServerUrl"
-    $userName = $Credential.UserName
-    $password = $Credential.GetNetworkCredential().Password
-    $connectionString = "AuthType=Office365;RequireNewInstance=True;Username=$userName;Password=$password;Url=$ServerUrl"
+	Write-Verbose "Connecting to: $ServerUrl"
+    $cs = "RequireNewInstance=True"
+	$cs+= ";Username=$($Credential.UserName)"
+	$cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
+	$cs+= ";Url=$ServerUrl"
 
-	if($ClientId -ne $null -and $ClientId -ne ""){
-		Write-Verbose "ClientId detected - adding ClientId of $ClientId to the connection string"
-		$connectionString += ";ClientId=$ClientId"
+	#disable the discovery check by default 
+	if($ForceDiscovery){ 
+		Write-Verbose "SkipDiscovery=False"
+		$cs+=";SkipDiscovery=False" }
+	else{ 
+		Write-Verbose "SkipDiscovery=True"
+		$cs+=";SkipDiscovery=True" }
+	
+	#Default to Office365 Auth, allow oAuth to be used
+	if(!$OAuthClientId -and !$ForceOAuth){
+		Write-Verbose "Using AuthType=Office365"
+		$cs += ";AuthType=Office365"
 	}
-
+	else{
+		Write-Verbose "Detected: ForceOAuth: $ForceOAuth ClientId: $ClientId"
+		#use the clientid if provided, else use a provided clientid 
+		if($OAuthClientId){
+			Write-Verbose "Using provide "
+			$cs += ";AuthType=OAuth;ClientId=$OAuthClientId"
+			if($OAuthRedirectUri){
+				$cs += ";redirecturi=$OAuthRedirectUri"
+			}
+		}
+		else{
+			$cs+=";AuthType=OAuth;ClientId=2ad88395-b77d-4561-9441-d0e40824f9bc"
+			$cs+=";redirecturi=app://5d3e90d6-aa8e-48a8-8f2c-58b45cc67315"
+		}
+	}
     try
     {
-        $global:conn =  New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $connectionString
+		if(!$cs -or $cs.Length -eq 0){
+			throw "Cannot create the CrmServiceClient, the connection string is null"
+		}
+        $global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $cs
         return $global:conn
     }
     catch
@@ -130,7 +163,6 @@ function Connect-CrmOnPremDiscovery{
         [Parameter(Mandatory=$false, ParameterSetName="InteractiveMode")]
         [switch]$InteractiveMode
     )
-    
     if($InteractiveMode)
     {
         $global:conn = Get-CrmConnection -InteractiveMode -Verbose
