@@ -29,6 +29,7 @@
   <ItemGroup>
     <Content Include="Microsoft.IdentityModel.Clients.ActiveDirectory.dll" />
     <Content Include="Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll" />
+    <Content Include="Microsoft.Xrm.Sdk.Deployment.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Microsoft.Crm.Sdk.Proxy.dll" />
