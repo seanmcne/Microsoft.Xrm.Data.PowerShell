@@ -93,7 +93,7 @@ function Connect-CrmOnline{
         })]
         [string]$OAuthClientId,
 		[Parameter(Position=6,Mandatory=$false)]
-        [switch]$OAuthRedirectUri
+        [string]$OAuthRedirectUri
     )
 	if($ServerUrl.StartsWith("https://","CurrentCultureIgnoreCase") -ne $true){
 		Write-Verbose "ServerUrl is missing https, fixing URL: https://$ServerUrl"
@@ -104,14 +104,6 @@ function Connect-CrmOnline{
 	$cs+= ";Username=$($Credential.UserName)"
 	$cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
 	$cs+= ";Url=$ServerUrl"
-
-	#disable the discovery check by default 
-	if($ForceDiscovery){ 
-		Write-Verbose "SkipDiscovery=False"
-		$cs+=";SkipDiscovery=False" }
-	else{ 
-		Write-Verbose "SkipDiscovery=True"
-		$cs+=";SkipDiscovery=True" }
 	
 	#Default to Office365 Auth, allow oAuth to be used
 	if(!$OAuthClientId -and !$ForceOAuth){
@@ -119,7 +111,7 @@ function Connect-CrmOnline{
 		$cs += ";AuthType=Office365"
 	}
 	else{
-		Write-Verbose "Detected: ForceOAuth: $ForceOAuth ClientId: $ClientId"
+		Write-Verbose "Params -> ForceOAuth: {$ForceOAuth} ClientId: {$OAuthClientId} RedirectUri: {$OAuthRedirectUri}"
 		#use the clientid if provided, else use a provided clientid 
 		if($OAuthClientId){
 			Write-Verbose "Using provide "
@@ -132,6 +124,18 @@ function Connect-CrmOnline{
 			$cs+=";AuthType=OAuth;ClientId=2ad88395-b77d-4561-9441-d0e40824f9bc"
 			$cs+=";redirecturi=app://5d3e90d6-aa8e-48a8-8f2c-58b45cc67315"
 		}
+	}
+	#disable the discovery check by default unless it's oAuth
+	if($OAuthClientId -or $ForceOAuth -or $OAuthRedirectUri){
+		Write-Verbose "SkipDiscovery not yet supported for oAuth, ensure SkipDiscovery is not in the connectionstring"
+	}
+	elseif($ForceDiscovery){ 
+		Write-Verbose "ForceDiscovery: SkipDiscovery=False"
+		$cs+=";SkipDiscovery=False" 
+	}
+	else{ 
+		Write-Verbose "Default: SkipDiscovery=True"
+		$cs+=";SkipDiscovery=True" 
 	}
     try
     {
