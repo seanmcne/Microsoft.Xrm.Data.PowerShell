@@ -4771,7 +4771,6 @@ function Set-CrmUserMailbox {
         [parameter(Mandatory=$true, Position=1)]
         [string]$UserId,
         [parameter(Mandatory=$false)]
-        [ValidatePattern('/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/')]
         [string]$EmailAddress,
         [parameter(Mandatory=$false, ParameterSetName="Custom")]        
         [guid]$EmailServerProfile,
