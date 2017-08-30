@@ -4412,19 +4412,30 @@ function Set-CrmConnectionTimeout{
     )
 
 	$conn = VerifyCrmConnectionParam $conn
-
-    if($SetDefault)
-    {
-        $timeSpan = New-Object System.TimeSpan -ArgumentList 0,0,120
-    }
-    else
-    {
-        $currentTimeout = $conn.OrganizationServiceProxy.Timeout.TotalSeconds
-        Write-Verbose "Current Timeout is $currentTimeout seconds"
-        $timeSpan = New-Object System.TimeSpan -ArgumentList 0,0,$TimeoutInSeconds
-    }
-
-    $conn.OrganizationServiceProxy.Timeout = $timeSpan
+	#powershell 4.0+ is required for New-TimeSpan -Seconds $TimeoutInSeconds 
+	$newTimeout = New-Object System.TimeSpan -ArgumentList 0,0,120
+	if(!$SetDefault){
+	    $newTimeout = New-Object System.TimeSpan -ArgumentList 0,0,$TimeoutInSeconds
+	}
+	if($conn.OrganizationServiceProxy -and $conn.OrganizationServiceProxy.Timeout -and $conn.OrganizationServiceProxy.getType().BaseType.Name -eq "OrganizationServiceProxy"){
+	    try{
+		Write-Verbose "Updating Timeout on OrganizationServiceProxy"
+		$conn.OrganizationServiceProxy.Timeout = $newTimeout
+	    }
+	    catch{
+		Write-Verbose "Failed to set the timeout value"        
+	    }
+	}
+	if($conn.OrganizationWebProxyClient -and $conn.OrganizationWebProxyClient.getType().Name -eq "OrganizationWebProxyClient"){
+	    try{
+		Write-Verbose "Updating Timeouts on OrganizationWebProxyClient"
+		$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.ReceiveTimeout = $newTimeout
+		$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.SendTimeout = $newTimeout
+	    }
+	    catch{
+		Write-Verbose "Failed to set the timeout values"
+	    }
+	}
 }
 
 function Set-CrmSystemSettings {
