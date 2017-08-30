@@ -5182,9 +5182,9 @@ function Test-CrmViewPerformance{
             }
            
             # Get all records by using Fetch
-            Test-XrmTimerStart
+            Test-CrmTimerStart
             $records = Get-CrmRecordsByFetch -conn $conn -Fetch $View.fetchxml -AllRows -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
-            $perf = Test-XrmTimerStop
+            $perf = Test-CrmTimerStop
             $owner = $View.ownerid
             $totalCount = $records.Count           
         }
@@ -5196,9 +5196,9 @@ function Test-CrmViewPerformance{
             }
             
 			# Get all records by using Fetch
-            Test-XrmTimerStart
+            Test-CrmTimerStart
             $records = Get-CrmRecordsByFetch -conn $conn -Fetch $View.fetchxml -AllRows -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
-            $perf = Test-XrmTimerStop
+            $perf = Test-CrmTimerStop
             $owner = "System"
             $totalCount = $records.Count
         }
@@ -5228,13 +5228,13 @@ function Test-CrmViewPerformance{
     }
 }
 
-function Test-XrmTimerStart{
+function Test-CrmTimerStart{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     $script:crmtimer = New-Object -TypeName 'System.Diagnostics.Stopwatch'
     $script:crmtimer.Start()
 }
 
-function Test-XrmTimerStop{
+function Test-CrmTimerStop{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     $crmtimerobj = Get-Variable crmtimer -Scope Script
     if($crmtimerobj.Value -ne $null)
