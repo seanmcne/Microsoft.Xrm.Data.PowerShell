@@ -42,7 +42,6 @@
     <Compile Include="Microsoft.Xrm.Tooling.CrmConnectControl.dll" />
     <Compile Include="Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll" />
     <Compile Include="Microsoft.Xrm.Tooling.Ui.Styles.dll" />
-    <Compile Include="Microsoft.Xrm.Tooling.WebResourceUtility.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="Build" />

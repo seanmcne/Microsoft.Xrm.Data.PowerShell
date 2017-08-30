@@ -893,7 +893,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
     <CmdletObject verb="Connect" noun="CrmOnline">
       <Name>Connect-CrmOnline</Name>
       <Syntax>
-        <string>Connect-CrmOnline [-Credential] &lt;PSCredential&gt; [-ServerUrl] &lt;String&gt; [[-ClientId] &lt;String&gt;]</string>
+        <string>Connect-CrmOnline [-Credential] &lt;PSCredential&gt; [-ServerUrl] &lt;String&gt; [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;SwitchParameter&gt;]</string>
       </Syntax>
       <GeneralHelp>
         <Synopsis>Connects to CRM Online organization without using Discovery Service.</Synopsis>
@@ -908,10 +908,10 @@ You can use Get-Credential to create Credential information.</Description>
         <ReturnTypeDescription />
       </GeneralHelp>
       <ParamSets>
-        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Credential ServerUrl ClientId Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Credential ServerUrl ForceDiscovery ForceOAuth OAuthClientId OAuthRedirectUri Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
       </ParamSets>
       <Parameters>
-        <ParameterDescription type="PSCredential" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="0" globbing="false">
+        <ParameterDescription type="PSCredential" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
           <Name>Credential</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -922,7 +922,7 @@ You can use Get-Credential to create Credential information.</Description>
           <Description>A PS-Credential. You can invoke Get-Credential.</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
           <Name>ServerUrl</Name>
           <Attributes>
             <string>System.Management.Automation.ValidatePatternAttribute</string>
@@ -933,28 +933,62 @@ You can use Get-Credential to create Credential information.</Description>
           <Description>A Url of your Dynamics CRM Online organization.</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="false" isPos="true" pos="2" globbing="false">
-          <Name>ClientId</Name>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="3" globbing="false">
+          <Name>ForceDiscovery</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Forces the connector to verify an org connection with discovery (NOT COMPATIBLE with Partner CSP). </Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="4" globbing="false">
+          <Name>ForceOAuth</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Forces oAuth authentication via Azure Active Directory. The default auth type is Office365. </Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="5" globbing="false">
+          <Name>OAuthClientId</Name>
           <Attributes>
             <string>System.Management.Automation.ValidateScriptAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Azure Active Directory Native Application Id</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="6" globbing="false">
+          <Name>OAuthRedirectUri</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Azure Active Directory Native Application Id's Redirect URI </Description>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
       <Examples>
         <Example>
           <Name>Example 1</Name>
-          <Cmd>PS C:\&gt; Connect-CrmOnline -Credential (Get-Credential) -Url "https://contoso.crm.dynamics.com"</Cmd>
+          <Cmd>PS C:\&gt; Connect-CrmOnline -Credential (Get-Credential) -ServerUrl "https://contoso.crm.dynamics.com"</Cmd>
           <Description>Connect to online using your organization URL </Description>
-          <Output> IsReady                        : True
- IsBatchOperationsAvailable     : True
- OrganizationServiceProxy       : Microsoft.Xrm.Tooling.Connector.CrmWebSvc+ManagedTokenOrganizationServiceProxy
- LastCrmError                   : 
- LastCrmException               : 
+          <Output>IsReady                        : True
+IsBatchOperationsAvailable     : True
+Authority                      :
+OAuthUserId                    :
+ActiveAuthenticationType       : Office365
+OrganizationServiceProxy       : Microsoft.Xrm.Tooling.Connector.CrmWebSvc+ManagedTokenOrganizationServiceProxy
+OrganizationWebProxyClient     :
+LastCrmError                   : OrganizationWebProxyClient is null
+LastCrmException               :
  CrmConnectOrgUriActual         : https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc
  ConnectedOrgFriendlyName       : contoso
  ConnectedOrgUniqueName         : contoso
@@ -962,8 +996,32 @@ You can use Get-Credential to create Credential information.</Description>
                                   https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc], 
                                   [OrganizationDataService, 
                                   https://contoso.api.crm.dynamics.com/XRMServices/2011/OrganizationData.svc]}
- ConnectionLockObject           : System.Object
- ConnectedOrgVersion            : 7.1.1.4309</Output>
+ConnectionLockObject           : System.Object
+ConnectedOrgVersion            : 8.2.1.359
+DisableCrossThreadSafeties     : False
+CallerId                       : 00000000-0000-0000-0000-000000000000</Output>
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>PS C:\&gt; Connect-CrmOnline -ServerUrl "https://contoso.crm.dynamics.com" -ForceOAuth</Cmd>
+          <Description>Connect to online using your organization URL using oAuth and get prompted for a credential (versus providing one) </Description>
+          <Output>IsReady                        : True
+IsBatchOperationsAvailable     : True
+Authority                      : https://login.windows.net/99f9884f-8651-415f-91ab-217c7036db97/oauth2/authorize/
+OAuthUserId                    : user@contoso.com 
+ActiveAuthenticationType       : OAuth
+OrganizationServiceProxy       :
+OrganizationWebProxyClient     : Microsoft.Xrm.Sdk.WebServiceClient.OrganizationWebProxyClient
+LastCrmError                   :
+LastCrmException               :
+CrmConnectOrgUriActual         : https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc/web?SDKClientVersion=9.0.9002.0
+ConnectedOrgFriendlyName       : PFEStaffing
+ConnectedOrgUniqueName         : pfecrmol
+ConnectedOrgPublishedEndpoints : {[WebApplication, https://contoso.crm.dynamics.com/], [OrganizationService, https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc], [OrganizationDataService, https://contoso.api.crm.dynamics.com/XRMServices/2011/OrganizationData.svc]}
+ConnectionLockObject           : System.Object
+ConnectedOrgVersion            : 8.2.1.359
+DisableCrossThreadSafeties     : False
+CallerId                       : 00000000-0000-0000-0000-000000000000</Output>
         </Example>
       </Examples>
       <RelatedLinks />
@@ -4363,8 +4421,7 @@ To omit conn parameter, you need creating $conn in advance, then cmdlets automat
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description>A file path to solution zip file.
-</Description>
+          <Description>A file path to solution zip file.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
@@ -4374,8 +4431,7 @@ To omit conn parameter, you need creating $conn in advance, then cmdlets automat
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description>Specify the parameter to active plug-ins when importing solution.
-</Description>
+          <Description>Specify the parameter to active plug-ins when importing solution.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="3" globbing="false">
@@ -4429,7 +4485,7 @@ To omit conn parameter, you need creating $conn in advance, then cmdlets automat
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Import as a holding solution</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="8" globbing="false">
@@ -4439,7 +4495,7 @@ To omit conn parameter, you need creating $conn in advance, then cmdlets automat
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Attempt to import using an async &amp; poll method</Description>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
@@ -9602,7 +9658,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>A file path to solution zip file.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
@@ -9612,7 +9668,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Specify the parameter to active plug-ins when importing solution.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="3" globbing="false">
@@ -9622,7 +9678,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Specify the parameter to overwrite conflicting unmanaged customizations when importing solution.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="4" globbing="false">
@@ -9632,7 +9689,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Specify the parameter to skip dependency check when importing solution.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="5" globbing="false">
@@ -9642,7 +9700,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Automatically publish the changes if the import completes before the max wait time</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int64" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="6" globbing="false">
@@ -9652,7 +9710,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Specify the parameter to override the default maximum 900 seconds (15 minutes) to wait for an imported solution to complete.
+</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="7" globbing="false">
@@ -9662,7 +9721,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Import as a holding solution</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="8" globbing="false">
@@ -9672,7 +9731,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Rather than return the import ID - block and poll until the command is complete</Description>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
@@ -9975,7 +10034,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
@@ -9985,7 +10044,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Name of solution </Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
@@ -9996,7 +10055,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Version Number</Description>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>

@@ -1989,31 +1989,52 @@ You can use Get-Credential to create Credential information.</maml:para>
 	<command:syntax>
 		<command:syntaxItem>
 			<maml:name>Connect-CrmOnline</maml:name>
-			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="0">
+			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
 				<maml:name>Credential</maml:name>
 				<maml:description>
 					<maml:para>A PS-Credential. You can invoke Get-Credential.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">PSCredential</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
+			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="2">
 				<maml:name>ServerUrl</maml:name>
 				<maml:description>
 					<maml:para>A Url of your Dynamics CRM Online organization.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="2">
-				<maml:name>ClientId</maml:name>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
+				<maml:name>ForceDiscovery</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>Forces the connector to verify an org connection with discovery (NOT COMPATIBLE with Partner CSP). </maml:para>
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="4">
+				<maml:name>ForceOAuth</maml:name>
+				<maml:description>
+					<maml:para>Forces oAuth authentication via Azure Active Directory. The default auth type is Office365. </maml:para>
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="5">
+				<maml:name>OAuthClientId</maml:name>
+				<maml:description>
+					<maml:para>Azure Active Directory Native Application Id</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="6">
+				<maml:name>OAuthRedirectUri</maml:name>
+				<maml:description>
+					<maml:para>Azure Active Directory Native Application Id&#39;s Redirect URI </maml:para>
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			</command:parameter>
 		</command:syntaxItem>
 	</command:syntax>
 	<command:parameters>
-		<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="0">
+		<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
 			<maml:name>Credential</maml:name>
 			<maml:description>
 				<maml:para>A PS-Credential. You can invoke Get-Credential.</maml:para>
@@ -2025,7 +2046,7 @@ You can use Get-Credential to create Credential information.</maml:para>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
+		<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="2">
 			<maml:name>ServerUrl</maml:name>
 			<maml:description>
 				<maml:para>A Url of your Dynamics CRM Online organization.</maml:para>
@@ -2037,14 +2058,50 @@ You can use Get-Credential to create Credential information.</maml:para>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="2">
-			<maml:name>ClientId</maml:name>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
+			<maml:name>ForceDiscovery</maml:name>
 			<maml:description>
-				<maml:para />
+				<maml:para>Forces the connector to verify an org connection with discovery (NOT COMPATIBLE with Partner CSP). </maml:para>
+			</maml:description>
+			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			<dev:type>
+				<maml:name>SwitchParameter</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="4">
+			<maml:name>ForceOAuth</maml:name>
+			<maml:description>
+				<maml:para>Forces oAuth authentication via Azure Active Directory. The default auth type is Office365. </maml:para>
+			</maml:description>
+			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			<dev:type>
+				<maml:name>SwitchParameter</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="5">
+			<maml:name>OAuthClientId</maml:name>
+			<maml:description>
+				<maml:para>Azure Active Directory Native Application Id</maml:para>
 			</maml:description>
 			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			<dev:type>
 				<maml:name>String</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="6">
+			<maml:name>OAuthRedirectUri</maml:name>
+			<maml:description>
+				<maml:para>Azure Active Directory Native Application Id&#39;s Redirect URI </maml:para>
+			</maml:description>
+			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			<dev:type>
+				<maml:name>SwitchParameter</maml:name>
 				<maml:uri/>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
@@ -2088,16 +2145,20 @@ You can use Get-Credential to create Credential information.</maml:para>
 			<maml:introduction>
 				<maml:paragraph>PS C:\&gt;</maml:paragraph>
 			</maml:introduction>
-			<dev:code>PS C:\&gt; Connect-CrmOnline -Credential (Get-Credential) -Url &quot;https://contoso.crm.dynamics.com&quot;</dev:code>
+			<dev:code>PS C:\&gt; Connect-CrmOnline -Credential (Get-Credential) -ServerUrl &quot;https://contoso.crm.dynamics.com&quot;</dev:code>
 			<dev:remarks>
 				<maml:para>Connect to online using your organization URL </maml:para>
 				<maml:para />
 				<maml:para />
-				<maml:para> IsReady                        : True
- IsBatchOperationsAvailable     : True
- OrganizationServiceProxy       : Microsoft.Xrm.Tooling.Connector.CrmWebSvc+ManagedTokenOrganizationServiceProxy
- LastCrmError                   : 
- LastCrmException               : 
+				<maml:para>IsReady                        : True
+IsBatchOperationsAvailable     : True
+Authority                      :
+OAuthUserId                    :
+ActiveAuthenticationType       : Office365
+OrganizationServiceProxy       : Microsoft.Xrm.Tooling.Connector.CrmWebSvc+ManagedTokenOrganizationServiceProxy
+OrganizationWebProxyClient     :
+LastCrmError                   : OrganizationWebProxyClient is null
+LastCrmException               :
  CrmConnectOrgUriActual         : https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc
  ConnectedOrgFriendlyName       : contoso
  ConnectedOrgUniqueName         : contoso
@@ -2105,8 +2166,46 @@ You can use Get-Credential to create Credential information.</maml:para>
                                   https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc], 
                                   [OrganizationDataService, 
                                   https://contoso.api.crm.dynamics.com/XRMServices/2011/OrganizationData.svc]}
- ConnectionLockObject           : System.Object
- ConnectedOrgVersion            : 7.1.1.4309</maml:para>
+ConnectionLockObject           : System.Object
+ConnectedOrgVersion            : 8.2.1.359
+DisableCrossThreadSafeties     : False
+CallerId                       : 00000000-0000-0000-0000-000000000000</maml:para>
+			</dev:remarks>
+			<command:commandLines>
+				<command:commandLine>
+					<command:commandText>
+						<maml:para />
+					</command:commandText>
+				</command:commandLine>
+			</command:commandLines>
+		</command:example>
+		<command:example>
+			<maml:title>--------------------------  Example 2  --------------------------</maml:title>
+			<maml:introduction>
+				<maml:paragraph>PS C:\&gt;</maml:paragraph>
+			</maml:introduction>
+			<dev:code>PS C:\&gt; Connect-CrmOnline -ServerUrl &quot;https://contoso.crm.dynamics.com&quot; -ForceOAuth</dev:code>
+			<dev:remarks>
+				<maml:para>Connect to online using your organization URL using oAuth and get prompted for a credential (versus providing one) </maml:para>
+				<maml:para />
+				<maml:para />
+				<maml:para>IsReady                        : True
+IsBatchOperationsAvailable     : True
+Authority                      : https://login.windows.net/99f9884f-8651-415f-91ab-217c7036db97/oauth2/authorize/
+OAuthUserId                    : user@contoso.com 
+ActiveAuthenticationType       : OAuth
+OrganizationServiceProxy       :
+OrganizationWebProxyClient     : Microsoft.Xrm.Sdk.WebServiceClient.OrganizationWebProxyClient
+LastCrmError                   :
+LastCrmException               :
+CrmConnectOrgUriActual         : https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc/web?SDKClientVersion=9.0.9002.0
+ConnectedOrgFriendlyName       : PFEStaffing
+ConnectedOrgUniqueName         : pfecrmol
+ConnectedOrgPublishedEndpoints : {[WebApplication, https://contoso.crm.dynamics.com/], [OrganizationService, https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc], [OrganizationDataService, https://contoso.api.crm.dynamics.com/XRMServices/2011/OrganizationData.svc]}
+ConnectionLockObject           : System.Object
+ConnectedOrgVersion            : 8.2.1.359
+DisableCrossThreadSafeties     : False
+CallerId                       : 00000000-0000-0000-0000-000000000000</maml:para>
 			</dev:remarks>
 			<command:commandLines>
 				<command:commandLine>
@@ -4167,7 +4266,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 			<maml:introduction>
 				<maml:paragraph>PS C:\&gt;</maml:paragraph>
 			</maml:introduction>
-			<dev:code>Get-CrmEntityAllMetadata -conn $conn -OnlyPublished $True EntityFilters all</dev:code>
+			<dev:code>Get-CrmEntityAllMetadata -conn $conn -OnlyPublished $True -EntityFilters all</dev:code>
 			<dev:remarks>
 				<maml:para>This example retrieves all published Metadata.</maml:para>
 				<maml:para />
@@ -4211,6 +4310,35 @@ DisplayCollectionName             : Microsoft.Xrm.Sdk.Label
 DisplayName                       : Microsoft.Xrm.Sdk.Label
 EntityHelpUrlEnabled              : False
 ...</maml:para>
+			</dev:remarks>
+			<command:commandLines>
+				<command:commandLine>
+					<command:commandText>
+						<maml:para />
+					</command:commandText>
+				</command:commandLine>
+			</command:commandLines>
+		</command:example>
+		<command:example>
+			<maml:title>--------------------------  Example 3  --------------------------</maml:title>
+			<maml:introduction>
+				<maml:paragraph>PS C:\&gt;</maml:paragraph>
+			</maml:introduction>
+			<dev:code>Get-CrmEntityAllMetadata -conn $conn -EntityFilters Entity | select -property @{N=&apos;LogicalName&apos;;E={$_.logicalname}}, @{N=&apos;DisplayName&apos;;E={$_.DisplayCollectionName.UserLocalizedLabel.Label}} | sort DisplayName</dev:code>
+			<dev:remarks>
+				<maml:para>This samples get Entity metadata and list its logicalname and display name as table.</maml:para>
+				<maml:para />
+				<maml:para />
+				<maml:para>LogicalName                                  DisplayName                                           
+-----------                                  -----------     
+cardtype                                     Action Card Type                                      
+actioncardusersettings                       Action Card User Settings                             
+actioncard                                   Action Cards                                          
+actioncarduserstate                          ActionCardUserStates                                  
+activitypointer                              Activities                                            
+activityparty                                Activity Parties                                      
+customeraddress                              Addresses                                             
+advancedsimilarityrule                       Advanced Similarity Rules          </maml:para>
 			</dev:remarks>
 			<command:commandLines>
 				<command:commandLine>
@@ -6184,6 +6312,13 @@ You can use Get-CrmEntityAttributes cmdlet to see all fields logicalname. The re
 				</maml:description>
 				<command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
 			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="4">
+				<maml:name>IncludeNullValue</maml:name>
+				<maml:description>
+					<maml:para>Sepcify when you want to include fields even if it has null value. By default, all the fields doesn&#39;t include value won&#39;t be returned.</maml:para>
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			</command:parameter>
 		</command:syntaxItem>
 	</command:syntax>
 	<command:parameters>
@@ -6235,6 +6370,18 @@ You can use Get-CrmEntityAttributes cmdlet to see all fields logicalname. The re
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="4">
+			<maml:name>IncludeNullValue</maml:name>
+			<maml:description>
+				<maml:para>Sepcify when you want to include fields even if it has null value. By default, all the fields doesn&#39;t include value won&#39;t be returned.</maml:para>
+			</maml:description>
+			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			<dev:type>
+				<maml:name>SwitchParameter</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
 	</command:parameters>
 	<command:inputTypes>
 		<command:inputType>
@@ -6277,7 +6424,7 @@ You can use Get-CrmEntityAttributes cmdlet to see all fields logicalname. The re
 			<dev:code>Get-CrmRecord -conn $conn -EntityLogicalName account -Id be02caab-6c16-e511-80d6-c4346bc43dc0 -Fields name,accountnumber
 </dev:code>
 			<dev:remarks>
-				<maml:para>This example retrieves an account record with name and accountnumber fields</maml:para>
+				<maml:para>This example retrieves an account record with name and accountnumber fields. If the value of the field is null, then it won&#39;t be returned.</maml:para>
 				<maml:para />
 				<maml:para />
 				<maml:para>name_Property      : [name, A. Datum Corporation (sample)]
@@ -6345,6 +6492,37 @@ emailaddress1_Property               : [emailaddress1, someone9@example.com]
 emailaddress1                        : someone9@example.com
 ......
 </maml:para>
+			</dev:remarks>
+			<command:commandLines>
+				<command:commandLine>
+					<command:commandText>
+						<maml:para />
+					</command:commandText>
+				</command:commandLine>
+			</command:commandLines>
+		</command:example>
+		<command:example>
+			<maml:title>--------------------------  Example 4  --------------------------</maml:title>
+			<maml:introduction>
+				<maml:paragraph>PS C:\&gt;</maml:paragraph>
+			</maml:introduction>
+			<dev:code>Get-CrmRecord -conn $conn -EntityLogicalName account -Id be02caab-6c16-e511-80d6-c4346bc43dc0 -Fields name,accountnumber,websiteurl -IncludeNullValue
+</dev:code>
+			<dev:remarks>
+				<maml:para>This example retrieves an account record with specified fields even if some of them are null value.</maml:para>
+				<maml:para />
+				<maml:para />
+				<maml:para>name_Property      : [name, A. Datum Corporation (sample)]
+name               : A. Datum Corporation (sample)
+accountid_Property : [accountid, be02caab-6c16-e511-80d6-c4346bc43dc0]
+accountid          : be02caab-6c16-e511-80d6-c4346bc43dc0
+accountnumber             : 
+accountnumber_Property    : 
+websiteurl                : 
+websiteurl_Property       : 
+original           : {[name_Property, [name, A. Datum Corporation (sample)]], [name, A. Datum Corporation (sample)], [accountid_Property, [accountid, 
+                    be02caab-6c16-e511-80d6-c4346bc43dc0]], [accountid, be02caab-6c16-e511-80d6-c4346bc43dc0]}
+logicalname        : account</maml:para>
 			</dev:remarks>
 			<command:commandLines>
 				<command:commandLine>
@@ -8781,16 +8959,14 @@ To omit conn parameter, you need creating $conn in advance, then cmdlets automat
 			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
 				<maml:name>SolutionFilePath</maml:name>
 				<maml:description>
-					<maml:para>A file path to solution zip file.
-</maml:para>
+					<maml:para>A file path to solution zip file.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
 				<maml:name>ActivatePlugIns</maml:name>
 				<maml:description>
-					<maml:para>Specify the parameter to active plug-ins when importing solution.
-</maml:para>
+					<maml:para>Specify the parameter to active plug-ins when importing solution.</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			</command:parameter>
@@ -8829,14 +9005,14 @@ To omit conn parameter, you need creating $conn in advance, then cmdlets automat
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="7">
 				<maml:name>ImportAsHoldingSolution</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>Import as a holding solution</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="8">
 				<maml:name>AsyncOperationImportMethod</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>Attempt to import using an async &amp; poll method</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			</command:parameter>
@@ -8859,8 +9035,7 @@ To omit conn parameter, you need creating $conn in advance, then cmdlets automat
 		<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
 			<maml:name>SolutionFilePath</maml:name>
 			<maml:description>
-				<maml:para>A file path to solution zip file.
-</maml:para>
+				<maml:para>A file path to solution zip file.</maml:para>
 			</maml:description>
 			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			<dev:type>
@@ -8872,8 +9047,7 @@ To omit conn parameter, you need creating $conn in advance, then cmdlets automat
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
 			<maml:name>ActivatePlugIns</maml:name>
 			<maml:description>
-				<maml:para>Specify the parameter to active plug-ins when importing solution.
-</maml:para>
+				<maml:para>Specify the parameter to active plug-ins when importing solution.</maml:para>
 			</maml:description>
 			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			<dev:type>
@@ -8937,7 +9111,7 @@ To omit conn parameter, you need creating $conn in advance, then cmdlets automat
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="7">
 			<maml:name>ImportAsHoldingSolution</maml:name>
 			<maml:description>
-				<maml:para />
+				<maml:para>Import as a holding solution</maml:para>
 			</maml:description>
 			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			<dev:type>
@@ -8949,7 +9123,7 @@ To omit conn parameter, you need creating $conn in advance, then cmdlets automat
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="8">
 			<maml:name>AsyncOperationImportMethod</maml:name>
 			<maml:description>
-				<maml:para />
+				<maml:para>Attempt to import using an async &amp; poll method</maml:para>
 			</maml:description>
 			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			<dev:type>
@@ -10356,6 +10530,23 @@ You can use Get-CrmEntityAttributeMetadata cmdlet and check AttributeType to see
 				<command:parameterValue required="true" variableLength="false">Hashtable</command:parameterValue>
 			</command:parameter>
 		</command:syntaxItem>
+		<command:syntaxItem>
+			<maml:name>New-CrmRecord</maml:name>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>conn</maml:name>
+				<maml:description>
+					<maml:para>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">CrmServiceClient</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
+				<maml:name>CrmRecord</maml:name>
+				<maml:description>
+					<maml:para>A record object which is obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don&#39;t use EntityLogicalName/Fields</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">PSObject</command:parameterValue>
+			</command:parameter>
+		</command:syntaxItem>
 	</command:syntax>
 	<command:parameters>
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
@@ -10391,6 +10582,18 @@ You can use Get-CrmEntityAttributeMetadata cmdlet and check AttributeType to see
 			<command:parameterValue required="true" variableLength="false">Hashtable</command:parameterValue>
 			<dev:type>
 				<maml:name>Hashtable</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
+			<maml:name>CrmRecord</maml:name>
+			<maml:description>
+				<maml:para>A record object which is obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don&#39;t use EntityLogicalName/Fields</maml:para>
+			</maml:description>
+			<command:parameterValue required="true" variableLength="false">PSObject</command:parameterValue>
+			<dev:type>
+				<maml:name>PSObject</maml:name>
 				<maml:uri/>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
@@ -10515,6 +10718,30 @@ PS C:\&gt;$childId = New-CrmRecord account @{&quot;name&quot;=&quot;child accoun
 				<maml:para>Guid
 ----
 59bd1c45-2b17-e511-80dc-c4346bc4fc6c</maml:para>
+			</dev:remarks>
+			<command:commandLines>
+				<command:commandLine>
+					<command:commandText>
+						<maml:para />
+					</command:commandText>
+				</command:commandLine>
+			</command:commandLines>
+		</command:example>
+		<command:example>
+			<maml:title>--------------------------  Example 5  --------------------------</maml:title>
+			<maml:introduction>
+				<maml:paragraph>PS C:\&gt;</maml:paragraph>
+			</maml:introduction>
+			<dev:code>PS C:\&gt;$account = Get-CrmRecord -conn $conn -EntityLogicalName account -Id $accountid -Fields *
+
+PS C:\&gt;New-CrmRecord -conn $conn -CrmRecord $account</dev:code>
+			<dev:remarks>
+				<maml:para>This example get record by Get-CrmRecord, then pass it to New-CrmRecord to create another record.</maml:para>
+				<maml:para />
+				<maml:para />
+				<maml:para>Guid                                
+----                                
+d6960250-d178-e711-80ff-c4346bdc42d1</maml:para>
 			</dev:remarks>
 			<command:commandLines>
 				<command:commandLine>
@@ -16285,7 +16512,70 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 				<maml:name>ApplyDefaultEmailSettings</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>Specify this to apply the organization default settings</maml:para>
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			</command:parameter>
+		</command:syntaxItem>
+		<command:syntaxItem>
+			<maml:name>Set-CrmUserMailbox</maml:name>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>conn</maml:name>
+				<maml:description>
+					<maml:para>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.
+</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">CrmServiceClient</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
+				<maml:name>UserId</maml:name>
+				<maml:description>
+					<maml:para>An Id of CRM user.
+</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>EmailAddress</maml:name>
+				<maml:description>
+					<maml:para>An EmailAddress of CRM user. 
+</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>StateCode</maml:name>
+				<maml:description>
+					<maml:para>StateCode value for a record. You can retrieve values by using Get-CrmEntityOptionSet &lt;EntityLogicalName&gt; statecode | % {$_.Items}
+</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>StatusCode</maml:name>
+				<maml:description>
+					<maml:para>StatusCode value for a record. You can retrieve values by using Get-CrmEntityOptionSet &lt;EntityLogicalName&gt; statuscode | % {$_.Items}</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>ScheduleTest</maml:name>
+				<maml:description>
+					<maml:para>Specify this to schedule test for the mailbox</maml:para>
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>MarkedAsPrimaryForExchangeSync</maml:name>
+				<maml:description>
+					<maml:para>Specify this to mark the mailbox as primary mailbox to sync with Exchange Online</maml:para>
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>ApproveEmail</maml:name>
+				<maml:description>
+					<maml:para>Specify this to approve the emailaddress.</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			</command:parameter>
@@ -16386,7 +16676,68 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 			<maml:name>ApplyDefaultEmailSettings</maml:name>
 			<maml:description>
-				<maml:para />
+				<maml:para>Specify this to apply the organization default settings</maml:para>
+			</maml:description>
+			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			<dev:type>
+				<maml:name>SwitchParameter</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<maml:name>StateCode</maml:name>
+			<maml:description>
+				<maml:para>StateCode value for a record. You can retrieve values by using Get-CrmEntityOptionSet &lt;EntityLogicalName&gt; statecode | % {$_.Items}
+</maml:para>
+			</maml:description>
+			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			<dev:type>
+				<maml:name>String</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<maml:name>StatusCode</maml:name>
+			<maml:description>
+				<maml:para>StatusCode value for a record. You can retrieve values by using Get-CrmEntityOptionSet &lt;EntityLogicalName&gt; statuscode | % {$_.Items}</maml:para>
+			</maml:description>
+			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			<dev:type>
+				<maml:name>String</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<maml:name>ScheduleTest</maml:name>
+			<maml:description>
+				<maml:para>Specify this to schedule test for the mailbox</maml:para>
+			</maml:description>
+			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			<dev:type>
+				<maml:name>SwitchParameter</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<maml:name>MarkedAsPrimaryForExchangeSync</maml:name>
+			<maml:description>
+				<maml:para>Specify this to mark the mailbox as primary mailbox to sync with Exchange Online</maml:para>
+			</maml:description>
+			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			<dev:type>
+				<maml:name>SwitchParameter</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<maml:name>ApproveEmail</maml:name>
+			<maml:description>
+				<maml:para>Specify this to approve the emailaddress.</maml:para>
 			</maml:description>
 			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			<dev:type>
@@ -16527,6 +16878,26 @@ When omitting conn parameter, cmdlets automatically finds it.</maml:para>
 			<dev:remarks>
 				<maml:para>This example updates mailbox email settings to default settings, which is in System Settings by omitting -conn parameter.
 When omitting conn parameter, cmdlets automatically finds it.</maml:para>
+				<maml:para />
+				<maml:para />
+				<maml:para></maml:para>
+			</dev:remarks>
+			<command:commandLines>
+				<command:commandLine>
+					<command:commandText>
+						<maml:para />
+					</command:commandText>
+				</command:commandLine>
+			</command:commandLines>
+		</command:example>
+		<command:example>
+			<maml:title>--------------------------  Example 6  --------------------------</maml:title>
+			<maml:introduction>
+				<maml:paragraph>PS C:\&gt;</maml:paragraph>
+			</maml:introduction>
+			<dev:code>Set-CrmUserMailbox -conn $conn -UserId f9d40920-7a43-4f51-9749-0549c4caf67d  -StateCode Active -StatusCode Active -ScheduleTest -MarkedAsPrimaryForExchangeSync -ApproveEmail</dev:code>
+			<dev:remarks>
+				<maml:para>This example activates mailbox, approve emailaddress, schedule test and set the mailbox as primary for sync with Exchange Online.</maml:para>
 				<maml:para />
 				<maml:para />
 				<maml:para></maml:para>
@@ -19849,56 +20220,59 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
 				<maml:name>SolutionFilePath</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>A file path to solution zip file.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
 				<maml:name>ActivateWorkflows</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>Specify the parameter to active plug-ins when importing solution.</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
 				<maml:name>OverwriteUnManagedCustomizations</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>Specify the parameter to overwrite conflicting unmanaged customizations when importing solution.
+</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="4">
 				<maml:name>SkipDependancyOnProductUpdateCheckOnInstall</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>Specify the parameter to skip dependency check when importing solution.
+</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="5">
 				<maml:name>PublishChanges</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>Automatically publish the changes if the import completes before the max wait time</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="6">
 				<maml:name>MaxWaitTimeInSeconds</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>Specify the parameter to override the default maximum 900 seconds (15 minutes) to wait for an imported solution to complete.
+</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="7">
 				<maml:name>ImportAsHoldingSolution</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>Import as a holding solution</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="8">
 				<maml:name>BlockUntilImportComplete</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>Rather than return the import ID - block and poll until the command is complete</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			</command:parameter>
@@ -19921,7 +20295,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 		<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
 			<maml:name>SolutionFilePath</maml:name>
 			<maml:description>
-				<maml:para />
+				<maml:para>A file path to solution zip file.</maml:para>
 			</maml:description>
 			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			<dev:type>
@@ -19933,7 +20307,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
 			<maml:name>ActivateWorkflows</maml:name>
 			<maml:description>
-				<maml:para />
+				<maml:para>Specify the parameter to active plug-ins when importing solution.</maml:para>
 			</maml:description>
 			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			<dev:type>
@@ -19945,7 +20319,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
 			<maml:name>OverwriteUnManagedCustomizations</maml:name>
 			<maml:description>
-				<maml:para />
+				<maml:para>Specify the parameter to overwrite conflicting unmanaged customizations when importing solution.
+</maml:para>
 			</maml:description>
 			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			<dev:type>
@@ -19957,7 +20332,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="4">
 			<maml:name>SkipDependancyOnProductUpdateCheckOnInstall</maml:name>
 			<maml:description>
-				<maml:para />
+				<maml:para>Specify the parameter to skip dependency check when importing solution.
+</maml:para>
 			</maml:description>
 			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			<dev:type>
@@ -19969,7 +20345,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="5">
 			<maml:name>PublishChanges</maml:name>
 			<maml:description>
-				<maml:para />
+				<maml:para>Automatically publish the changes if the import completes before the max wait time</maml:para>
 			</maml:description>
 			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			<dev:type>
@@ -19981,7 +20357,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="6">
 			<maml:name>MaxWaitTimeInSeconds</maml:name>
 			<maml:description>
-				<maml:para />
+				<maml:para>Specify the parameter to override the default maximum 900 seconds (15 minutes) to wait for an imported solution to complete.
+</maml:para>
 			</maml:description>
 			<command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
 			<dev:type>
@@ -19993,7 +20370,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="7">
 			<maml:name>ImportAsHoldingSolution</maml:name>
 			<maml:description>
-				<maml:para />
+				<maml:para>Import as a holding solution</maml:para>
 			</maml:description>
 			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			<dev:type>
@@ -20005,7 +20382,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="8">
 			<maml:name>BlockUntilImportComplete</maml:name>
 			<maml:description>
-				<maml:para />
+				<maml:para>Rather than return the import ID - block and poll until the command is complete</maml:para>
 			</maml:description>
 			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			<dev:type>
@@ -20703,21 +21080,21 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 				<maml:name>conn</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">CrmServiceClient</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
 				<maml:name>SolutionName</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>Name of solution </maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="2">
 				<maml:name>VersionNumber</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>Version Number</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
@@ -20727,7 +21104,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 			<maml:name>conn</maml:name>
 			<maml:description>
-				<maml:para />
+				<maml:para>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.</maml:para>
 			</maml:description>
 			<command:parameterValue required="true" variableLength="false">CrmServiceClient</command:parameterValue>
 			<dev:type>
@@ -20739,7 +21116,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 		<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
 			<maml:name>SolutionName</maml:name>
 			<maml:description>
-				<maml:para />
+				<maml:para>Name of solution </maml:para>
 			</maml:description>
 			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			<dev:type>
@@ -20751,7 +21128,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 		<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="2">
 			<maml:name>VersionNumber</maml:name>
 			<maml:description>
-				<maml:para />
+				<maml:para>Version Number</maml:para>
 			</maml:description>
 			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			<dev:type>
@@ -21267,6 +21644,480 @@ Output                         True</maml:para>
     ------------     ------- -------------
     new_ContactBound {}      System.Runtime.Serialization.ExtensionDataObject
     new_ContactBound {}      System.Runtime.Serialization.ExtensionDataObject</maml:para>
+			</dev:remarks>
+			<command:commandLines>
+				<command:commandLine>
+					<command:commandText>
+						<maml:para />
+					</command:commandText>
+				</command:commandLine>
+			</command:commandLines>
+		</command:example>
+	</command:examples>
+	<maml:relatedLinks>
+	</maml:relatedLinks>
+</command:command>
+<command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+<!--Generated by PS Cmdlet Help Editor-->
+	<command:details>
+		<command:name>Set-CrmQueueMailbox</command:name>
+		<maml:description>
+			<maml:para />
+		</maml:description>
+		<maml:copyright>
+			<maml:para />
+		</maml:copyright>
+		<command:verb>Set</command:verb>
+		<command:noun>CrmQueueMailbox</command:noun>
+		<dev:version />
+	</command:details>
+	<maml:description>
+		<maml:para />
+	</maml:description>
+	<command:syntax>
+		<command:syntaxItem>
+			<maml:name>Set-CrmQueueMailbox</maml:name>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>conn</maml:name>
+				<maml:description>
+					<maml:para>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.
+</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">CrmServiceClient</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
+				<maml:name>QueueId</maml:name>
+				<maml:description>
+					<maml:para>An Id of queue.
+</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>EmailAddress</maml:name>
+				<maml:description>
+					<maml:para>An EmailAddress of the queue. 
+</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>EmailServerProfile</maml:name>
+				<maml:description>
+					<maml:para>Change &quot;Server Profile&quot; setting of Synchronization Method. This parameter accepts Email Server Profile record&#39;s guid. To get all profiles, use Get-CrmEmailServerProfiles command and use ProfileId.
+</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">Guid</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>IncomingEmailDeliveryMethod</maml:name>
+				<maml:description>
+					<maml:para>Change &quot;Incoming Email&quot; setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox incomingemaildeliverymethod | % Items command and use PickListItemId.</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>OutgoingEmailDeliveryMethod</maml:name>
+				<maml:description>
+					<maml:para>Change &quot;Outgoing Email&quot; setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox outgoingemaildeliverymethod | % Items command and use PickListItemId.</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+			</command:parameter>
+		</command:syntaxItem>
+		<command:syntaxItem>
+			<maml:name>Set-CrmQueueMailbox</maml:name>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>conn</maml:name>
+				<maml:description>
+					<maml:para>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.
+</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">CrmServiceClient</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
+				<maml:name>QueueId</maml:name>
+				<maml:description>
+					<maml:para>An Id of queue.
+</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>EmailAddress</maml:name>
+				<maml:description>
+					<maml:para>An EmailAddress of the queue. 
+</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>ApplyDefaultEmailSettings</maml:name>
+				<maml:description>
+					<maml:para>Specify this to apply the organization default settings</maml:para>
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			</command:parameter>
+		</command:syntaxItem>
+		<command:syntaxItem>
+			<maml:name>Set-CrmQueueMailbox</maml:name>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>conn</maml:name>
+				<maml:description>
+					<maml:para>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.
+</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">CrmServiceClient</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
+				<maml:name>QueueId</maml:name>
+				<maml:description>
+					<maml:para>An Id of queue.
+</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>EmailAddress</maml:name>
+				<maml:description>
+					<maml:para>An EmailAddress of the queue. 
+</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>StateCode</maml:name>
+				<maml:description>
+					<maml:para>StateCode value for a record. You can retrieve values by using Get-CrmEntityOptionSet &lt;EntityLogicalName&gt; statecode | % {$_.Items}
+</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>StatusCode</maml:name>
+				<maml:description>
+					<maml:para>StatusCode value for a record. You can retrieve values by using Get-CrmEntityOptionSet &lt;EntityLogicalName&gt; statuscode | % {$_.Items}</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>ScheduleTest</maml:name>
+				<maml:description>
+					<maml:para>Specify this to schedule test for the mailbox</maml:para>
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>MarkedAsPrimaryForExchangeSync</maml:name>
+				<maml:description>
+					<maml:para>Specify this to mark the mailbox as primary mailbox to sync with Exchange Online</maml:para>
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>ApproveEmail</maml:name>
+				<maml:description>
+					<maml:para>Specify this to approve the emailaddress.</maml:para>
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			</command:parameter>
+		</command:syntaxItem>
+	</command:syntax>
+	<command:parameters>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<maml:name>conn</maml:name>
+			<maml:description>
+				<maml:para>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.
+</maml:para>
+			</maml:description>
+			<command:parameterValue required="true" variableLength="false">CrmServiceClient</command:parameterValue>
+			<dev:type>
+				<maml:name>CrmServiceClient</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
+			<maml:name>QueueId</maml:name>
+			<maml:description>
+				<maml:para>An Id of queue.
+</maml:para>
+			</maml:description>
+			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			<dev:type>
+				<maml:name>String</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<maml:name>EmailAddress</maml:name>
+			<maml:description>
+				<maml:para>An EmailAddress of the queue. 
+</maml:para>
+			</maml:description>
+			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			<dev:type>
+				<maml:name>String</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<maml:name>EmailServerProfile</maml:name>
+			<maml:description>
+				<maml:para>Change &quot;Server Profile&quot; setting of Synchronization Method. This parameter accepts Email Server Profile record&#39;s guid. To get all profiles, use Get-CrmEmailServerProfiles command and use ProfileId.
+</maml:para>
+			</maml:description>
+			<command:parameterValue required="true" variableLength="false">Guid</command:parameterValue>
+			<dev:type>
+				<maml:name>Guid</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<maml:name>IncomingEmailDeliveryMethod</maml:name>
+			<maml:description>
+				<maml:para>Change &quot;Incoming Email&quot; setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox incomingemaildeliverymethod | % Items command and use PickListItemId.</maml:para>
+			</maml:description>
+			<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+			<dev:type>
+				<maml:name>Int32</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<maml:name>OutgoingEmailDeliveryMethod</maml:name>
+			<maml:description>
+				<maml:para>Change &quot;Outgoing Email&quot; setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox outgoingemaildeliverymethod | % Items command and use PickListItemId.</maml:para>
+			</maml:description>
+			<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+			<dev:type>
+				<maml:name>Int32</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<maml:name>ApplyDefaultEmailSettings</maml:name>
+			<maml:description>
+				<maml:para>Specify this to apply the organization default settings</maml:para>
+			</maml:description>
+			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			<dev:type>
+				<maml:name>SwitchParameter</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<maml:name>StateCode</maml:name>
+			<maml:description>
+				<maml:para>StateCode value for a record. You can retrieve values by using Get-CrmEntityOptionSet &lt;EntityLogicalName&gt; statecode | % {$_.Items}
+</maml:para>
+			</maml:description>
+			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			<dev:type>
+				<maml:name>String</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<maml:name>StatusCode</maml:name>
+			<maml:description>
+				<maml:para>StatusCode value for a record. You can retrieve values by using Get-CrmEntityOptionSet &lt;EntityLogicalName&gt; statuscode | % {$_.Items}</maml:para>
+			</maml:description>
+			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			<dev:type>
+				<maml:name>String</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<maml:name>ScheduleTest</maml:name>
+			<maml:description>
+				<maml:para>Specify this to schedule test for the mailbox</maml:para>
+			</maml:description>
+			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			<dev:type>
+				<maml:name>SwitchParameter</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<maml:name>MarkedAsPrimaryForExchangeSync</maml:name>
+			<maml:description>
+				<maml:para>Specify this to mark the mailbox as primary mailbox to sync with Exchange Online</maml:para>
+			</maml:description>
+			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			<dev:type>
+				<maml:name>SwitchParameter</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<maml:name>ApproveEmail</maml:name>
+			<maml:description>
+				<maml:para>Specify this to approve the emailaddress.</maml:para>
+			</maml:description>
+			<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			<dev:type>
+				<maml:name>SwitchParameter</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+	</command:parameters>
+	<command:inputTypes>
+		<command:inputType>
+			<dev:type>
+				<maml:name></maml:name>
+				<maml:uri></maml:uri>
+				<maml:description/>
+			</dev:type>
+			<maml:description>
+<maml:para />
+			</maml:description>
+		</command:inputType>
+	</command:inputTypes>
+	<command:returnValues>
+		<command:returnValue>
+			<dev:type>
+				<maml:name></maml:name>
+				<maml:uri></maml:uri>
+				<maml:description/>
+			</dev:type>
+			<maml:description>
+<maml:para />
+			</maml:description>
+		</command:returnValue>
+	</command:returnValues>
+	<command:terminatingErrors></command:terminatingErrors>
+	<command:nonTerminatingErrors></command:nonTerminatingErrors>
+	<maml:alertSet>
+		<maml:title></maml:title>
+		<maml:alert>
+			<maml:para />
+		</maml:alert>
+	</maml:alertSet>
+	<command:examples>
+		<command:example>
+			<maml:title>--------------------------  Example 1  --------------------------</maml:title>
+			<maml:introduction>
+				<maml:paragraph>PS C:\&gt;</maml:paragraph>
+			</maml:introduction>
+			<dev:code>Set-CrmQueueMailbox -conn $conn -QueueId f9d40920-7a43-4f51-9749-0549c4caf67d -IncomingEmailDeliveryMethod 0</dev:code>
+			<dev:remarks>
+				<maml:para>This example updates &quot;Incoming Email&quot; setting to &quot;None&quot;.</maml:para>
+				<maml:para />
+				<maml:para />
+				<maml:para></maml:para>
+			</dev:remarks>
+			<command:commandLines>
+				<command:commandLine>
+					<command:commandText>
+						<maml:para />
+					</command:commandText>
+				</command:commandLine>
+			</command:commandLines>
+		</command:example>
+		<command:example>
+			<maml:title>--------------------------  Example 2  --------------------------</maml:title>
+			<maml:introduction>
+				<maml:paragraph>PS C:\&gt;</maml:paragraph>
+			</maml:introduction>
+			<dev:code>Set-CrmQueueMailbox -conn $conn -QueueId f9d40920-7a43-4f51-9749-0549c4caf67d -EmailServerProfile 1b2d4b03-831e-e511-80e1-c4346bc44d24</dev:code>
+			<dev:remarks>
+				<maml:para>This example updates &quot;Server Profile&quot; setting to specified Profile.</maml:para>
+				<maml:para />
+				<maml:para />
+				<maml:para></maml:para>
+			</dev:remarks>
+			<command:commandLines>
+				<command:commandLine>
+					<command:commandText>
+						<maml:para />
+					</command:commandText>
+				</command:commandLine>
+			</command:commandLines>
+		</command:example>
+		<command:example>
+			<maml:title>--------------------------  Example 3  --------------------------</maml:title>
+			<maml:introduction>
+				<maml:paragraph>PS C:\&gt;</maml:paragraph>
+			</maml:introduction>
+			<dev:code>Set-CrmQueueMailbox -conn $conn -QueueId f9d40920-7a43-4f51-9749-0549c4caf67d -ApplyDefaultEmailSettings</dev:code>
+			<dev:remarks>
+				<maml:para>This example updates mailbox email settings to default settings, which is in System Settings.</maml:para>
+				<maml:para />
+				<maml:para />
+				<maml:para></maml:para>
+			</dev:remarks>
+			<command:commandLines>
+				<command:commandLine>
+					<command:commandText>
+						<maml:para />
+					</command:commandText>
+				</command:commandLine>
+			</command:commandLines>
+		</command:example>
+		<command:example>
+			<maml:title>--------------------------  Example 4  --------------------------</maml:title>
+			<maml:introduction>
+				<maml:paragraph>PS C:\&gt;</maml:paragraph>
+			</maml:introduction>
+			<dev:code>Set-CrmQueueMailbox -QueueId f9d40920-7a43-4f51-9749-0549c4caf67d -IncomingEmailDeliveryMethod 0</dev:code>
+			<dev:remarks>
+				<maml:para>This example disables &quot;Incoming Email&quot; setting to &quot;None&quot; by omitting -conn parameter.
+When omitting conn parameter, cmdlets automatically finds it.</maml:para>
+				<maml:para />
+				<maml:para />
+				<maml:para></maml:para>
+			</dev:remarks>
+			<command:commandLines>
+				<command:commandLine>
+					<command:commandText>
+						<maml:para />
+					</command:commandText>
+				</command:commandLine>
+			</command:commandLines>
+		</command:example>
+		<command:example>
+			<maml:title>--------------------------  Example 5  --------------------------</maml:title>
+			<maml:introduction>
+				<maml:paragraph>PS C:\&gt;</maml:paragraph>
+			</maml:introduction>
+			<dev:code>Set-CrmQueueMailbox -QueueId f9d40920-7a43-4f51-9749-0549c4caf67d -ApplyDefaultEmailSettings</dev:code>
+			<dev:remarks>
+				<maml:para>This example updates mailbox email settings to default settings, which is in System Settings by omitting -conn parameter. When omitting conn parameter, cmdlets automatically finds it.</maml:para>
+				<maml:para />
+				<maml:para />
+				<maml:para></maml:para>
+			</dev:remarks>
+			<command:commandLines>
+				<command:commandLine>
+					<command:commandText>
+						<maml:para />
+					</command:commandText>
+				</command:commandLine>
+			</command:commandLines>
+		</command:example>
+		<command:example>
+			<maml:title>--------------------------  Example 6  --------------------------</maml:title>
+			<maml:introduction>
+				<maml:paragraph>PS C:\&gt;</maml:paragraph>
+			</maml:introduction>
+			<dev:code>Set-CrmQueueMailbox -conn $conn -QueueId f9d40920-7a43-4f51-9749-0549c4caf67d  -StateCode Active -StatusCode Active -ScheduleTest -MarkedAsPrimaryForExchangeSync -ApproveEmail</dev:code>
+			<dev:remarks>
+				<maml:para>This example activates mailbox, approve emailaddress, schedule test and set the mailbox as primary for sync with Exchange Online.</maml:para>
+				<maml:para />
+				<maml:para />
+				<maml:para></maml:para>
 			</dev:remarks>
 			<command:commandLines>
 				<command:commandLine>
