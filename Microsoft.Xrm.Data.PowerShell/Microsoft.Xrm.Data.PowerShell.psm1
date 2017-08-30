@@ -303,12 +303,12 @@ function New-CrmRecord{
         $result = $conn.CreateNewRecord($EntityLogicalName, $newfields, $null, $false, [Guid]::Empty)
         if(!$result -or $result -eq [System.Guid]::Empty)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException        
+        throw LastCrmConnectorException($conn)
     }
 
     return $result
@@ -347,12 +347,12 @@ function Get-CrmRecord{
     }
     catch
     {
-        throw $conn.LastCrmException        
+        throw LastCrmConnectorException($conn)        
     }    
     
     if($record -eq $null)
     {        
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
         
     $psobj = New-Object -TypeName System.Management.Automation.PSObject
@@ -763,7 +763,6 @@ function Set-CrmRecord{
             $newfields.Add($field.Key, $newfield)
         }
     }
-    
     try
     {
         # if no field has new value, then do nothing.
@@ -774,13 +773,13 @@ function Set-CrmRecord{
         $result = $conn.UpdateEntity($entityLogicalName, $primaryKeyField, $Id, $newfields, $null, $false, [Guid]::Empty)
         if(!$result)
         {
-            throw $conn.LastCrmException
+			throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
         #TODO: Throw Exceptions back to user
-        throw $conn.LastCrmException
+		throw LastCrmConnectorException($conn)
     }
 }
 
@@ -816,12 +815,12 @@ function Remove-CrmRecord{
             $result = $conn.DeleteEntity($EntityLogicalName, $Id, [Guid]::Empty)
             if(!$result)
             {
-                throw $conn.LastCrmException
+                throw LastCrmConnectorException($conn)
             }
         }
         catch
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
 }
@@ -858,12 +857,12 @@ function Move-CrmRecordToQueue{
         $result = $conn.AddEntityToQueue($Id, $EntityLogicalName, $QueueName, $WorkingUserId, $SetWorkingByUser, [Guid]::Empty)
 		if(!$result)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
 }
 
@@ -917,14 +916,14 @@ function Set-CrmRecordOwner{
 			}			
 			if(!$result)
             {
-                throw $conn.LastCrmException
+                throw LastCrmConnectorException($conn)
             }
 
 			write-verbose "Completed..."
 		}
 		catch
 		{
-		    throw $conn.LastCrmException
+		    throw LastCrmConnectorException($conn)
 		}
 	}
 }
@@ -958,12 +957,12 @@ function Set-CrmActivityRecordToCloseState{
         $result = $conn.CloseActivity($ActivityEntityType, $ActivityId, $StateCode, $StatusCode, [Guid]::Empty)
 		if(!$result)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
 }
 
@@ -1006,12 +1005,12 @@ function Add-CrmNoteToCrmRecord{
         $result = $conn.CreateAnnotation($EntityLogicalName, $Id, $newfields, [Guid]::Empty)
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
 }
 
@@ -1053,12 +1052,12 @@ function Add-CrmRecordAssociation{
         $result = $conn.CreateEntityAssociation($EntityLogicalName1, $Id1, $EntityLogicalName2, $Id2, $RelationshipName, [Guid]::Empty)
 		if(!$result)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
 }
 
@@ -1119,12 +1118,12 @@ function Add-CrmMultiRecordAssociation{
         $result = $conn.CreateMultiEntityAssociation($EntityLogicalName1, $Id1, $EntityLogicalName2, $Id2s, $RelationshipName, [Guid]::Empty, $IsReflexiveRelationship)
 		if(!$result)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
 }
 
@@ -1181,12 +1180,12 @@ function Add-CrmActivityToCrmRecord{
                 $Subject, $Description, $OnwerUserId, $newfields, [Guid]::Empty)
 			if($result -eq $null)
 			{
-				throw $conn.LastCrmException
+				throw LastCrmConnectorException($conn)
 			}
 		}
 		catch
 		{
-			throw $conn.LastCrmException
+			throw LastCrmConnectorException($conn)
 		}
 
 		return $result
@@ -1231,12 +1230,12 @@ function Remove-CrmRecordAssociation{
         $result = $conn.DeleteEntityAssociation($EntityLogicalName1, $Id1, $EntityLogicalName2, $Id2, $RelationshipName, [Guid]::Empty)
 		if(!$result)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
 }
 
@@ -1311,12 +1310,12 @@ function Invoke-CrmRecordWorkflow{
 		else{ throw "Duplicate workflow detected, try executing the workflow by its ID"}
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
     return $result
 }
@@ -1340,12 +1339,12 @@ function Get-MyCrmUserId{
         $result = $conn.GetMyCrmUserId()
 		if($result -eq $null) 
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }    
 
     return $result
@@ -1369,12 +1368,12 @@ function Get-CrmEntityAttributes{
         $result = $conn.GetAllAttributesForEntity($EntityLogicalName)
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }    
 
     return $result
@@ -1425,12 +1424,12 @@ function Get-CrmEntityAllMetadata{
         $result = $conn.GetAllEntityMetadata($OnlyPublished, $filter)
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }    
     return $result
 }
@@ -1455,12 +1454,12 @@ function Get-CrmEntityAttributeMetadata{
         $result = $conn.GetEntityAttributeMetadataForAttribute($EntityLogicalName, $FieldLogicalName)
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }    
     return $result
 }
@@ -1509,7 +1508,7 @@ function Get-CrmRecordsByFetch{
         $records = $conn.GetEntityDataByFetchSearch($Fetch, $TopCount, $PageNumber, $PageCookie, [ref]$PagingCookie, [ref]$NextPage, [Guid]::Empty)
         if($conn.LastCrmException -ne $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
         $logicalname = $xml.SelectSingleNode("/fetch/entity").Name
         #if there are zero results returned 
@@ -1605,7 +1604,7 @@ function Get-CrmRecordsByFetch{
     catch
     {
         Write-Error $_.Exception
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
     $resultSet = New-Object 'System.Collections.Generic.Dictionary[[System.String],[System.Management.Automation.PSObject]]'
     $resultSet.Add("CrmRecords", $recordslist)
@@ -1632,12 +1631,12 @@ function Get-CrmEntityDisplayName{
         $result = $conn.GetEntityDisplayName($EntityLogicalName)
 		if($result -eq $null)
         {
-			throw $conn.LastCrmException
+			throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }    
     return $result
 }
@@ -1658,12 +1657,12 @@ function Get-CrmEntityDisplayPluralName{
         $result = $conn.GetEntityDisplayNamePlural($EntityLogicalName)
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }     
     return $result
 }
@@ -1716,12 +1715,12 @@ function Get-CrmEntityMetadata{
         $result = $conn.GetEntityMetadata($EntityLogicalName, $filter)
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }    
 
     return $result
@@ -1745,12 +1744,12 @@ function Get-CrmEntityName{
         $result = $conn.GetEntityName($EntityTypeCode)
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }   
 
     return $result
@@ -1772,12 +1771,12 @@ function Get-CrmEntityTypeCode{
         $result = $conn.GetEntityTypeCode($EntityLogicalName)
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }    
     return $result
 }
@@ -1798,12 +1797,12 @@ function Get-CrmGlobalOptionSet{
         $result = $conn.GetGlobalOptionSetMetadata($OptionSetName)
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
     return $result
 }
@@ -1826,12 +1825,12 @@ function Get-CrmEntityOptionSet{
         $result = $conn.GetPickListElementFromMetadataEntity($EntityLogicalName, $FieldLogicalName)
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
 
     return $result
@@ -1918,7 +1917,7 @@ function Import-CrmSolutionAsync{
 		}
 		catch
 		{
-			throw $conn.LastCrmException
+			throw LastCrmConnectorException($conn)
 		}    
         $pollingStart = Get-Date
         $isProcessing = $true
@@ -2190,12 +2189,12 @@ function Add-CrmSampleData{
         $result = $conn.InstallSampleDataToCrm()
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
     return $result
 }
@@ -2217,7 +2216,7 @@ function Test-CrmSampleDataInstalled{
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }    
 
     return $result
@@ -2241,12 +2240,12 @@ function Publish-CrmEntity{
         $result = $conn.PublishEntity($EntityLogicalName)
 		if(!$result)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
 
     return $result
@@ -2287,12 +2286,12 @@ function Publish-CrmTheme{
 		$result = $conn.ExecuteCrmOrganizationRequest($req, $null)
 		if(!$result)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
 
     return $result
@@ -2321,12 +2320,12 @@ function Remove-CrmEntityMetadataCache{
         $result = $conn.ResetLocalMetadataCache($EntityLogicalName)
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }    
 }
 
@@ -2347,7 +2346,7 @@ function Remove-CrmSampleData{
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
 
     return $result
@@ -2397,7 +2396,7 @@ function Set-CrmRecordState{
                 $result = $conn.UpdateStateAndStatusForEntity($EntityLogicalName, $Id, $StateCodeInt, $statusCodeInt, [Guid]::Empty)
 			    if(!$result)
 			    {
-			    	throw $conn.LastCrmException
+			    	throw LastCrmConnectorException($conn)
 			    }
             }
             else
@@ -2405,13 +2404,13 @@ function Set-CrmRecordState{
                 $result = $conn.UpdateStateAndStatusForEntity($EntityLogicalName, $Id, $stateCode, $statusCode, [Guid]::Empty)
 			    if(!$result)
 			    {
-			    	throw $conn.LastCrmException
+			    	throw LastCrmConnectorException($conn)
 			    }
             }
 		}
 		catch
 		{
-			throw $conn.LastCrmException
+			throw LastCrmConnectorException($conn)
 		}
 	}
 }
@@ -2609,12 +2608,12 @@ function Disable-CrmLanguagePack{
         $result = $conn.ExecuteCrmOrganizationRequest($request, $null)
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }    
 }
 
@@ -2639,12 +2638,12 @@ function Enable-CrmLanguagePack{
         $result = $conn.ExecuteCrmOrganizationRequest($request, $null)
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }    
 }
 
@@ -2687,11 +2686,11 @@ function Export-CrmApplicationRibbonXml {
         }
 
         #Should only get here if there was nothing returned.
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
     catch
     {
-	    throw $conn.LastCrmException
+	    throw LastCrmConnectorException($conn)
     }
 }
 
@@ -2738,11 +2737,11 @@ function Export-CrmEntityRibbonXml {
         }
 
         #Should only get here if there was nothing returned.
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
     catch
     {
-	    throw $conn.LastCrmException
+	    throw LastCrmConnectorException($conn)
     }
 }
 
@@ -2845,7 +2844,7 @@ function Export-CrmSolution{
 				throw "The result was null, please double check the command"
 			}
 			else{
-				throw $conn.LastCrmException
+				throw LastCrmConnectorException($conn)
 			}
 		}
 
@@ -2963,7 +2962,7 @@ function Get-CrmAllLanguagePacks{
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }    
 
     return $response.LocaleIds
@@ -3000,12 +2999,12 @@ function Get-CrmEntityRecordCount{
             $result = $conn.ExecuteCrmOrganizationRequest($request)
 			if($result -eq $null)
 			{
-				throw $conn.LastCrmException
+				throw LastCrmConnectorException($conn)
 			}
         }
         catch
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
         
         $count += $result.EntityCollection.Entities.Count
@@ -3717,7 +3716,7 @@ function Get-CrmUserPrivileges{
 	    }
 	    catch
 	    {
-	        throw $conn.LastCrmException
+	        throw LastCrmConnectorException($conn)
 	    }	    
 	    
 	    foreach($rolePrivilege in $rolePrivileges)
@@ -3986,7 +3985,7 @@ function Invoke-CrmWhoAmI{
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }    
 
     return $result
@@ -4146,12 +4145,12 @@ function Publish-CrmCustomization{
         $response = $conn.ExecuteCrmOrganizationRequest($request, $null)
         if($response.ResponseName -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }    
 }
 
@@ -4174,7 +4173,7 @@ function Publish-CrmAllCustomization{
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }    
 
     #return $response
@@ -4259,12 +4258,12 @@ function Remove-CrmUserManager{
         $result = $conn.ExecuteCrmOrganizationRequest($request, $null)
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     } 
 }
 
@@ -4377,7 +4376,7 @@ function Set-CrmSolutionVersionNumber {
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
 
     $result
@@ -4753,12 +4752,12 @@ function Set-CrmUserBusinessUnit{
         $result = $conn.ExecuteCrmOrganizationRequest($request, $null)
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     }
 }
 
@@ -4994,12 +4993,12 @@ function Set-CrmUserManager{
         $result = $conn.ExecuteCrmOrganizationRequest($request, $null)
 		if($result -eq $null)
         {
-            throw $conn.LastCrmException
+            throw LastCrmConnectorException($conn)
         }
     }
     catch
     {
-        throw $conn.LastCrmException
+        throw LastCrmConnectorException($conn)
     } 
 }
 
@@ -5365,7 +5364,15 @@ function GuessPrimaryKeyField() {
     
     $primaryKeyField
 }
+function LastCrmConnectorException {
+	[CmdletBinding()]
+    PARAM( 
+        [parameter(Mandatory=$true)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
+    )
 
+	return (Coalesce $conn.LastCrmError $conn.LastCrmException) 
+}
 ## Taken from CRM SDK sample code
 ## https://msdn.microsoft.com/en-us/library/microsoft.crm.sdk.messages.retrieveentityribbonresponse.compressedentityxml.aspx
 function UnzipCrmRibbon {
