@@ -2039,7 +2039,7 @@ function Import-CrmSolution{
                 $OverwriteUnManagedCustomizations, $SkipDependancyOnProductUpdateCheckOnInstall,$ImportAsHoldingSolution)
         Write-Verbose "ImportId: $result" 
 		if ($result -eq [guid]::Empty) {
-             throw $conn.LastCrmError
+             throw LastCrmConnectorException($conn)
         }
         $pollingStart = Get-Date
         $isProcessing = $true
