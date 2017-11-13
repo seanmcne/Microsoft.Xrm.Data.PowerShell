@@ -125,11 +125,8 @@ function Connect-CrmOnline{
 			$cs+=";redirecturi=app://5d3e90d6-aa8e-48a8-8f2c-58b45cc67315"
 		}
 	}
-	#disable the discovery check by default unless it's oAuth
-	if($OAuthClientId -or $ForceOAuth -or $OAuthRedirectUri){
-		Write-Verbose "SkipDiscovery not yet supported for oAuth, ensure SkipDiscovery is not in the connectionstring"
-	}
-	elseif($ForceDiscovery){ 
+	#disable the discovery check by default 
+	if($ForceDiscovery){ 
 		Write-Verbose "ForceDiscovery: SkipDiscovery=False"
 		$cs+=";SkipDiscovery=False" 
 	}
