@@ -1478,8 +1478,8 @@ function Get-CrmRecordsByFetch{
         [string]$PageCookie,
         [parameter(Mandatory=$false, Position=5)]
         [switch]$AllRows
-
     )
+	$elapsed = [System.Diagnostics.Stopwatch]::StartNew()
     $conn = VerifyCrmConnectionParam $conn
     #default page number to 1 if not supplied
     if($PageNumber -eq 0)
@@ -1496,17 +1496,21 @@ function Get-CrmRecordsByFetch{
     $resultSet = New-Object 'System.Collections.Generic.Dictionary[[System.String],[System.Management.Automation.PSObject]]'
     try
     {
-        Write-Debug "Getting data from CRM"
+        Write-Verbose "Getting data from CRM"
 		$xml = [xml]$Fetch
 		if($xml.fetch.count -ne 0 -and $TopCount -eq 0)
 		{
 			$TopCount = $xml.fetch.count
 		}
+		$crmFetchTimer = [System.Diagnostics.Stopwatch]::StartNew()
         $records = $conn.GetEntityDataByFetchSearch($Fetch, $TopCount, $PageNumber, $PageCookie, [ref]$PagingCookie, [ref]$NextPage, [Guid]::Empty)
+		$crmFetchTimer.Stop()
         if($conn.LastCrmException -ne $null)
         {
             throw LastCrmConnectorException($conn)
         }
+		Write-Verbose "Received page of data from CRM"
+		$swCheck= [System.Diagnostics.Stopwatch]::StartNew()
         $logicalname = $xml.SelectSingleNode("/fetch/entity").Name
         #if there are zero results returned 
         if($records.Count -eq 0)
@@ -1523,8 +1527,8 @@ function Get-CrmRecordsByFetch{
         #if we have records
         elseif($records.Count -gt 0)
         {
-            Write-Debug "Records Found!"
-            foreach($record in $records.Values){   
+			Write-Verbose "$($records.Count) Records Found!"
+            foreach($record in $records.Values){
                 $psobj = New-Object -TypeName System.Management.Automation.PSObject
                 if($recordslist.Count -eq 0){
                     $atts = $xml.GetElementsByTagName('attribute')
@@ -1541,12 +1545,14 @@ function Get-CrmRecordsByFetch{
                     foreach($att in $record.GetEnumerator()){
 						#BUG where ReturnProperty_Id is returned as "ReturnProperty_Id " <-- with a trailing space
 						$keyName = $att.Key
-						if($keyName -eq "ReturnProperty_Id "){
+						if($keyName -eq ("ReturnProperty_Id ")){
 							$keyName = "ReturnProperty_Id"
 						}
-						if(!($psobj | gm).Name.Contains($keyName)){
+						if($psobj.PSObject.Properties.Match($keyName).Count -eq 0){
+							#add the member if it doesn't already exist
 							Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $null
 						}
+
 						if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference]){
 							$psobj.($keyName) = $att.Value.Name
 						}
@@ -1563,8 +1569,9 @@ function Get-CrmRecordsByFetch{
 						#BUG where ReturnProperty_Id is returned as "ReturnProperty_Id " <-- with a trailing space
 						$keyName = $att.Key
 						if($keyName -eq "ReturnProperty_Id "){
-							$keyName = "ReturnProperty_Id"
+							Add-Member -InputObject $psobj -MemberType NoteProperty -Name "ReturnProperty_Id" -Value $att.Value
 						}
+
                         if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference]){
                             Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $att.Value.Name
                         }
@@ -1574,7 +1581,7 @@ function Get-CrmRecordsByFetch{
                         else{
                             Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $att.Value
                         }
-                    }  
+                    }
                 }
 				Add-Member -InputObject $psobj -MemberType NoteProperty -Name "original" -Value $record
 				Add-Member -InputObject $psobj -MemberType NoteProperty -Name "logicalname" -Value $logicalname
@@ -1588,15 +1595,18 @@ function Get-CrmRecordsByFetch{
             if($NextPage -and $AllRows)  
             {
                 $PageNumber = $PageNumber + 1
-                Write-Debug "Fetching next page #$PageNumber"
+                Write-Verbose "Fetching next page #$PageNumber"
+				$crmFetchTimer.Start()
                 $NextRecordSet = Get-CrmRecordsByFetch -conn $conn -Fetch $Fetch -TopCount $TopCount -PageNumber $PageNumber -PageCookie $PagingCookie -AllRows
-                if($NextRecordSet.CrmRecords.Count -gt 0)
+                $crmFetchTimer.Stop()
+				if($NextRecordSet.CrmRecords.Count -gt 0)
                 {
-                    Write-Debug "Adding data to original results from page#: $PageNumber"
+                    Write-Verbose "Adding data to original results from page#: $PageNumber"
                     $recordslist.AddRange($NextRecordSet.CrmRecords)
                 }
             }
         }
+		$swCheck.Stop()
     }
     catch
     {
@@ -1609,6 +1619,11 @@ function Get-CrmRecordsByFetch{
     $resultSet.Add("PagingCookie",$PagingCookie)
     $resultSet.Add("NextPage",$NextPage)
     $resultSet.Add("FetchXml", $Fetch)
+	$resultSet.Add("FetchQueryTime", $crmFetchTimer.Elapsed)
+	Write-Verbose "Crm Server responded in:     $($crmFetchTimer.Elapsed)"
+	Write-Verbose "Get-CrmRecordsByFetch Parse: $($swCheck.Elapsed)"
+	Write-Verbose "Get-CrmRecordsByFetch Total: $($elapsed.Elapsed)"
+
     return $resultSet
 }
 
