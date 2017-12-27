@@ -754,8 +754,14 @@ function Set-CrmRecord{
         foreach($field in $Fields.GetEnumerator())
         {  
             $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
-            $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
-        
+            if($field.value -eq $null)
+            {
+                $newfield.Type = [Microsoft.Xrm.Tooling.Connector.CrmFieldType]::Raw
+            }
+            else
+            {
+                $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
+            }
             $newfield.Value = $field.Value
             $newfields.Add($field.Key, $newfield)
         }
