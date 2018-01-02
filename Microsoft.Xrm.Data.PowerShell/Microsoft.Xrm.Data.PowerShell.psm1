@@ -4937,7 +4937,7 @@ function Set-CrmQueueMailbox {
         {
             $updateFields.Add($parameter.Key.ToLower(), (New-CrmEntityReference emailserverprofile $parameter.Value))
         }
-        elseif($parameter.Key -in ("IncomingEmailDeliveryMethod","OutgoingEmailDeliveryMethod","ACTDeliveryMethod"))
+        elseif($parameter.Key -in ("IncomingEmailDeliveryMethod","OutgoingEmailDeliveryMethod"))
         {
             $updateFields.Add($parameter.Key.ToLower(), (New-CrmOptionSetValue $parameter.Value))
         }
