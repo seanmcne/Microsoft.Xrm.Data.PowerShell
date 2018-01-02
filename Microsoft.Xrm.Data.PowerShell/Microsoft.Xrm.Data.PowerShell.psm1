@@ -4836,10 +4836,6 @@ function Set-CrmUserMailbox {
     }
     foreach($parameter in $MyInvocation.BoundParameters.GetEnumerator())
     {   
-        if($parameter.Key -in ("UserId", "ApplyDefaultEmailSettings", "conn"))
-        {
-            continue;
-        }
         if($parameter.Key -in ("EmailServerProfile"))
         {
             $updateFields.Add($parameter.Key.ToLower(), (New-CrmEntityReference emailserverprofile $parameter.Value))
@@ -4852,7 +4848,7 @@ function Set-CrmUserMailbox {
         {
             Set-CrmRecordState -conn $conn -EntityLogicalName mailbox -Id $Id -StateCode $StateCode -StatusCode $StatusCode
         }
-        else
+        elseif($parameter.Key -in ("EmailAddress"))
         {
             $updateFields.Add($parameter.Key.ToLower(), $parameter.Value)
         }
@@ -4934,18 +4930,14 @@ function Set-CrmQueueMailbox {
     {
         Approve-CrmEmailAddress -conn $conn -QueueId $QueueId
     }
-
+	
     foreach($parameter in $MyInvocation.BoundParameters.GetEnumerator())
     {   
-        if($parameter.Key -in ("UserId", "ApplyDefaultEmailSettings", "conn"))
-        {
-            continue;
-        }
         if($parameter.Key -in ("EmailServerProfile"))
         {
             $updateFields.Add($parameter.Key.ToLower(), (New-CrmEntityReference emailserverprofile $parameter.Value))
         }
-        elseif($parameter.Key -in ("IncomingEmailDeliveryMethod","OutgoingEmailDeliveryMethod"))
+        elseif($parameter.Key -in ("IncomingEmailDeliveryMethod","OutgoingEmailDeliveryMethod","ACTDeliveryMethod"))
         {
             $updateFields.Add($parameter.Key.ToLower(), (New-CrmOptionSetValue $parameter.Value))
         }
@@ -4953,12 +4945,11 @@ function Set-CrmQueueMailbox {
         {
             Set-CrmRecordState -conn $conn -EntityLogicalName mailbox -Id $Id -StateCode $StateCode -StatusCode $StatusCode
         }
-        else
+        elseif($parameter.Key -in ("EmailAddress"))
         {
             $updateFields.Add($parameter.Key.ToLower(), $parameter.Value)
         }
     }
-
     
     Set-CrmRecord -conn $conn -EntityLogicalName mailbox -Id $Id -Fields $updateFields
 }
