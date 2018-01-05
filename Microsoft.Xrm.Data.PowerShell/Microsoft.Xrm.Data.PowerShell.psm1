@@ -20,7 +20,7 @@ function Connect-CrmOnlineDiscovery{
         [Parameter(Mandatory=$false)]
         [switch]$InteractiveMode
     )
-        
+    AddTls12Support #make sure tls12 is enabled 
     if($InteractiveMode)
     {
         $global:conn = Get-CrmConnection -InteractiveMode -Verbose
@@ -95,6 +95,7 @@ function Connect-CrmOnline{
 		[Parameter(Position=6,Mandatory=$false)]
         [string]$OAuthRedirectUri
     )
+    AddTls12Support #make sure tls12 is enabled 
 	if($ServerUrl.StartsWith("https://","CurrentCultureIgnoreCase") -ne $true){
 		Write-Verbose "ServerUrl is missing https, fixing URL: https://$ServerUrl"
 		$ServerUrl = "https://" + $ServerUrl
@@ -164,6 +165,7 @@ function Connect-CrmOnPremDiscovery{
         [Parameter(Mandatory=$false, ParameterSetName="InteractiveMode")]
         [switch]$InteractiveMode
     )
+    AddTls12Support #make sure tls12 is enabled 
     if($InteractiveMode)
     {
         $global:conn = Get-CrmConnection -InteractiveMode -Verbose
@@ -5366,6 +5368,10 @@ function LastCrmConnectorException {
     )
 
 	return (Coalesce $conn.LastCrmError $conn.LastCrmException) 
+}
+function AddTls12Support {
+	#by default PowerShell will show Ssl3, Tls - since SSL3 is not desirable we will drop it and use Tls + Tls12
+	[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls -bor [System.Net.SecurityProtocolType]::Tls12
 }
 ## Taken from CRM SDK sample code
 ## https://msdn.microsoft.com/en-us/library/microsoft.crm.sdk.messages.retrieveentityribbonresponse.compressedentityxml.aspx
