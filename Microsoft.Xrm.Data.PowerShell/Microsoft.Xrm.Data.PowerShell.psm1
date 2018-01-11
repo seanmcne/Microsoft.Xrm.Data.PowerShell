@@ -3121,13 +3121,11 @@ function Get-CrmLicenseSummary{
         </entity>
     </fetch>
 "@; 
-	PROCESS{
-		$users = Get-CrmRecordsByFetch -conn $conn -Fetch $fetch; 
-		Write-Output 'IsLicensed:' ($users.CrmRecords | group islicensed | select count, name); 
-		Write-Output 'AccessMode:' ($users.CrmRecords | group accessmode | select count, name); 
-		Write-Output 'CalType:' ($users.CrmRecords | group accessmode | select count, name); 
-	}
-    
+
+	$users = Get-CrmRecordsByFetch -conn $conn -Fetch $fetch; 
+	Write-Output 'IsLicensed:' ($users.CrmRecords | group islicensed | select count, name); 
+	Write-Output 'AccessMode:' ($users.CrmRecords | group accessmode | select count, name); 
+	Write-Output 'CalType:' ($users.CrmRecords | group accessmode | select count, name); 
 }
 
 function Get-CrmOrgDbOrgSettings{
