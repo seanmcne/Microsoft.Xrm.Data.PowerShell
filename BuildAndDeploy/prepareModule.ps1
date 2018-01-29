@@ -1,10 +1,12 @@
-#gci d:\a\ -Recurse 
+Param(
+   [string]$keypass
+)
 
-$keypass = $args[0]
+#gci d:\a\ -Recurse 
 $keypath = $secureFilePath
-write-output "rawpath: $secureFilePath" 
-write-output $(secureFilePath) 
-write-output $(Agent.TempDirectory)
+write-host "Secret sauce: $keypass should be redacted"
+write-host $env:secureFilePath 
+write-host $env:Agent.TempDirectory
 
 $Copyright = "(C) $((get-date).year) Microsoft Corporation All rights reserved."
 $ModuleName = "Microsoft.Xrm.Data.PowerShell" 
