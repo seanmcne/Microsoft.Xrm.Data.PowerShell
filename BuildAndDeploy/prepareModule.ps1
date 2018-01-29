@@ -1,4 +1,5 @@
 gci ..\  -Recurse -Verbose
+cd .\Microsoft.Xrm.Data.PowerShell\
 
 "Setting variables"
 $modulePath = Convert-Path ".\Microsoft.Xrm.Data.PowerShell\"
