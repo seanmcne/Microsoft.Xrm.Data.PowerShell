@@ -1,7 +1,7 @@
-gci c:\users\ -Recurse 
+#gci d:\a\ -Recurse 
 
 $keypass = $args[0]
-$keypath = "pshellSigning.pfx"
+$keypath = $secureFilePath
 $Copyright = "(C) $((get-date).year) Microsoft Corporation All rights reserved."
 $ModuleName = "Microsoft.Xrm.Data.PowerShell" 
 $moduleFileName = "$ModuleName.psd1"
