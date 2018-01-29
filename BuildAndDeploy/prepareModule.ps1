@@ -1,3 +1,5 @@
+gci ../ -Recurse 
+
 $keypass = $args[0]
 $keypath = "pshellSigning.pfx"
 $Copyright = "(C) $((get-date).year) Microsoft Corporation All rights reserved."
