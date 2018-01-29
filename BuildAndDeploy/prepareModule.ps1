@@ -2,11 +2,12 @@ Param(
    [string]$keypass
 )
 
-#gci d:\a\ -Recurse 
-$keypath = $secureFilePath
 write-host "Secret sauce: $keypass should be redacted"
-write-host $env:secureFilePath 
-write-host $env:Agent.TempDirectory
+write-host $tempDirectory
+
+#gci d:\a\ -Recurse 
+$tempDirectory = $env:AGENT_WORKFOLDER + "\_temp\" 
+$keypath = "$tempDirectory\pshellSigning.pfx"
 
 $Copyright = "(C) $((get-date).year) Microsoft Corporation All rights reserved."
 $ModuleName = "Microsoft.Xrm.Data.PowerShell" 
