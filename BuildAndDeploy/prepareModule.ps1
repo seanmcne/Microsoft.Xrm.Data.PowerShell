@@ -1,4 +1,4 @@
-gci ../ -Recurse 
+gci c:\users\ -Recurse 
 
 $keypass = $args[0]
 $keypath = "pshellSigning.pfx"
