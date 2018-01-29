@@ -2,6 +2,10 @@
 
 $keypass = $args[0]
 $keypath = $secureFilePath
+write-output "rawpath: $secureFilePath" 
+write-output $(secureFilePath) 
+write-output $(Agent.TempDirectory)
+
 $Copyright = "(C) $((get-date).year) Microsoft Corporation All rights reserved."
 $ModuleName = "Microsoft.Xrm.Data.PowerShell" 
 $moduleFileName = "$ModuleName.psd1"
@@ -19,7 +23,7 @@ $datafile.Copyright = $Copyright
 $datafile.ModuleVersion = $newBuildNumber
 
 "Updating module manifest" 
-Update-ModuleManifest "$modulepath\$moduleFileName" -Copyright $Copyright -ModuleVersion $vNum -Verbose
+Update-ModuleManifest "$modulepath\$moduleFileName" -Copyright $Copyright -ModuleVersion $vNum
 
 "Clean out *.psproj and *.pshproj from $modulepath..."
 try{
