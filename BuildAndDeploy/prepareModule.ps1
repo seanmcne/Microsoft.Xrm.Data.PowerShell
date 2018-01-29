@@ -4,8 +4,6 @@ Param(
 #gci d:\a\ -Recurse 
 $tempDirectory = $env:AGENT_WORKFOLDER + "\_temp\" 
 $keypath = "$tempDirectory\pshellSigning.pfx"
-write-host "Secret sauce: $keypass should be redacted"
-write-host $tempDirectory
 
 $Copyright = "(C) $((get-date).year) Microsoft Corporation All rights reserved."
 $ModuleName = "Microsoft.Xrm.Data.PowerShell" 
