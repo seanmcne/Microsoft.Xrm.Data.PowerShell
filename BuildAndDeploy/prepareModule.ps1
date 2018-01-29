@@ -1,5 +1,6 @@
 gci ..\  -Recurse -Verbose
 
+"Setting variables"
 $modulePath = Convert-Path ".\Microsoft.Xrm.Data.PowerShell\"
 $moduleName = "Microsoft.Xrm.Data.PowerShell.psd1"
 $Copyright = "(C) $((get-date).year) Microsoft Corporation All rights reserved."
@@ -10,6 +11,9 @@ $manifestVersion = [System.Version]::Parse($vNum)
 $newBuildNumber = "$($manifestVersion.Major).$($manifestVersion.Minor)"
 $datafile.Copyright = $Copyright
 $datafile.ModuleVersion = $newBuildNumber
+
+"Updating module manifest" 
+
 Update-ModuleManifest "$modulepath\$moduleName" -Copyright $Copyright -ModuleVersion $vNum -Verbose
 
 "Removing *.psproj and *.pshproj from $modulepath..."
