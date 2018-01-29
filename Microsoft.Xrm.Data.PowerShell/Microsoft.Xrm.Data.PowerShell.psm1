@@ -4028,8 +4028,8 @@ function Invoke-CrmAction {
     }
     process
     {
-        $request = [Microsoft.Xrm.Sdk.OrganizationRequest]::new($Name)
-
+		$request = new-object Microsoft.Xrm.Sdk.OrganizationRequest
+		$request.RequestName = $Name
         if($Target) {
             $request.Parameters.Add("Target", $Target) 
         }
