@@ -1,23 +1,23 @@
-gci ..\  -Recurse -Verbose
-cd .\Microsoft.Xrm.Data.PowerShell\
-
-"Setting variables"
-$modulePath = Convert-Path "."
-$moduleName = "Microsoft.Xrm.Data.PowerShell.psd1"
 $Copyright = "(C) $((get-date).year) Microsoft Corporation All rights reserved."
-$datafile = Import-PowerShellDataFile "$modulepath\$moduleName" -Verbose
-$vNum = $datafile.ModuleVersion
+$ModuleName = "Microsoft.Xrm.Data.PowerShell" 
+$moduleFileName = "$ModuleName.psd1"
 
+cd $ModuleName
+
+$modulePath = Convert-Path "."
+
+#get, parse, and update Module attributes 
+$datafile = Import-PowerShellDataFile "$modulepath\$moduleFileName" -Verbose
+$vNum = $datafile.ModuleVersion
 $manifestVersion = [System.Version]::Parse($vNum)
 $newBuildNumber = "$($manifestVersion.Major).$($manifestVersion.Minor)"
 $datafile.Copyright = $Copyright
 $datafile.ModuleVersion = $newBuildNumber
 
 "Updating module manifest" 
+Update-ModuleManifest "$modulepath\$moduleFileName" -Copyright $Copyright -ModuleVersion $vNum -Verbose
 
-Update-ModuleManifest "$modulepath\$moduleName" -Copyright $Copyright -ModuleVersion $vNum -Verbose
-
-"Removing *.psproj and *.pshproj from $modulepath..."
+"Clean out *.psproj and *.pshproj from $modulepath..."
 try{
 	$Files = Get-ChildItem $modulepath -Include *.pssproj,*.pshproj -Recurse -verbose
 	foreach ($File in $Files){ 
