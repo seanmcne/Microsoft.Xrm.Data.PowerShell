@@ -1,6 +1,6 @@
 gci ..\  -Recurse -Verbose
 
-$modulePath = Convert-Path .
+$modulePath = Convert-Path ".\Microsoft.Xrm.Data.PowerShell\"
 $moduleName = "Microsoft.Xrm.Data.PowerShell.psd1"
 $Copyright = "(C) $((get-date).year) Microsoft Corporation All rights reserved."
 $datafile = Import-PowerShellDataFile "$modulepath\$moduleName"
