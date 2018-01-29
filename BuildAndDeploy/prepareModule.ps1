@@ -2,7 +2,7 @@ gci ..\  -Recurse -Verbose
 cd .\Microsoft.Xrm.Data.PowerShell\
 
 "Setting variables"
-$modulePath = Convert-Path ".\Microsoft.Xrm.Data.PowerShell\"
+$modulePath = Convert-Path "."
 $moduleName = "Microsoft.Xrm.Data.PowerShell.psd1"
 $Copyright = "(C) $((get-date).year) Microsoft Corporation All rights reserved."
 $datafile = Import-PowerShellDataFile "$modulepath\$moduleName" -Verbose
