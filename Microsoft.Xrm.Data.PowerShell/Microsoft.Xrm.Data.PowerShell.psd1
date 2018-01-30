@@ -17,8 +17,8 @@
 # Script module or binary module file associated with this manifest.
 RootModule = 'Microsoft.Xrm.Data.Powershell.psm1'
 
-# Version number of this module. This is Dynamics CRM 2016 SP1 SDK base
-ModuleVersion = '2.6.1'
+# Version number of this module.
+ModuleVersion = '2.7'
 
 # ID used to uniquely identify this module
 GUID = '7df9c140-65c3-4862-b3bc-73fad633aae4'
