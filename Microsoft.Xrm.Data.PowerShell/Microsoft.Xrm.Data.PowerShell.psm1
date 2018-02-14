@@ -4431,8 +4431,8 @@ function Set-CrmConnectionTimeout{
 	if($conn.OrganizationWebProxyClient -and $conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding){
 	    try{
 			Write-Verbose "Updating Timeouts on OrganizationWebProxyClient"
-			$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.CloseTimeout = $newTimeout
 			$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.OpenTimeout = $newTimeout
+			$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.CloseTimeout = $newTimeout
 			$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.ReceiveTimeout = $newTimeout
 			$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.SendTimeout = $newTimeout
 	    }
