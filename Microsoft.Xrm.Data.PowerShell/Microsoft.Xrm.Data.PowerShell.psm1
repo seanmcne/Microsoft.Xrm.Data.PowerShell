@@ -4419,23 +4419,25 @@ function Set-CrmConnectionTimeout{
 	if(!$SetDefault){
 	    $newTimeout = New-Object System.TimeSpan -ArgumentList 0,0,$TimeoutInSeconds
 	}
-	if($conn.OrganizationServiceProxy -and $conn.OrganizationServiceProxy.Timeout -and $conn.OrganizationServiceProxy.getType().BaseType.Name -eq "OrganizationServiceProxy"){
+	if($conn.OrganizationServiceProxy -and $conn.OrganizationServiceProxy.Timeout){
 	    try{
-		Write-Verbose "Updating Timeout on OrganizationServiceProxy"
-		$conn.OrganizationServiceProxy.Timeout = $newTimeout
+			Write-Verbose "Updating Timeout on OrganizationServiceProxy"
+			$conn.OrganizationServiceProxy.Timeout = $newTimeout
 	    }
 	    catch{
-		Write-Verbose "Failed to set the timeout value"        
+			Write-Verbose "Failed to set the timeout value"        
 	    }
 	}
-	if($conn.OrganizationWebProxyClient -and $conn.OrganizationWebProxyClient.getType().Name -eq "OrganizationWebProxyClient"){
+	if($conn.OrganizationWebProxyClient -and $conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding){
 	    try{
-		Write-Verbose "Updating Timeouts on OrganizationWebProxyClient"
-		$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.ReceiveTimeout = $newTimeout
-		$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.SendTimeout = $newTimeout
+			Write-Verbose "Updating Timeouts on OrganizationWebProxyClient"
+			$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.OpenTimeout = $newTimeout
+			$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.CloseTimeout = $newTimeout
+			$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.ReceiveTimeout = $newTimeout
+			$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.SendTimeout = $newTimeout
 	    }
 	    catch{
-		Write-Verbose "Failed to set the timeout values"
+			Write-Verbose "Failed to set the timeout values"
 	    }
 	}
 }
