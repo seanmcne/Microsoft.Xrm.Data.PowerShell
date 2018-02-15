@@ -2199,8 +2199,8 @@ OrganizationWebProxyClient     : Microsoft.Xrm.Sdk.WebServiceClient.Organization
 LastCrmError                   :
 LastCrmException               :
 CrmConnectOrgUriActual         : https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc/web?SDKClientVersion=9.0.9002.0
-ConnectedOrgFriendlyName       : PFEStaffing
-ConnectedOrgUniqueName         : pfecrmol
+ConnectedOrgFriendlyName       : Contoso
+ConnectedOrgUniqueName         : contosocrmol
 ConnectedOrgPublishedEndpoints : {[WebApplication, https://contoso.crm.dynamics.com/], [OrganizationService, https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc], [OrganizationDataService, https://contoso.api.crm.dynamics.com/XRMServices/2011/OrganizationData.svc]}
 ConnectionLockObject           : System.Object
 ConnectedOrgVersion            : 8.2.1.359

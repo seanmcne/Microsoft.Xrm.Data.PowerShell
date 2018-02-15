@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <ModuleObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" fVersion="1.1" type="Script" mclass="Module" useSupports="false">
   <Name>Microsoft.Xrm.Data.PowerShell</Name>
-  <Version>2.6</Version>
+  <Version>2.7.2</Version>
   <Description />
   <HasManifest>true</HasManifest>
   <OverridePostCount>false</OverridePostCount>
@@ -893,7 +893,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
     <CmdletObject verb="Connect" noun="CrmOnline">
       <Name>Connect-CrmOnline</Name>
       <Syntax>
-        <string>Connect-CrmOnline [-Credential] &lt;PSCredential&gt; [-ServerUrl] &lt;String&gt; [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;SwitchParameter&gt;]</string>
+        <string>Connect-CrmOnline [-Credential] &lt;PSCredential&gt; [-ServerUrl] &lt;String&gt; [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;String&gt;]</string>
       </Syntax>
       <GeneralHelp>
         <Synopsis>Connects to CRM Online organization without using Discovery Service.</Synopsis>
@@ -964,14 +964,14 @@ You can use Get-Credential to create Credential information.</Description>
           <Description>Azure Active Directory Native Application Id</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="6" globbing="false">
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="6" globbing="false">
           <Name>OAuthRedirectUri</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description>Azure Active Directory Native Application Id's Redirect URI </Description>
+          <Description />
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
@@ -1015,8 +1015,8 @@ OrganizationWebProxyClient     : Microsoft.Xrm.Sdk.WebServiceClient.Organization
 LastCrmError                   :
 LastCrmException               :
 CrmConnectOrgUriActual         : https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc/web?SDKClientVersion=9.0.9002.0
-ConnectedOrgFriendlyName       : PFEStaffing
-ConnectedOrgUniqueName         : pfecrmol
+ConnectedOrgFriendlyName       : Contoso
+ConnectedOrgUniqueName         : contosocrmol
 ConnectedOrgPublishedEndpoints : {[WebApplication, https://contoso.crm.dynamics.com/], [OrganizationService, https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc], [OrganizationDataService, https://contoso.api.crm.dynamics.com/XRMServices/2011/OrganizationData.svc]}
 ConnectionLockObject           : System.Object
 ConnectedOrgVersion            : 8.2.1.359
@@ -5091,7 +5091,7 @@ ExtensionData :</Output>
       <Name>New-CrmRecord</Name>
       <Syntax>
         <string>New-CrmRecord [-conn &lt;CrmServiceClient&gt;] [-EntityLogicalName] &lt;String&gt; [-Fields] &lt;Hashtable&gt;</string>
-        <string>New-CrmRecord [-conn &lt;CrmServiceClient&gt;] [-CrmRecord] &lt;PSObject&gt;</string>
+        <string>New-CrmRecord [-conn &lt;CrmServiceClient&gt;] [-CrmRecord] &lt;PSObject&gt; [[-PreserveCrmRecordId] &lt;SwitchParameter&gt;]</string>
       </Syntax>
       <GeneralHelp>
         <Synopsis>Creates a new CRM record by specifying field name/value set, and returns record guid.</Synopsis>
@@ -5110,7 +5110,7 @@ You can use Get-CrmEntityAttributeMetadata cmdlet and check AttributeType to see
       </GeneralHelp>
       <ParamSets>
         <CommandParameterSetInfo2 Name="NameAndFields" Params="conn EntityLogicalName Fields Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
-        <CommandParameterSetInfo2 Name="CrmRecord" Params="conn CrmRecord Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="CrmRecord" Params="conn CrmRecord PreserveCrmRecordId Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
       </ParamSets>
       <Parameters>
         <ParameterDescription type="CrmServiceClient" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -5152,6 +5152,16 @@ You can use Get-CrmEntityAttributeMetadata cmdlet and check AttributeType to see
           </Attributes>
           <Aliases />
           <Description>A record object which is obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use EntityLogicalName/Fields</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
+          <Name>PreserveCrmRecordId</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description />
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
@@ -7991,7 +8001,6 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
         <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
           <Name>EmailAddress</Name>
           <Attributes>
-            <string>System.Management.Automation.ValidatePatternAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
@@ -8385,74 +8394,6 @@ Performance  : The operation took 00:00:00.3948901</Output>
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
     </CmdletObject>
-    <CmdletObject verb="Test" noun="XrmTimerStart">
-      <Name>Test-XrmTimerStart</Name>
-      <Syntax>
-        <string>Test-XrmTimerStart</string>
-      </Syntax>
-      <GeneralHelp>
-        <Synopsis>Instantiate timer object and start it.
-</Synopsis>
-        <Description>The Test-XrmTimerStart cmdlet lets you instantiate timer object and start it. Use with Text-XrmTimerStop.
-</Description>
-        <Notes />
-        <InputType />
-        <InputUrl />
-        <InputTypeDescription />
-        <ReturnType />
-        <ReturnUrl />
-        <ReturnTypeDescription />
-      </GeneralHelp>
-      <ParamSets>
-        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="" />
-      </ParamSets>
-      <Parameters />
-      <Examples>
-        <Example>
-          <Name>Example 1</Name>
-          <Cmd>Test-XrmTimerStart; $result = Get-MyCrmUserId; Test-XrmTimerStop</Cmd>
-          <Description>This example shows performance result of Get-MyCrmUserId using a one line execution. </Description>
-          <Output>The operation took 00:00:00.0816009</Output>
-        </Example>
-      </Examples>
-      <RelatedLinks />
-      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
-      <Publish>false</Publish>
-    </CmdletObject>
-    <CmdletObject verb="Test" noun="XrmTimerStop">
-      <Name>Test-XrmTimerStop</Name>
-      <Syntax>
-        <string>Test-XrmTimerStop</string>
-      </Syntax>
-      <GeneralHelp>
-        <Synopsis>Find timer object which started by Test-XrmTimerStart and stop it. Then display the elapsed time.
-</Synopsis>
-        <Description>The Test-XrmTimerStop cmdlet lets you see the elapsed time after you call Test-XrmTimerStart.
-</Description>
-        <Notes />
-        <InputType />
-        <InputUrl />
-        <InputTypeDescription />
-        <ReturnType />
-        <ReturnUrl />
-        <ReturnTypeDescription />
-      </GeneralHelp>
-      <ParamSets>
-        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="" />
-      </ParamSets>
-      <Parameters />
-      <Examples>
-        <Example>
-          <Name>Example 1</Name>
-          <Cmd>Test-XrmTimerStart; $result = Get-MyCrmUserId; Test-XrmTimerStop</Cmd>
-          <Description>This example shows performance result of Get-MyCrmUserId using a one line execution. </Description>
-          <Output>The operation took 00:00:00.0816009</Output>
-        </Example>
-      </Examples>
-      <RelatedLinks />
-      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
-      <Publish>false</Publish>
-    </CmdletObject>
     <CmdletObject verb="Get" noun="CrmConnection">
       <Name>Get-CrmConnection</Name>
       <Syntax>
@@ -8652,8 +8593,8 @@ Performance  : The operation took 00:00:00.3948901</Output>
         <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
           <Name>Confirm</Name>
           <Attributes>
-            <string>System.Management.Automation.AliasAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.AliasAttribute</string>
           </Attributes>
           <Aliases>
             <string>cf</string>
@@ -10464,6 +10405,56 @@ When omitting conn parameter, cmdlets automatically finds it.</Description>
           <Output />
         </Example>
       </Examples>
+      <RelatedLinks />
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Test" noun="CrmTimerStart">
+      <Name>Test-CrmTimerStart</Name>
+      <Syntax>
+        <string>Test-CrmTimerStart</string>
+      </Syntax>
+      <GeneralHelp>
+        <Synopsis />
+        <Description />
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType />
+        <ReturnUrl />
+        <ReturnTypeDescription />
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="" />
+      </ParamSets>
+      <Parameters />
+      <Examples />
+      <RelatedLinks />
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Test" noun="CrmTimerStop">
+      <Name>Test-CrmTimerStop</Name>
+      <Syntax>
+        <string>Test-CrmTimerStop</string>
+      </Syntax>
+      <GeneralHelp>
+        <Synopsis />
+        <Description />
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType />
+        <ReturnUrl />
+        <ReturnTypeDescription />
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="" />
+      </ParamSets>
+      <Parameters />
+      <Examples />
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
