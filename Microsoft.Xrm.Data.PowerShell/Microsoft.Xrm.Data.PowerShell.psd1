@@ -18,7 +18,7 @@
 RootModule = 'Microsoft.Xrm.Data.Powershell.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.7.2'
+ModuleVersion = '2.8.0'
 
 # ID used to uniquely identify this module
 GUID = '7df9c140-65c3-4862-b3bc-73fad633aae4'
@@ -57,7 +57,7 @@ DotNetFrameworkVersion = '4.0.0.0'
 #RequiredModules = @("Microsoft.Xrm.Tooling.CrmConnector.Powershell")
 
 # Assemblies that must be loaded prior to importing this module
-RequiredAssemblies = @("Microsoft.Crm.Sdk.Proxy.dll", "Microsoft.IdentityModel.Clients.ActiveDirectory.dll", "Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll","Microsoft.Xrm.Sdk.dll","Microsoft.Xrm.Tooling.Connector.dll","Microsoft.Xrm.Tooling.CrmConnectControl.dll","Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll","Microsoft.Xrm.Tooling.Ui.Styles.dll")
+RequiredAssemblies = @("Microsoft.Crm.Sdk.Proxy.dll", "Microsoft.IdentityModel.Clients.ActiveDirectory.dll", "Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll","Microsoft.Xrm.Sdk.dll","Microsoft.Xrm.Tooling.Connector.dll","Microsoft.Xrm.Tooling.CrmConnectControl.dll","Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll","Microsoft.Xrm.Tooling.Ui.Styles.dll","Microsoft.Rest.ClientRuntime.dll","Newtonsoft.Json.dll")
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
 #ScriptsToProcess = @()
@@ -90,7 +90,7 @@ AliasesToExport = @('*')
 ModuleList = @("Microsoft.Xrm.Data.Powershell")
 
 # List of all files packaged with this module
-FileList = @("Microsoft.Xrm.Data.Powershell.psm1","Microsoft.Xrm.Data.Powershell.psd1","Microsoft.Crm.Sdk.Proxy.dll", "Microsoft.IdentityModel.Clients.ActiveDirectory.dll", "Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll","Microsoft.Xrm.Data.PowerShell.Help.xml", "Microsoft.Xrm.Sdk.Deployment.dll","Microsoft.Xrm.Sdk.dll","Microsoft.Xrm.Tooling.Connector.dll","Microsoft.Xrm.Tooling.CrmConnectControl.dll","Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll","Microsoft.Xrm.Tooling.Ui.Styles.dll")
+FileList = @("Microsoft.Xrm.Data.Powershell.psm1","Microsoft.Xrm.Data.Powershell.psd1","Microsoft.Crm.Sdk.Proxy.dll", "Microsoft.IdentityModel.Clients.ActiveDirectory.dll", "Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll","Microsoft.Xrm.Data.PowerShell.Help.xml", "Microsoft.Xrm.Sdk.Deployment.dll","Microsoft.Xrm.Sdk.dll","Microsoft.Xrm.Tooling.Connector.dll","Microsoft.Xrm.Tooling.CrmConnectControl.dll","Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll","Microsoft.Xrm.Tooling.Ui.Styles.dll","Microsoft.Rest.ClientRuntime.dll","Newtonsoft.Json.dll")
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
 PrivateData = @{

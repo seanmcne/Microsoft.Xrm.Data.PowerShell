@@ -20,6 +20,9 @@ $manifestVersion = [System.Version]::Parse($vNum)
 $newBuildNumber = "$($manifestVersion.Major).$($manifestVersion.Minor)"
 $datafile.Copyright = $Copyright
 $datafile.ModuleVersion = $newBuildNumber
+$datafile.CmdletsToExport = "*"
+$datafile.FunctionsToExport = "*-*"
+$datafile.VariablesToExport = "*"
 
 "Updating module manifest" 
 Update-ModuleManifest "$modulepath\$moduleFileName" -Copyright $Copyright -ModuleVersion $vNum
