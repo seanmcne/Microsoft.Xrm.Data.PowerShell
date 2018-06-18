@@ -76,7 +76,7 @@ function Connect-CrmOnline{
         [parameter(Position=1, Mandatory=$true)]
         [PSCredential]$Credential, 
         [Parameter(Position=2,Mandatory=$true)]
-        [ValidatePattern('([\w-]+).crm([0-9]).(dynamics|crm[\w-]).(com|de)')]
+        [ValidatePattern('([\w-]+).crm([0-9]*).(microsoftdynamics|dynamics|crm[\w-]*).(com|de)')]
         [string]$ServerUrl, 
 		[Parameter(Position=3,Mandatory=$false)]
         [switch]$ForceDiscovery,
