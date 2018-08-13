@@ -81,7 +81,7 @@ Connect-CrmOnlineDiscovery -InteractiveMode
 # OnPrem
 Connect-CrmOnPremDiscovery -InteractiveMode
 # Azure Automation
-Connect-CrmOnline -Credential $cred -ServerUri "https://<org>.crm.dynamics.com"
+Connect-CrmOnline -Credential $cred -ServerUrl "https://<org>.crm.dynamics.com"
 ```
 
 For Azure Automation, write all scripts inside inlinescript block as Runbook or use PowerShell type.
