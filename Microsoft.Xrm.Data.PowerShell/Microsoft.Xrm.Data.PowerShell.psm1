@@ -323,8 +323,8 @@ function New-CRMRecordsBatch
         #Put all of your records into an entity list. Then put the list here. See Examples
         [Parameter(Mandatory=$true,
                    Position=0)]
-        [System.Collections.Generic.List[Microsoft.Xrm.Sdk.Entity]]
-        $EntitiesList,
+        [Microsoft.Xrm.Sdk.Entity[]]
+        $Entities,
 
         #conn
         [Parameter(Mandatory=$false,
@@ -347,7 +347,6 @@ function New-CRMRecordsBatch
 
     Begin
     {
-        #remove the import once added to the module.
         $conn = VerifyCrmConnectionParam $conn
         if(!$conn.IsBatchOperationsAvailable){throw "Batch operations are not available for this server."}
     }
@@ -356,17 +355,17 @@ function New-CRMRecordsBatch
         
         #we need to break the jobs up into small amounts. If you do to many at a time, it will not work and will return null.
         $end = 0
-        while ($end -lt $EntitiesList.count)
+        while ($end -lt $Entities.count)
         {
             $start = $end
             $end += $NumberOfRecordsPerBatch
-            Write-Progress -Activity 'Executing Batch' -Status "$end of $($EntitiesList.count)" -PercentComplete ($end/$EntitiesList.count*100)
+            Write-Progress -Activity 'Executing Batch' -Status "$end of $($Entities.count)" -PercentComplete ($end/$Entities.count*100)
             #We need to create a batch job with the CrmServiceClient, CreateBatchOperationRequest does this, but just returns a GUID.
             #GetBatchById() then returns the Microsoft.Xrm.Tooling.Connector.RequestBatch object which is where we can stuff an array of entities to be created in the CRM.
-            $RequestBatch = $Connection.GetBatchById($Connection.CreateBatchOperationRequest("EntityList Index $start to $end",$ReturnResults,$ContinueOnError))
+            $RequestBatch = $conn.GetBatchById($conn.CreateBatchOperationRequest("EntityList Index $start to $end",$ReturnResults,$ContinueOnError))
             
             Write-Verbose "Adding $NumberOfRecordsPerBatch Items to Batch"
-            foreach($entity in $EntitiesList[$start..$end])
+            foreach($entity in $Entities[$start..$end])
             {
                 #put the Entity inside the createrequest which creates an Microsoft.Xrm.Sdk.OrganizationRequest object
                 $createRequest = New-Object Microsoft.Xrm.Sdk.Messages.CreateRequest
@@ -380,7 +379,7 @@ function New-CRMRecordsBatch
             }
             Write-Verbose 'Executing Batch on Server. Awaiting Response'
             #send the batch job to the CRM server for processing.
-            $response = $Connection.ExecuteBatch($RequestBatch.BatchId)
+            $response = $conn.ExecuteBatch($RequestBatch.BatchId)
             #error handling.
             if($response.IsFaulted){throw $response.Responses[0].Fault}
             elseif($response -eq $null){throw "Server returned null. Try a smaller batch size."}
@@ -394,8 +393,6 @@ function New-CRMRecordsBatch
         
     }
 }
-
-$ImportResult = Import-Suburbs -SuburbCSVFilePath $SuburbInfoFilePath -Connection $uat
 
 function Get-CrmRecord{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
