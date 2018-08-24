@@ -327,8 +327,7 @@ function New-CRMRecordsBatch
         $Entities,
 
         #conn
-        [Parameter(Mandatory=$false,
-                   Position=1)]
+        [Parameter(Mandatory=$false)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]
         $conn,
         #The number of records to send to the server at once. Default = 500.
@@ -337,9 +336,9 @@ function New-CRMRecordsBatch
         $NumberOfRecordsPerBatch = 500,
 
         #Indicates whether results should be returned. Default true
-        [Parameter(Mandatory=$true,
-                   Position=2)]
-        [bool]$ReturnResults,
+        [Parameter(Mandatory=$false,
+                   Position=1)]
+        [bool]$ReturnResults=$true,
 
         #Indicates whether the server side process should continue on error.
         [switch]$ContinueOnError
@@ -349,6 +348,8 @@ function New-CRMRecordsBatch
     {
         $conn = VerifyCrmConnectionParam $conn
         if(!$conn.IsBatchOperationsAvailable){throw "Batch operations are not available for this server."}
+        #write-progress doesn't like the math if the batch size is larger than the entity count.
+        if($Entities.count -lt $NumberOfRecordsPerBatch){$NumberOfRecordsPerBatch = $Entities.count}
     }
     Process
     {
@@ -362,7 +363,7 @@ function New-CRMRecordsBatch
             Write-Progress -Activity 'Executing Batch' -Status "$end of $($Entities.count)" -PercentComplete ($end/$Entities.count*100)
             #We need to create a batch job with the CrmServiceClient, CreateBatchOperationRequest does this, but just returns a GUID.
             #GetBatchById() then returns the Microsoft.Xrm.Tooling.Connector.RequestBatch object which is where we can stuff an array of entities to be created in the CRM.
-            $RequestBatch = $conn.GetBatchById($conn.CreateBatchOperationRequest("EntityList Index $start to $end",$ReturnResults,$ContinueOnError))
+            $requestBatch = $conn.GetBatchById($conn.CreateBatchOperationRequest("EntityList Index $start to $end",$ReturnResults,$ContinueOnError))
             
             Write-Verbose "Adding $NumberOfRecordsPerBatch Items to Batch"
             foreach($entity in $Entities[$start..$end])
@@ -375,7 +376,7 @@ function New-CRMRecordsBatch
                 $item = [Microsoft.Xrm.Tooling.Connector.BatchItemOrganizationRequest]::new()
                 $item.Request = $createRequest
                 
-                $RequestBatch.BatchItems.Add($item)
+                $requestBatch.BatchItems.Add($item)
             }
             Write-Verbose 'Executing Batch on Server. Awaiting Response'
             #send the batch job to the CRM server for processing.
