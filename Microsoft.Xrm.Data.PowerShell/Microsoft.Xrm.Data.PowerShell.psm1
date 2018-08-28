@@ -1485,139 +1485,97 @@ function Get-CrmRecordsByFetch{
         [parameter(Mandatory=$false, Position=4)]
         [string]$PageCookie,
         [parameter(Mandatory=$false, Position=5)]
-        [switch]$AllRows
+        [switch]$AllRows,
+		[parameter(Mandatory=$false, Position=5)]
+        [switch]$old
 
     )
-    $conn = VerifyCrmConnectionParam $conn
-    #default page number to 1 if not supplied
-    if($PageNumber -eq 0)
-    {
-        $PageNumber = 1
-    }
-    $PagingCookie = ""
-    $NextPage = $false
-    if($PageCookie -eq "")
-    {
-        $PageCookie = $null
-    }
-    $recordslist = New-Object 'System.Collections.Generic.List[System.Management.Automation.PSObject]'
-    $resultSet = New-Object 'System.Collections.Generic.Dictionary[[System.String],[System.Management.Automation.PSObject]]'
-    try
-    {
-        Write-Debug "Getting data from CRM"
-		$xml = [xml]$Fetch
-		if($xml.fetch.count -ne 0 -and $TopCount -eq 0)
+		$elapsed = [System.Diagnostics.Stopwatch]::StartNew() 
+		$conn = VerifyCrmConnectionParam $conn
+		#default page number to 1 if not supplied
+		if($PageNumber -eq 0)
 		{
-			$TopCount = $xml.fetch.count
+			$PageNumber = 1
 		}
-        $records = $conn.GetEntityDataByFetchSearch($Fetch, $TopCount, $PageNumber, $PageCookie, [ref]$PagingCookie, [ref]$NextPage, [Guid]::Empty)
-        if($conn.LastCrmException -ne $null)
-        {
-            throw LastCrmConnectorException($conn)
-        }
-        $logicalname = $xml.SelectSingleNode("/fetch/entity").Name
-        #if there are zero results returned 
-        if($records.Count -eq 0)
-        {
-            $error = "No Result" 
-            Write-Warning $error
-            $resultSet.Add("CrmRecords", $recordslist)
-            $resultSet.Add("Count", $recordslist.Count)
-            $resultSet.Add("PagingCookie",$null)
-            $resultSet.Add("NextPage",$false)
-            #EXIT
-            return $resultSet
-        }
-        #if we have records
-        elseif($records.Count -gt 0)
-        {
-            Write-Debug "Records Found!"
-            foreach($record in $records.Values){   
-                $psobj = New-Object -TypeName System.Management.Automation.PSObject
-                if($recordslist.Count -eq 0){
-                    $atts = $xml.GetElementsByTagName('attribute')
-					foreach($att in $atts){
-						if($att.ParentNode.HasAttribute('alias')){
-							$attName = $att.ParentNode.GetAttribute('alias') + "." + $att.name
-						}
-						else{
-							$attName = $att.name
-						}
-						Add-Member -InputObject $psobj -MemberType NoteProperty -Name $attName -Value $null
-						Add-Member -InputObject $psobj -MemberType NoteProperty -Name ($attName + "_Property") -Value $null
+		$PagingCookie = ""
+		$NextPage = $false
+		if($PageCookie -eq "")
+		{
+			$PageCookie = $null
+		}
+		$recordslist = New-Object 'System.Collections.Generic.List[System.Management.Automation.PSObject]'
+		$resultSet = New-Object 'System.Collections.Generic.Dictionary[[System.String],[System.Management.Automation.PSObject]]'
+		try
+		{
+			Write-Debug "Getting data from CRM"
+			$xml = [xml]$Fetch
+			if($xml.fetch.count -ne 0 -and $TopCount -eq 0)
+			{
+				$TopCount = $xml.fetch.count
+			}
+			$crmFetchTimer = [System.Diagnostics.Stopwatch]::StartNew() 
+			$records = $conn.GetEntityDataByFetchSearch($Fetch, $TopCount, $PageNumber, $PageCookie, [ref]$PagingCookie, [ref]$NextPage, [Guid]::Empty)
+			$crmFetchTimer.Stop() 
+			if($conn.LastCrmException -ne $null)
+			{
+				throw LastCrmConnectorException($conn)
+			}
+			$swCheck= [System.Diagnostics.Stopwatch]::StartNew() 
+			$logicalname = $xml.SelectSingleNode("/fetch/entity").Name
+			#if there are zero results returned 
+			if($records.Count -eq 0)
+			{
+				$error = "No Result" 
+				Write-Warning $error
+				$resultSet.Add("CrmRecords", $recordslist)
+				$resultSet.Add("Count", $recordslist.Count)
+				$resultSet.Add("PagingCookie",$null)
+				$resultSet.Add("NextPage",$false)
+				$resultSet.Add("FetchXml", $Fetch)
+				$resultSet.Add("FetchQueryTime", $crmFetchTimer.Elapsed) 
+				#EXIT
+				return $resultSet
+			}
+			#if we have records
+			elseif($records.Count -gt 0)
+			{
+				Write-Verbose "$($records.Count) records Found!"
+				$swElapsed=[System.Diagnostics.Stopwatch]::StartNew() 
+				$recordslist = parseRecordsPage -records $records -logicalname $logicalname -xml $xml -Verbose
+				Write-Verbose "Elapsed Time: $($swElapsed.ElapsedMilliseconds)"
+				#IF we have multiple pages!
+				if($NextPage -and $AllRows)  
+				{
+					$PageNumber = $PageNumber + 1
+					Write-Debug "Fetching next page #$PageNumber"
+					#TODO: restructure to avoid recursion for multiple pages 
+					$crmFetchTimer.Start()  
+					$NextRecordSet = Get-CrmRecordsByFetch -conn $conn -Fetch $Fetch -TopCount $TopCount -PageNumber $PageNumber -PageCookie $PagingCookie -AllRows
+					$crmFetchTimer.Stop()
+					if($NextRecordSet.CrmRecords.Count -gt 0)
+					{
+						Write-Verbose "Adding data to original results from page#: $PageNumber"
+						$recordslist.AddRange($NextRecordSet.CrmRecords)
 					}
-                    foreach($att in $record.GetEnumerator()){
-						#BUG where ReturnProperty_Id is returned as "ReturnProperty_Id " <-- with a trailing space
-						$keyName = $att.Key
-						if($keyName -eq "ReturnProperty_Id "){
-							$keyName = "ReturnProperty_Id"
-						}
-						if(!($psobj | gm).Name.Contains($keyName)){
-							Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $null
-						}
-						if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference]){
-							$psobj.($keyName) = $att.Value.Name
-						}
-						elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue]){
-							$psobj.($keyName) = $att.Value.Value
-						}
-						else{
-							$psobj.($keyName) = $att.Value
-						}
-					}  
-                }
-                else{
-                    foreach($att in $record.GetEnumerator()){
-						#BUG where ReturnProperty_Id is returned as "ReturnProperty_Id " <-- with a trailing space
-						$keyName = $att.Key
-						if($keyName -eq "ReturnProperty_Id "){
-							$keyName = "ReturnProperty_Id"
-						}
-                        if($att.Value -is [Microsoft.Xrm.Sdk.EntityReference]){
-                            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $att.Value.Name
-                        }
-				    	elseif($att.Value -is [Microsoft.Xrm.Sdk.AliasedValue]){
-				    		Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $att.Value.Value
-				    	}
-                        else{
-                            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $keyName -Value $att.Value
-                        }
-                    }  
-                }
-				Add-Member -InputObject $psobj -MemberType NoteProperty -Name "original" -Value $record
-				Add-Member -InputObject $psobj -MemberType NoteProperty -Name "logicalname" -Value $logicalname
-				#adding Dynamic EntityReference
-				if($psobj."ReturnProperty_Id" -ne $null -and $psobj."ReturnProperty_EntityName" -ne $null){
-					Add-Member -InputObject $psobj -MemberType NoteProperty -Name "EntityReference" -Value (New-CrmEntityReference -EntityLogicalName $psobj."ReturnProperty_EntityName" -Id $psobj."ReturnProperty_Id")
 				}
-                $recordslist.Add($psobj)
-            }
-            #IF we have multiple pages!
-            if($NextPage -and $AllRows)  
-            {
-                $PageNumber = $PageNumber + 1
-                Write-Debug "Fetching next page #$PageNumber"
-                $NextRecordSet = Get-CrmRecordsByFetch -conn $conn -Fetch $Fetch -TopCount $TopCount -PageNumber $PageNumber -PageCookie $PagingCookie -AllRows
-                if($NextRecordSet.CrmRecords.Count -gt 0)
-                {
-                    Write-Debug "Adding data to original results from page#: $PageNumber"
-                    $recordslist.AddRange($NextRecordSet.CrmRecords)
-                }
-            }
-        }
-    }
-    catch
-    {
-        Write-Error $_.Exception
-        throw LastCrmConnectorException($conn)
-    }
-    $resultSet = New-Object 'System.Collections.Generic.Dictionary[[System.String],[System.Management.Automation.PSObject]]'
-    $resultSet.Add("CrmRecords", $recordslist)
-    $resultSet.Add("Count", $recordslist.Count)
-    $resultSet.Add("PagingCookie",$PagingCookie)
-    $resultSet.Add("NextPage",$NextPage)
-    $resultSet.Add("FetchXml", $Fetch)
-    return $resultSet
+			}
+		}
+		catch
+		{
+			Write-Error $_.Exception
+			throw LastCrmConnectorException($conn)
+		}
+		$resultSet = New-Object 'System.Collections.Generic.Dictionary[[System.String],[System.Management.Automation.PSObject]]'
+		$resultSet.Add("CrmRecords", $recordslist)
+		$resultSet.Add("Count", $recordslist.Count)
+		$resultSet.Add("PagingCookie",$PagingCookie)
+		$resultSet.Add("NextPage",$NextPage)
+		$resultSet.Add("FetchXml", $Fetch)
+		$resultSet.Add("FetchQueryTime", $crmFetchTimer.Elapsed) 
+		Write-Verbose "Crm Server responded in:     $($crmFetchTimer.Elapsed)" 
+		Write-Verbose "Get-CrmRecordsByFetch Parse: $($swCheck.Elapsed)" 
+		Write-Verbose "Get-CrmRecordsByFetch Total: $($elapsed.Elapsed)" 
+		return $resultSet
 }
 
 #GetEntityDisplayName
@@ -5253,6 +5211,71 @@ function Test-CrmTimerStop{
 }
 
 ### Internal Helpers 
+function parseRecordsPage {
+    PARAM( 
+        [parameter(Mandatory=$true)]
+        [object]$records,
+        [parameter(Mandatory=$true)]
+        [string] $logicalname,
+        [parameter(Mandatory=$true)]
+        [xml] $xml
+    )
+    #$elapsed = [System.Diagnostics.Stopwatch]::StartNew() 
+    $recordslist = New-Object 'System.Collections.Generic.List[System.Management.Automation.PSObject]'
+		#future: create expected attributes
+    <#
+    $expectedAttributes = $xml.GetElementsByTagName('attribute')
+    $template = @{}
+    foreach($att in $expectedAttributes){
+	    if($att.ParentNode.HasAttribute('alias')){
+		    $attName = $att.ParentNode.GetAttribute('alias') + "." + $att.name
+	    }
+	    else{
+		    $attName = $att.name
+	    }
+        $template.Add($attName, $null)
+    }
+    #>
+    foreach($record in $records.Values){   
+        $record.Add("original",$record)
+        $record.Add("logicalname",$logicalname)
+        if($record.ContainsKey("ReturnProperty_Id ") -eq $true){
+            $record.Add("ReturnProperty_Id",$record.'ReturnProperty_Id ')|Out-Null
+            $record.Remove("ReturnProperty_Id ")|Out-Null
+        }
+        #convert aliased values to actual values 
+        ForEach($attribute in ($record.Keys|Select)){
+            if($attribute.EndsWith("_Property")){
+                if($record[$attribute].Value -is [Microsoft.Xrm.Sdk.AliasedValue]){
+                    $attName = $attribute.Replace("_Property","")
+                    $record[$attName] = $record[$attribute].Value.Value
+                }
+                if($record[$attribute].Value -is [Microsoft.Xrm.Sdk.EntityReference]){
+                    $attName = $attribute.Replace("_Property","")
+                    $record[$attName] = $record[$attribute].Value.Name
+                }
+            }
+        }
+        #future: merge the output record with the template set of expected attributes
+        <#
+        ForEach ($Key in $template.Keys) {
+            if(!$record.ContainsKey($Key)) {
+                $record.Add($Key, $null)
+            }
+        }
+        #>
+        #TODO: Convert aliased values w/out property name to the actual value $record.something_Property.Value.Value
+        #convert hashtable to a ps object 
+        $psobj = New-Object -TypeName PSObject -Property $record
+
+        #adding Dynamic EntityReference
+		if($psobj."ReturnProperty_Id" -ne $null -and $psobj."ReturnProperty_EntityName" -ne $null){
+			Add-Member -InputObject $psobj -MemberType NoteProperty -Name "EntityReference" -Value (New-CrmEntityReference -EntityLogicalName $psobj."ReturnProperty_EntityName" -Id $psobj."ReturnProperty_Id")
+		}
+        $recordslist.Add($psobj)
+    }
+   return $recordslist
+}
 function Coalesce {
 	foreach($i in $args){
 		if($i -ne $null){
