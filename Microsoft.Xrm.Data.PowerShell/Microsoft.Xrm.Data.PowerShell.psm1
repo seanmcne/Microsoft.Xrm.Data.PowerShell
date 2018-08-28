@@ -1485,10 +1485,7 @@ function Get-CrmRecordsByFetch{
         [parameter(Mandatory=$false, Position=4)]
         [string]$PageCookie,
         [parameter(Mandatory=$false, Position=5)]
-        [switch]$AllRows,
-		[parameter(Mandatory=$false, Position=5)]
-        [switch]$old
-
+        [switch]$AllRows
     )
 		$elapsed = [System.Diagnostics.Stopwatch]::StartNew() 
 		$conn = VerifyCrmConnectionParam $conn
