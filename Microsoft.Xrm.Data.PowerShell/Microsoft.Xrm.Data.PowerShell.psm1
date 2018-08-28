@@ -333,7 +333,7 @@ function New-CRMRecordsBatch
         #The number of records to send to the server at once. Default = 500.
         [Parameter(Mandatory=$false)]
         [int]
-        $NumberOfRecordsPerBatch = 500,
+        $NumberOfRecordsPerBatch = 100,
 
         #Indicates whether results should be returned. Default true
         [Parameter(Mandatory=$false,
@@ -383,7 +383,7 @@ function New-CRMRecordsBatch
             $response = $conn.ExecuteBatch($RequestBatch.BatchId)
             #error handling.
             if($response.IsFaulted){throw $response.Responses[0].Fault}
-            elseif($response -eq $null){throw "Server returned null. Try a smaller batch size."}
+            elseif(($null -eq $response) -and ($ReturnResults -eq $true)){throw "Server returned null. Try a smaller batch size."}
             else{$response}
         }
 
