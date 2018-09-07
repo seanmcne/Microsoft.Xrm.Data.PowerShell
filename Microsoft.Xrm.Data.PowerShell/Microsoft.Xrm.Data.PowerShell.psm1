@@ -314,19 +314,19 @@ function New-CrmRecord{
 }
 
 #ExecuteBatch CreateRequest
-function New-CRMRecordsBatch
-{
+function New-CRMRecordsBatch{
+    # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     [OutputType([Microsoft.Xrm.Sdk.Messages.ExecuteMultipleResponse])]
     Param
     (
         #Put all of your records into an entity list. Then put the list here. See Examples
-        [Parameter(Mandatory=$true,
+                [Parameter(Mandatory=$true,
                    Position=0)]
         [Microsoft.Xrm.Sdk.Entity[]]
         $Entities,
 
-        #conn
+#conn
         [Parameter(Mandatory=$false)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]
         $conn,

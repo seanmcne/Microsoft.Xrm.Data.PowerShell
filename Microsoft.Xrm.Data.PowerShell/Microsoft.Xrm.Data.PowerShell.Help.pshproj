@@ -10534,7 +10534,7 @@ You need to make an array of [Microsoft.Xrm.Sdk.Entity] with all of the attribut
       </Parameters>
       <Examples>
         <Example>
-          <Name>Example 1</Name>
+          <Name>Example 1 - Basic Use</Name>
           <Cmd>$accounts = Import-Csv -Path "C:\dataAug-24-2018.csv"
 
 [Microsoft.Xrm.Sdk.Entity[]]$accountEntities = @(
@@ -10551,14 +10551,38 @@ You need to make an array of [Microsoft.Xrm.Sdk.Entity] with all of the attribut
 )
 
 $results = New-CRMRecordsBatch -Entities $accountEntities
-$results</Cmd>
-          <Description>In this example, we create an array of Entities from a CSV file that contains account information and pass them into New-CRMRecordsBatch. What is not shown here is the Server connection which was created before New-CRMRecordBatch was run.</Description>
+$results
+...</Cmd>
+          <Description>
+In this example, we create an array of Entities from a CSV file that contains account information and pass them into New-CRMRecordsBatch. What is not shown here is the Server connection which was created before New-CRMRecordBatch was run. Below is the output of the $results variable, it is a Microsoft.Xrm.Sdk.Messages.ExecuteMultipleResponse and contains a lot of information about the records that were created by the server which may be useful to you. </Description>
           <Output>IsFaulted     : False
 Responses     : {Microsoft.Xrm.Sdk.ExecuteMultipleResponseItem, Microsoft.Xrm.Sdk.ExecuteMultipleResponseItem, Microsoft.Xrm.Sdk.ExecuteMultipleResponseItem, 
                 Microsoft.Xrm.Sdk.ExecuteMultipleResponseItem...}
 ResponseName  : ExecuteMultiple
 Results       : {[IsFaulted, False], [Responses, Microsoft.Xrm.Sdk.ExecuteMultipleResponseItemCollection]}
 ExtensionData : System.Runtime.Serialization.ExtensionDataObject</Output>
+        </Example>
+        <Example>
+          <Name>Example 2 - Use ReturnResults</Name>
+          <Cmd>$accounts = Import-Csv -Path "C:\dataAug-24-2018.csv"
+
+[Microsoft.Xrm.Sdk.Entity[]]$accountEntities = @(
+    foreach($account in $accounts)
+    {
+        $entity = [Microsoft.Xrm.Sdk.Entity]::new('account')
+        $entity.Attributes['name'] = $account.Company
+        $entity.Attributes['telephone1'] = $account.Phone
+        $entity.Attributes['address1_line1'] = $account.Street
+        $entity.Attributes['address1_postalcode'] = $account.PostCode
+        $entity.Attributes['address1_city'] = $account.City
+        $entity
+    }
+)
+
+New-CRMRecordsBatch -Entities $accountEntities -ReturnResults:$false
+</Cmd>
+          <Description>This is exactly the same as Example 1 except that no results are returned by the server. How the operation went will be a mystery to you. </Description>
+          <Output />
         </Example>
       </Examples>
       <RelatedLinks />

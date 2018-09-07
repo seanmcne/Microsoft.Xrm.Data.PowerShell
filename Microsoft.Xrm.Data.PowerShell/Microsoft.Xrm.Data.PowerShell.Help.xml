@@ -22267,7 +22267,7 @@ You need to make an array of [Microsoft.Xrm.Sdk.Entity] with all of the attribut
 	</maml:alertSet>
 	<command:examples>
 		<command:example>
-			<maml:title>--------------------------  Example 1  --------------------------</maml:title>
+			<maml:title>--------------------------  Example 1 - Basic Use  --------------------------</maml:title>
 			<maml:introduction>
 				<maml:paragraph>PS C:\&gt;</maml:paragraph>
 			</maml:introduction>
@@ -22287,9 +22287,11 @@ You need to make an array of [Microsoft.Xrm.Sdk.Entity] with all of the attribut
 )
 
 $results = New-CRMRecordsBatch -Entities $accountEntities
-$results</dev:code>
+$results
+...</dev:code>
 			<dev:remarks>
-				<maml:para>In this example, we create an array of Entities from a CSV file that contains account information and pass them into New-CRMRecordsBatch. What is not shown here is the Server connection which was created before New-CRMRecordBatch was run.</maml:para>
+				<maml:para>
+In this example, we create an array of Entities from a CSV file that contains account information and pass them into New-CRMRecordsBatch. What is not shown here is the Server connection which was created before New-CRMRecordBatch was run. Below is the output of the $results variable, it is a Microsoft.Xrm.Sdk.Messages.ExecuteMultipleResponse and contains a lot of information about the records that were created by the server which may be useful to you. </maml:para>
 				<maml:para />
 				<maml:para />
 				<maml:para>IsFaulted     : False
@@ -22298,6 +22300,42 @@ Responses     : {Microsoft.Xrm.Sdk.ExecuteMultipleResponseItem, Microsoft.Xrm.Sd
 ResponseName  : ExecuteMultiple
 Results       : {[IsFaulted, False], [Responses, Microsoft.Xrm.Sdk.ExecuteMultipleResponseItemCollection]}
 ExtensionData : System.Runtime.Serialization.ExtensionDataObject</maml:para>
+			</dev:remarks>
+			<command:commandLines>
+				<command:commandLine>
+					<command:commandText>
+						<maml:para />
+					</command:commandText>
+				</command:commandLine>
+			</command:commandLines>
+		</command:example>
+		<command:example>
+			<maml:title>--------------------------  Example 2 - Use ReturnResults  --------------------------</maml:title>
+			<maml:introduction>
+				<maml:paragraph>PS C:\&gt;</maml:paragraph>
+			</maml:introduction>
+			<dev:code>$accounts = Import-Csv -Path &quot;C:\dataAug-24-2018.csv&quot;
+
+[Microsoft.Xrm.Sdk.Entity[]]$accountEntities = @(
+    foreach($account in $accounts)
+    {
+        $entity = [Microsoft.Xrm.Sdk.Entity]::new(&apos;account&apos;)
+        $entity.Attributes[&apos;name&apos;] = $account.Company
+        $entity.Attributes[&apos;telephone1&apos;] = $account.Phone
+        $entity.Attributes[&apos;address1_line1&apos;] = $account.Street
+        $entity.Attributes[&apos;address1_postalcode&apos;] = $account.PostCode
+        $entity.Attributes[&apos;address1_city&apos;] = $account.City
+        $entity
+    }
+)
+
+New-CRMRecordsBatch -Entities $accountEntities -ReturnResults:$false
+</dev:code>
+			<dev:remarks>
+				<maml:para>This is exactly the same as Example 1 except that no results are returned by the server. How the operation went will be a mystery to you. </maml:para>
+				<maml:para />
+				<maml:para />
+				<maml:para></maml:para>
 			</dev:remarks>
 			<command:commandLines>
 				<command:commandLine>
