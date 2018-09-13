@@ -1,4 +1,4 @@
-﻿### https://msdn.microsoft.com/en-us/library/microsoft.xrm.tooling.connector.crmserviceclient_methods(v=crm.6).aspx ###
+### https://msdn.microsoft.com/en-us/library/microsoft.xrm.tooling.connector.crmserviceclient_methods(v=crm.6).aspx ###
 # Copyright © Microsoft Corporation.  All Rights Reserved.
 # This code released under the terms of the 
 # Microsoft Public License (MS-PL, http://opensource.org/licenses/ms-pl.html.)
@@ -1500,7 +1500,9 @@ function Get-CrmRecordsByFetch{
 		{
 			$PageCookie = $null
 		}
-		$recordslist = New-Object 'System.Collections.Generic.List[System.Management.Automation.PSObject]'
+        $recordslist = New-Object "System.Collections.Generic.List[PSCustomObject]"
+        write-verbose $recordslist.GetType()
+		#$recordslist = New-Object 'System.Collections.Generic.List[System.Management.Automation.PSObject]'
 		$resultSet = New-Object 'System.Collections.Generic.Dictionary[[System.String],[System.Management.Automation.PSObject]]'
 		try
 		{
@@ -1537,9 +1539,13 @@ function Get-CrmRecordsByFetch{
 			elseif($records.Count -gt 0)
 			{
 				Write-Verbose "$($records.Count) records Found!"
+                write-verbose $recordslist.GetType()
+
 				$swElapsed=[System.Diagnostics.Stopwatch]::StartNew() 
-				$recordslist = parseRecordsPage -records $records -logicalname $logicalname -xml $xml -Verbose
-				Write-Verbose "Elapsed Time: $($swElapsed.ElapsedMilliseconds)"
+				[System.Collections.Generic.List[PSCustomObject]]$recordslist = parseRecordsPage -records $records -logicalname $logicalname -xml $xml -Verbose
+                write-verbose $recordslist.GetType()
+				
+                Write-Verbose "Elapsed Time: $($swElapsed.ElapsedMilliseconds)"
 				#IF we have multiple pages!
 				if($NextPage -and $AllRows)  
 				{
@@ -1547,7 +1553,7 @@ function Get-CrmRecordsByFetch{
 					Write-Debug "Fetching next page #$PageNumber"
 					#TODO: restructure to avoid recursion for multiple pages 
 					$crmFetchTimer.Start()  
-					$NextRecordSet = Get-CrmRecordsByFetch -conn $conn -Fetch $Fetch -TopCount $TopCount -PageNumber $PageNumber -PageCookie $PagingCookie -AllRows
+					[System.Collections.Generic.List[PSCustomObject]] $NextRecordSet = Get-CrmRecordsByFetch -conn $conn -Fetch $Fetch -TopCount $TopCount -PageNumber $PageNumber -PageCookie $PagingCookie -AllRows
 					$crmFetchTimer.Stop()
 					if($NextRecordSet.CrmRecords.Count -gt 0)
 					{
@@ -5218,7 +5224,8 @@ function parseRecordsPage {
         [xml] $xml
     )
     #$elapsed = [System.Diagnostics.Stopwatch]::StartNew() 
-    $recordslist = New-Object 'System.Collections.Generic.List[System.Management.Automation.PSObject]'
+    $recordslist = New-Object "System.Collections.Generic.List[PSCustomObject]"
+    #$recordslist = New-Object 'System.Collections.Generic.List[System.Management.Automation.PSObject]'
 		#future: create expected attributes
     <#
     $expectedAttributes = $xml.GetElementsByTagName('attribute')
