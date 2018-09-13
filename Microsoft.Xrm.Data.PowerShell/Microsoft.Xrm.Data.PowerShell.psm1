@@ -1,4 +1,4 @@
-﻿### https://msdn.microsoft.com/en-us/library/microsoft.xrm.tooling.connector.crmserviceclient_methods(v=crm.6).aspx ###
+### https://msdn.microsoft.com/en-us/library/microsoft.xrm.tooling.connector.crmserviceclient_methods(v=crm.6).aspx ###
 # Copyright © Microsoft Corporation.  All Rights Reserved.
 # This code released under the terms of the 
 # Microsoft Public License (MS-PL, http://opensource.org/licenses/ms-pl.html.)
