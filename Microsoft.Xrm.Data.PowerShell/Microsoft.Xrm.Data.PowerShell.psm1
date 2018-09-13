@@ -1500,7 +1500,8 @@ function Get-CrmRecordsByFetch{
 		{
 			$PageCookie = $null
 		}
-		$recordslist = New-Object 'System.Collections.Generic.List[System.Management.Automation.PSObject]'
+		#$recordslist = New-Object 'System.Collections.Generic.List[System.Management.Automation.PSObject]'
+		$recordslist = New-Object "System.Collections.Generic.List[PSCustomObject]"
 		$resultSet = New-Object 'System.Collections.Generic.Dictionary[[System.String],[System.Management.Automation.PSObject]]'
 		try
 		{
@@ -1538,7 +1539,7 @@ function Get-CrmRecordsByFetch{
 			{
 				Write-Verbose "$($records.Count) records Found!"
 				$swElapsed=[System.Diagnostics.Stopwatch]::StartNew() 
-				$recordslist = parseRecordsPage -records $records -logicalname $logicalname -xml $xml -Verbose
+				[System.Collections.Generic.List[PSCustomObject]]$recordslist = parseRecordsPage -records $records -logicalname $logicalname -xml $xml -Verbose
 				Write-Verbose "Elapsed Time: $($swElapsed.ElapsedMilliseconds)"
 				#IF we have multiple pages!
 				if($NextPage -and $AllRows)  
