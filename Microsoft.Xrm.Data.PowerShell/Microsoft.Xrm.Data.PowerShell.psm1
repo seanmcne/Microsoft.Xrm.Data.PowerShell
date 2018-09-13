@@ -79,21 +79,21 @@ function Connect-CrmOnline{
         [ValidatePattern('([\w-]+).crm([0-9]*).(microsoftdynamics|dynamics|crm[\w-]*).(com|de)')]
         [string]$ServerUrl, 
 		[Parameter(Position=3,Mandatory=$false)]
-Â Â Â Â Â Â Â Â [switch]$ForceDiscovery,
+        [switch]$ForceDiscovery,
 		[Parameter(Position=4,Mandatory=$false)]
-Â Â Â Â Â Â Â Â [switch]$ForceOAuth, 
+        [switch]$ForceOAuth, 
 		[Parameter(Position=5,Mandatory=$false)]
-Â Â Â Â Â Â Â Â [ValidateScript({
-Â Â Â Â Â Â Â Â Â Â Â Â try {
-Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â [System.Guid]::Parse($_) | Out-Null
-Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â $true
-Â Â Â Â Â Â Â Â Â Â Â Â } catch {
-Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â $false
-Â Â Â Â Â Â Â Â Â Â Â Â }
-Â Â Â Â Â Â Â Â })]
-Â Â Â Â Â Â Â Â [string]$OAuthClientId,
+        [ValidateScript({
+            try {
+                [System.Guid]::Parse($_) | Out-Null
+                $true
+            } catch {
+                $false
+            }
+        })]
+        [string]$OAuthClientId,
 		[Parameter(Position=6,Mandatory=$false)]
-Â Â Â Â Â Â Â Â [string]$OAuthRedirectUri
+        [string]$OAuthRedirectUri
     )
     AddTls12Support #make sure tls12 is enabled 
 	if($ServerUrl.StartsWith("https://","CurrentCultureIgnoreCase") -ne $true){
