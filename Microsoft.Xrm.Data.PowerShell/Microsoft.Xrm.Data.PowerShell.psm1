@@ -5241,12 +5241,16 @@ function parseRecordsPage {
             $record.Add("ReturnProperty_Id",$record.'ReturnProperty_Id ')|Out-Null
             $record.Remove("ReturnProperty_Id ")|Out-Null
         }
-        #convert aliased values to actual values 
+        #add entityReferences values as values 
         ForEach($attribute in ($record.Keys|Select)){
             if($attribute.EndsWith("_Property")){
                 if($record[$attribute].Value -is [Microsoft.Xrm.Sdk.AliasedValue]){
-                    $attName = $attribute.Replace("_Property","")
-                    $record[$attName] = $record[$attribute].Value.Value
+                    #if aliased value BUT if it's an EntityRef... then ignore it 
+                    if($record[$attribute].Value.Value -isnot [Microsoft.Xrm.Sdk.EntityReference]){
+                        $attName = $attribute.Replace("_Property","")
+                        $record[$attName] = $record[$attribute].Value.Value
+                    }
+                                
                 }
                 if($record[$attribute].Value -is [Microsoft.Xrm.Sdk.EntityReference]){
                     $attName = $attribute.Replace("_Property","")
@@ -5254,7 +5258,7 @@ function parseRecordsPage {
                 }
             }
         }
-        #future: merge the output record with the template set of expected attributes
+        #future: consider merging the output record with the template set of expected attributes - however, this has negative performance implications
         <#
         ForEach ($Key in $template.Keys) {
             if(!$record.ContainsKey($Key)) {
@@ -5262,7 +5266,6 @@ function parseRecordsPage {
             }
         }
         #>
-        #TODO: Convert aliased values w/out property name to the actual value $record.something_Property.Value.Value
         #convert hashtable to a ps object 
         $psobj = New-Object -TypeName PSObject -Property $record
 
