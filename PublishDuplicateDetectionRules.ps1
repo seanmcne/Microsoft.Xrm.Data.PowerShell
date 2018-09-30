@@ -52,33 +52,34 @@
 "@
       $matchingDDRules = Get-CrmRecordsByFetch -conn $conn -Fetch $fetch
 
-      Write-Host $matchingDDRules.Count "rules found"    
+      Write-Host $matchingDDRules.Count "matching rules found"    
      
       if($matchingDDRules.Count -lt 1)
       {      
-        throw "Duplicate rule $DuplicateDetectionRule did not exist"
+        throw "Duplicate rule $DuplicateDetectionRule not found"
       }
-
       
-      $PublishAll
-
+     
       if($PublishAll -eq $false)
-      {       Write-Host "Publishing one rule"
+      {      
+      Write-Host "Publishing single rule"
       $ddRule_toPublish = New-Object Microsoft.Crm.Sdk.Messages.PublishDuplicateRuleRequest
       $ddRule_toPublish.DuplicateRuleId= $matchingDDRules.CrmRecords[0].duplicateruleid
       $conn.ExecuteCrmOrganizationRequest($ddRule_toPublish,$trace)   
+      Write-Host "Single rule published"  
       }
       else
-      { Write-Host "Publishing rules"
+      { 
+        Write-Host "Publishing multiple rules"
         foreach($rule in $matchingDDRules.CrmRecords)
         {
-            write-host "rule is " $rule.duplicateruleid
+            write-host "publishing rule id: " $rule.duplicateruleid
             $ddRule_toPublish = New-Object Microsoft.Crm.Sdk.Messages.PublishDuplicateRuleRequest            
             $ddRule_toPublish.DuplicateRuleId= $rule.duplicateruleid
             $conn.ExecuteCrmOrganizationRequest($ddRule_toPublish,$trace)  
             Write-Host "Rule Published"       
         }
-
+        Write-Host "Multiple rules published"
       }      
 }
 
