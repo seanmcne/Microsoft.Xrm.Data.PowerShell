@@ -38,8 +38,6 @@
     )
       
       $conn =  VerifyCrmConnectionParam $conn
-     
-      #$matchingDDRules =Get-CrmRecords  -EntityLogicalName duplicaterule -Fields * -FilterAttribute name -FilterOperator eq -FilterValue $DuplicateDetectionRule  
       
       $fetch = @"
                 <fetch>
@@ -47,7 +45,7 @@
                     <all-attributes/>
                     <filter>
                       <condition attribute="statuscode" operator="eq" value="0" />
-                      <condition attribute="name" operator="eq" value="Accounts with the same Account Name" />
+                      <condition attribute="name" operator="eq" value=$DuplicateDetectionRule />
                     </filter>
                   </entity>
                 </fetch>
