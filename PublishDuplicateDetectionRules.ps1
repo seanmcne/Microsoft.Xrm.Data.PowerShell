@@ -52,7 +52,7 @@
 "@
       $matchingDDRules = Get-CrmRecordsByFetch -conn $conn -Fetch $fetch
 
-      Write-Host $matchingDDRules.Count "matching rules found"    
+      Write-Host $matchingDDRules.Count " matching rules found"    
      
       if($matchingDDRules.Count -lt 1)
       {      
