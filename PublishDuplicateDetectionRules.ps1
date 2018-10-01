@@ -45,7 +45,7 @@
                     <all-attributes/>
                     <filter>
                       <condition attribute="statuscode" operator="eq" value="0" />
-                      <condition attribute="name" operator="eq" value=$DuplicateDetectionRule />
+                      <condition attribute="name" operator="eq" value="$DuplicateDetectionRule"/>
                     </filter>
                   </entity>
                 </fetch>
