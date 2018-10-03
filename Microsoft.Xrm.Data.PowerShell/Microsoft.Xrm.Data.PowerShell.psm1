@@ -4607,8 +4607,15 @@ function Set-CrmSystemSettings {
         [parameter(Mandatory=$false)]
         [bool]$UsePositionHierarchy,
         [parameter(Mandatory=$false)]
-        [bool]$UseSkypeProtocol
-
+        [bool]$UseSkypeProtocol,
+		[parameter(Mandatory=$false)]
+		[bool]$UseAllowUsersSeeAppdownloadMessage,
+		[parameter(Mandatory=$false)]
+		[string]$DefaultCrmCustomName,
+		[parameter(Mandatory=$false)]
+		[bool]$SuppressSLA,
+		[parameter(Mandatory=$false)]
+		[bool]$IsAuditEnabled
     )
 
 	$conn = VerifyCrmConnectionParam $conn
