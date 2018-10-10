@@ -3470,7 +3470,7 @@ function Get-CrmSystemSettings{
         
     foreach($att in $record.original.GetEnumerator())
     {
-        if(($att.Key.Contains("Property")) -or ($att.Key -eq "organizationid"))
+        if(($att.Key.Contains("Property")) -or ($att.Key -eq "organizationid") -or ($att.Key.StartsWith("ReturnProperty_")) -or ($att.Key -eq "logicalname") -or ($att.Key -eq "original"))
         {
             continue
         }
