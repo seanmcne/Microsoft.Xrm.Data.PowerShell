@@ -3518,7 +3518,13 @@ function Get-CrmSystemSettings{
         {
             $name = ($attributes | where {$_.LogicalName -eq $att.Key}).SchemaName
         }
-        Add-Member -InputObject $psobj -MemberType NoteProperty -Name $name -Value $record.($att.Key) 
+
+		if($name -eq $null){
+			Write-Warning "SKIPPING Property: $($att.Key)"
+		}
+		else{
+			Add-Member -InputObject $psobj -MemberType NoteProperty -Name $name -Value $record.($att.Key) 
+		}
     }
 
     return $psobj
