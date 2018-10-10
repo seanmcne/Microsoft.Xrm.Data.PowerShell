@@ -3470,7 +3470,7 @@ function Get-CrmSystemSettings{
         
     foreach($att in $record.original.GetEnumerator())
     {
-        if(($att.Key.Contains("Property")) -or ($att.Key -eq "organizationid"))
+        if(($att.Key.Contains("Property")) -or ($att.Key -eq "organizationid") -or ($att.Key.StartsWith("ReturnProperty_")) -or ($att.Key -eq "logicalname") -or ($att.Key -eq "original"))
         {
             continue
         }
@@ -3518,7 +3518,13 @@ function Get-CrmSystemSettings{
         {
             $name = ($attributes | where {$_.LogicalName -eq $att.Key}).SchemaName
         }
-        Add-Member -InputObject $psobj -MemberType NoteProperty -Name $name -Value $record.($att.Key) 
+
+		if($name -eq $null){
+			Write-Warning "SKIPPING Property: $($att.Key)"
+		}
+		else{
+			Add-Member -InputObject $psobj -MemberType NoteProperty -Name $name -Value $record.($att.Key) 
+		}
     }
 
     return $psobj
