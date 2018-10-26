@@ -25,7 +25,7 @@ $datafile.FunctionsToExport = "*-*"
 $datafile.VariablesToExport = "*"
 
 "Updating module manifest" 
-Update-ModuleManifest "$modulepath\$moduleFileName" -Copyright $Copyright -ModuleVersion $vNum
+#Update-ModuleManifest "$modulepath\$moduleFileName" -Copyright $Copyright -ModuleVersion $vNum
 
 "Clean out *.psproj and *.pshproj from $modulepath..."
 try{
