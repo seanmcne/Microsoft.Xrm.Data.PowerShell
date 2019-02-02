@@ -83,17 +83,17 @@ function Connect-CrmOnline{
 		[Parameter(Position=4,Mandatory=$false)]
         [switch]$ForceOAuth, 
 		[Parameter(Position=5,Mandatory=$false)]
-        [ValidateScript({
-            try {
-                [System.Guid]::Parse($_) | Out-Null
-                $true
-            } catch {
-                $false
-            }
-        })]
-        [string]$OAuthClientId,
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ValidateScript({
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½try {
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[System.Guid]::Parse($_) | Out-Null
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½$true
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½} catch {
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½$false
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½}
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½})]
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[string]$OAuthClientId,
 		[Parameter(Position=6,Mandatory=$false)]
-        [string]$OAuthRedirectUri
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[string]$OAuthRedirectUri
     )
     AddTls12Support #make sure tls12 is enabled 
 	if($ServerUrl.StartsWith("https://","CurrentCultureIgnoreCase") -ne $true){
@@ -1888,7 +1888,7 @@ function Import-CrmSolutionAsync{
         Write-Verbose "Import of file completed, waiting on completion of AsyncOperationId: $importId"
 
 		try{
-			while(($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds) -or ($isProcessing -and $MaxWaitTimeInSeconds -eq -1)){
+			while(($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds) -or ($isProcessing -and $MaxWaitTimeInSeconds -leq 0)) {
 				#delay
 				Start-Sleep -Seconds $pollingDelaySeconds
 				#check the import job for success/fail/inProgress
@@ -1903,7 +1903,7 @@ function Import-CrmSolutionAsync{
 				if($status -lt 30){
 					$isProcessing = $true
 					$secondsSpentPolling = ([Int]((Get-Date) - $pollingStart).TotalSeconds)
-					Write-Output "$($secondsSPentPolling.ToString("000")) sec of: $MaxWaitTimeInSeconds - ImportStatus: $($import.statuscode)"
+					Write-Output "$($secondsSPentPolling.ToString("000")) sec$(if ($MaxWaitTimeInSeconds -leq 0) { "" } else { " of: $MaxWaitTimeInSeconds" }) - ImportStatus: $($import.statuscode)"
 				}
 				elseif($status -eq 31 -or $status -eq 32 ){
 					$isProcessing = $false
