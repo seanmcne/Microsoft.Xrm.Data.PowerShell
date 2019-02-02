@@ -83,17 +83,17 @@ function Connect-CrmOnline{
 		[Parameter(Position=4,Mandatory=$false)]
         [switch]$ForceOAuth, 
 		[Parameter(Position=5,Mandatory=$false)]
-��������[ValidateScript({
-������������try {
-����������������[System.Guid]::Parse($_) | Out-Null
-����������������$true
-������������} catch {
-����������������$false
-������������}
-��������})]
-��������[string]$OAuthClientId,
+        [ValidateScript({
+            try {
+                [System.Guid]::Parse($_) | Out-Null
+                $true
+            } catch {
+                $false
+            }
+        })]
+        [string]$OAuthClientId,
 		[Parameter(Position=6,Mandatory=$false)]
-��������[string]$OAuthRedirectUri
+        [string]$OAuthRedirectUri
     )
     AddTls12Support #make sure tls12 is enabled 
 	if($ServerUrl.StartsWith("https://","CurrentCultureIgnoreCase") -ne $true){
