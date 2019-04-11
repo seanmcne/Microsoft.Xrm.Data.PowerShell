@@ -1054,7 +1054,17 @@ function Add-CrmRecordAssociation{
     }
     try
     {
-        $result = $conn.CreateEntityAssociation($EntityLogicalName1, $Id1, $EntityLogicalName2, $Id2, $RelationshipName, [Guid]::Empty)
+		$AssociateRequest = [Microsoft.Xrm.Sdk.Messages.AssociateRequest]::new();
+		$AssociateRequest.Target = [Microsoft.Xrm.Sdk.EntityReference]::new($EntityLogicalName1,$Id1);
+		$AssociateRequest.Relationship = $RelationshipName;
+
+		$RelatedEntityReference = [System.Collections.Generic.List[Microsoft.Xrm.Sdk.EntityReference]]::new()
+		$RelatedEntityReference.Add(([Microsoft.Xrm.Sdk.EntityReference]::new($EntityLogicalName2,$Id2)))
+		$RelatedEntityCollection = [Microsoft.Xrm.Sdk.EntityReferenceCollection]::new($RelatedEntityReference)
+		$AssociateRequest.RelatedEntities = $RelatedEntityCollection
+
+		$result = $conn.Execute($AssociateRequest)
+
 		if(!$result)
         {
             throw LastCrmConnectorException($conn)
@@ -1232,7 +1242,17 @@ function Remove-CrmRecordAssociation{
     }
     try
     {
-        $result = $conn.DeleteEntityAssociation($EntityLogicalName1, $Id1, $EntityLogicalName2, $Id2, $RelationshipName, [Guid]::Empty)
+		$DisassociateRequest = [Microsoft.Xrm.Sdk.Messages.DisassociateRequest]::new();
+		$DisassociateRequest.Target = [Microsoft.Xrm.Sdk.EntityReference]::new($EntityLogicalName1,$Id1);
+		$DisassociateRequest.Relationship = $RelationshipName;
+
+		$RelatedEntityReference = [System.Collections.Generic.List[Microsoft.Xrm.Sdk.EntityReference]]::new()
+		$RelatedEntityReference.Add(([Microsoft.Xrm.Sdk.EntityReference]::new($EntityLogicalName2,$Id2)))
+		$RelatedEntityCollection = [Microsoft.Xrm.Sdk.EntityReferenceCollection]::new($RelatedEntityReference)
+		$DisassociateRequest.RelatedEntities = $RelatedEntityCollection
+
+		$result = $conn.Execute($DisassociateRequest)
+
 		if(!$result)
         {
             throw LastCrmConnectorException($conn)
