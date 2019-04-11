@@ -18,20 +18,14 @@ $datafile = Import-PowerShellDataFile "$modulepath\$moduleFileName" -Verbose
 $vNum = $datafile.ModuleVersion
 $manifestVersion = [System.Version]::Parse($vNum)
 $newBuildNumber = "$($manifestVersion.Major).$($manifestVersion.Minor)"
-
-if($manifestVersion.Build){
-	$newBuildNumber+=".$($manifestVersion.Build)"
-}
-
-if($manifestVersion.Revision){
-	$newBuildNumber+=".$($manifestVersion.Revision)"
-}
+$datafile.Copyright = $Copyright
+$datafile.ModuleVersion = $newBuildNumber
+$datafile.CmdletsToExport = "*"
+$datafile.FunctionsToExport = "*-*"
+$datafile.VariablesToExport = "*"
 
 "Updating module manifest" 
-#$psd1Raw = Get-Content -Path "$modulepath\$moduleFileName" -Raw
-#update the version number in the raw text file since the cmdlet to update it isn't working well 
-#$psd1Raw = $psd1Raw -replace "ModuleVersion *= *'[0-9.]*'","ModuleVersion = $newBuildNumber"
-
+#Update-ModuleManifest "$modulepath\$moduleFileName" -Copyright $Copyright -ModuleVersion $vNum
 
 "Clean out *.psproj and *.pshproj from $modulepath..."
 try{

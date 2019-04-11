@@ -14834,6 +14834,42 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
 			</command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="103">
+        <maml:name>UseAllowUsersSeeAppdownloadMessage</maml:name>
+        <maml:description>
+          <maml:para>
+            Change &quot;Users see app download message&quot; setting.
+          </maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="103">
+        <maml:name>DefaultCrmCustomName</maml:name>
+        <maml:description>
+          <maml:para>
+            Change &quot;Default app name&quot; setting.
+          </maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="104">
+        <maml:name>SuppressSLA</maml:name>
+        <maml:description>
+          <maml:para>
+            Change &quot;Disable service level agreements(SLAs) on SLA-enabled entity records&quot; setting. $true: Yes $false: False
+          </maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="106">
+        <maml:name>IsAuditEnabled</maml:name>
+        <maml:description>
+          <maml:para>
+            Change &quot; Start Auditing&quot; setting. $true: Yes $false: No
+          </maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
+      </command:parameter>
 		</command:syntaxItem>
 	</command:syntax>
 	<command:parameters>
