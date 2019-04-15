@@ -140,6 +140,8 @@ function Connect-CrmOnline{
 		if(!$cs -or $cs.Length -eq 0){
 			throw "Cannot create the CrmServiceClient, the connection string is null"
 		}
+		Write-Verbose ($cs.Replace($Credential.GetNetworkCredential().Password, "")) 
+
         $global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $cs
         return $global:conn
     }
