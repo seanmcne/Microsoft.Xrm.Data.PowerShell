@@ -1,5 +1,5 @@
-### https://msdn.microsoft.com/en-us/library/microsoft.xrm.tooling.connector.crmserviceclient_methods(v=crm.6).aspx ###
-# Copyright Â© Microsoft Corporation.  All Rights Reserved.
+ï»¿### https://msdn.microsoft.com/en-us/library/microsoft.xrm.tooling.connector.crmserviceclient_methods(v=crm.6).aspx ###
+# Copyright Ã‚Â© Microsoft Corporation.  All Rights Reserved.
 # This code released under the terms of the 
 # Microsoft Public License (MS-PL, http://opensource.org/licenses/ms-pl.html.)
 # Sample Code is provided for the purpose of illustration only and is not intended to be used in a production environment. 
@@ -9,7 +9,7 @@
 # You agree: 
 # (i) to not use Our name, logo, or trademarks to market Your software product in which the Sample Code is embedded; 
 # (ii) to include a valid copyright notice on Your software product in which the Sample Code is embedded; 
-# and (iii) to indemnify, hold harmless, and defend Us and Our suppliers from and against any claims or lawsuits, including attorneysâ€™ fees, that arise or result from the use or distribution of the Sample Code 
+# and (iii) to indemnify, hold harmless, and defend Us and Our suppliers from and against any claims or lawsuits, including attorneysÃ¢â‚¬â„¢ fees, that arise or result from the use or distribution of the Sample Code 
 
 function Connect-CrmOnlineDiscovery{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
@@ -83,17 +83,17 @@ function Connect-CrmOnline{
 		[Parameter(Position=4,Mandatory=$false)]
         [switch]$ForceOAuth, 
 		[Parameter(Position=5,Mandatory=$false)]
-        [ValidateScript({
-            try {
-                [System.Guid]::Parse($_) | Out-Null
-                $true
-            } catch {
-                $false
-            }
-        })]
-        [string]$OAuthClientId,
+Â Â Â Â Â Â Â Â [ValidateScript({
+Â Â Â Â Â Â Â Â Â Â Â Â try {
+Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â [System.Guid]::Parse($_) | Out-Null
+Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â $true
+Â Â Â Â Â Â Â Â Â Â Â Â } catch {
+Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â $false
+Â Â Â Â Â Â Â Â Â Â Â Â }
+Â Â Â Â Â Â Â Â })]
+Â Â Â Â Â Â Â Â [string]$OAuthClientId,
 		[Parameter(Position=6,Mandatory=$false)]
-        [string]$OAuthRedirectUri
+Â Â Â Â Â Â Â Â [string]$OAuthRedirectUri
     )
     AddTls12Support #make sure tls12 is enabled 
 	if($ServerUrl.StartsWith("https://","CurrentCultureIgnoreCase") -ne $true){
