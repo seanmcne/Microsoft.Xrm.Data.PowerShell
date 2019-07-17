@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <ModuleObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" fVersion="1.1" type="Script" mclass="Module" useSupports="false">
   <Name>Microsoft.Xrm.Data.PowerShell</Name>
-  <Version>2.7.2</Version>
+  <Version>2.8.0</Version>
   <Description />
   <HasManifest>true</HasManifest>
   <OverridePostCount>false</OverridePostCount>
@@ -8397,7 +8397,7 @@ Performance  : The operation took 00:00:00.3948901</Output>
     <CmdletObject verb="Get" noun="CrmConnection">
       <Name>Get-CrmConnection</Name>
       <Syntax>
-        <string>Get-CrmConnection [[-InteractiveMode] &lt;SwitchParameter&gt;] [[-MaxCrmConnectionTimeOutMinutes] &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
+        <string>Get-CrmConnection [[-InteractiveMode] &lt;SwitchParameter&gt;] [[-ProfileName] &lt;String&gt;] [[-MaxCrmConnectionTimeOutMinutes] &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
         <string>Get-CrmConnection [-OrganizationName] &lt;String&gt; [[-ProfileName] &lt;String&gt;] [[-HomeRealmUrl] &lt;Uri&gt;] [-ServerUrl] &lt;Uri&gt; [[-Credential] &lt;PSCredential&gt;] [[-MaxCrmConnectionTimeOutMinutes] &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
         <string>Get-CrmConnection -OrganizationName &lt;String&gt; [[-ProfileName] &lt;String&gt;] [[-DeploymentRegion] &lt;String&gt;] [-OnLineType] &lt;CommonAuth+OnlineType&gt; [[-Credential] &lt;PSCredential&gt;] [[-MaxCrmConnectionTimeOutMinutes] &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
         <string>Get-CrmConnection [-ConnectionString] &lt;String&gt; [[-MaxCrmConnectionTimeOutMinutes] &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
@@ -8414,7 +8414,7 @@ Performance  : The operation took 00:00:00.3948901</Output>
         <ReturnTypeDescription />
       </GeneralHelp>
       <ParamSets>
-        <CommandParameterSetInfo2 Name="UIOnly" Params="InteractiveMode MaxCrmConnectionTimeOutMinutes LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="UIOnly" Params="InteractiveMode ProfileName MaxCrmConnectionTimeOutMinutes LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
         <CommandParameterSetInfo2 Name="OnPrem" Params="OrganizationName ProfileName HomeRealmUrl ServerUrl Credential MaxCrmConnectionTimeOutMinutes LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
         <CommandParameterSetInfo2 Name="OnLine" Params="OrganizationName ProfileName DeploymentRegion OnLineType Credential MaxCrmConnectionTimeOutMinutes LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
         <CommandParameterSetInfo2 Name="ConnectionStringOnly" Params="ConnectionString MaxCrmConnectionTimeOutMinutes LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
@@ -8439,9 +8439,10 @@ Performance  : The operation took 00:00:00.3948901</Output>
           <Description />
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="5" globbing="false">
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="0" globbing="false">
           <Name>ProfileName</Name>
           <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
           </Attributes>
@@ -8581,8 +8582,8 @@ Performance  : The operation took 00:00:00.3948901</Output>
         <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
           <Name>WhatIf</Name>
           <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.AliasAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
           </Attributes>
           <Aliases>
             <string>wi</string>
@@ -10455,6 +10456,135 @@ When omitting conn parameter, cmdlets automatically finds it.</Description>
       </ParamSets>
       <Parameters />
       <Examples />
+      <RelatedLinks />
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="New" noun="CRMRecordsBatch">
+      <Name>New-CRMRecordsBatch</Name>
+      <Syntax>
+        <string>New-CRMRecordsBatch [-Entities] &lt;Entity[]&gt; [-conn &lt;CrmServiceClient&gt;] [-NumberOfRecordsPerBatch &lt;Int32&gt;] [[-ReturnResults] &lt;Boolean&gt;] [-ContinueOnError]</string>
+      </Syntax>
+      <GeneralHelp>
+        <Synopsis>Create many records with less calls to the CRM server.</Synopsis>
+        <Description>Uses the ExecuteBatch method to send multiple CreateRequest objects to the server at a time using the Web API.  This will only work on CRM servers where Batch Operations are Available. 
+You need to make an array of [Microsoft.Xrm.Sdk.Entity] with all of the attributes you want for each object first, then pass that array to this cmdlet. New-CRMRecordsBatch will break up your array into batches and send them to the CRM server for processing. </Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType>Microsoft.Xrm.Sdk.Messages.ExecuteMultipleResponse</ReturnType>
+        <ReturnUrl />
+        <ReturnTypeDescription />
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Entities conn NumberOfRecordsPerBatch ReturnResults ContinueOnError Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+      </ParamSets>
+      <Parameters>
+        <ParameterDescription type="Entity[]" varLen="true" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="0" globbing="false">
+          <Name>Entities</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>The [Microsoft.Xrm.Sdk.Entity[]] you wish to create goes here.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="CrmServiceClient" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>conn</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>A connection to your CRM organization. Use $conn = Get-CrmConnection &lt;Parameters&gt; to generate it.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>NumberOfRecordsPerBatch</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Number of records to send to the CRM server at a time. If this is set too high, the server will return $null.</Description>
+          <DefaultValue>100</DefaultValue>
+        </ParameterDescription>
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
+          <Name>ReturnResults</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>By default, this cmdlet will tell the CRM server to return the results of the records back to you. If set to false, the server will return no results. </Description>
+          <DefaultValue>true</DefaultValue>
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>ContinueOnError</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Indicates whether the server side process should continue on error. By default, if one record fails inside a batch, the whole batch will fail and be rolled back.  If you use this switch, the CRM server will ignore process everything in the batch except the failed record. </Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1 - Basic Use</Name>
+          <Cmd>$accounts = Import-Csv -Path "C:\dataAug-24-2018.csv"
+
+[Microsoft.Xrm.Sdk.Entity[]]$accountEntities = @(
+    foreach($account in $accounts)
+    {
+        $entity = [Microsoft.Xrm.Sdk.Entity]::new('account')
+        $entity.Attributes['name'] = $account.Company
+        $entity.Attributes['telephone1'] = $account.Phone
+        $entity.Attributes['address1_line1'] = $account.Street
+        $entity.Attributes['address1_postalcode'] = $account.PostCode
+        $entity.Attributes['address1_city'] = $account.City
+        $entity
+    }
+)
+
+$results = New-CRMRecordsBatch -Entities $accountEntities
+$results
+...</Cmd>
+          <Description>
+In this example, we create an array of Entities from a CSV file that contains account information and pass them into New-CRMRecordsBatch. What is not shown here is the Server connection which was created before New-CRMRecordBatch was run. Below is the output of the $results variable, it is a Microsoft.Xrm.Sdk.Messages.ExecuteMultipleResponse and contains a lot of information about the records that were created by the server which may be useful to you. </Description>
+          <Output>IsFaulted     : False
+Responses     : {Microsoft.Xrm.Sdk.ExecuteMultipleResponseItem, Microsoft.Xrm.Sdk.ExecuteMultipleResponseItem, Microsoft.Xrm.Sdk.ExecuteMultipleResponseItem, 
+                Microsoft.Xrm.Sdk.ExecuteMultipleResponseItem...}
+ResponseName  : ExecuteMultiple
+Results       : {[IsFaulted, False], [Responses, Microsoft.Xrm.Sdk.ExecuteMultipleResponseItemCollection]}
+ExtensionData : System.Runtime.Serialization.ExtensionDataObject</Output>
+        </Example>
+        <Example>
+          <Name>Example 2 - Use ReturnResults</Name>
+          <Cmd>$accounts = Import-Csv -Path "C:\dataAug-24-2018.csv"
+
+[Microsoft.Xrm.Sdk.Entity[]]$accountEntities = @(
+    foreach($account in $accounts)
+    {
+        $entity = [Microsoft.Xrm.Sdk.Entity]::new('account')
+        $entity.Attributes['name'] = $account.Company
+        $entity.Attributes['telephone1'] = $account.Phone
+        $entity.Attributes['address1_line1'] = $account.Street
+        $entity.Attributes['address1_postalcode'] = $account.PostCode
+        $entity.Attributes['address1_city'] = $account.City
+        $entity
+    }
+)
+
+New-CRMRecordsBatch -Entities $accountEntities -ReturnResults:$false
+</Cmd>
+          <Description>This is exactly the same as Example 1 except that no results are returned by the server. How the operation went will be a mystery to you. </Description>
+          <Output />
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>

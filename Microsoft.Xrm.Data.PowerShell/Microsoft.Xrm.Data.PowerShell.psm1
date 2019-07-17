@@ -315,6 +315,88 @@ function New-CrmRecord{
     return $result
 }
 
+#ExecuteBatch CreateRequest
+function New-CRMRecordsBatch{
+    # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+    [CmdletBinding()]
+    [OutputType([Microsoft.Xrm.Sdk.Messages.ExecuteMultipleResponse])]
+    Param
+    (
+        #Put all of your records into an entity list. Then put the list here. See Examples
+                [Parameter(Mandatory=$true,
+                   Position=0)]
+        [Microsoft.Xrm.Sdk.Entity[]]
+        $Entities,
+
+        #conn
+        [Parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]
+        $conn,
+        #The number of records to send to the server at once. Default = 500.
+        [Parameter(Mandatory=$false)]
+        [int]
+        $NumberOfRecordsPerBatch = 100,
+
+        #Indicates whether results should be returned. Default true
+        [Parameter(Mandatory=$false,
+                   Position=1)]
+        [bool]$ReturnResults=$true,
+
+        #Indicates whether the server side process should continue on error.
+        [switch]$ContinueOnError
+    )
+
+    Begin
+    {
+        $conn = VerifyCrmConnectionParam $conn
+        if(!$conn.IsBatchOperationsAvailable){throw "Batch operations are not available for this server."}
+        #write-progress doesn't like the math if the batch size is larger than the entity count.
+        if($Entities.count -lt $NumberOfRecordsPerBatch){$NumberOfRecordsPerBatch = $Entities.count}
+    }
+    Process
+    {
+        
+        #we need to break the jobs up into small amounts. If you do to many at a time, it will not work and will return null.
+        $end = 0
+        while ($end -lt $Entities.count)
+        {
+            $start = $end
+            $end += $NumberOfRecordsPerBatch
+            Write-Progress -Activity 'Executing Batch' -Status "$end of $($Entities.count)" -PercentComplete ($end/$Entities.count*100)
+            #We need to create a batch job with the CrmServiceClient, CreateBatchOperationRequest does this, but just returns a GUID.
+            #GetBatchById() then returns the Microsoft.Xrm.Tooling.Connector.RequestBatch object which is where we can stuff an array of entities to be created in the CRM.
+            $requestBatch = $conn.GetBatchById($conn.CreateBatchOperationRequest("EntityList Index $start to $end",$ReturnResults,$ContinueOnError))
+            
+            Write-Verbose "Adding $NumberOfRecordsPerBatch Items to Batch"
+            foreach($entity in $Entities[$start..$end])
+            {
+                #put the Entity inside the createrequest which creates an Microsoft.Xrm.Sdk.OrganizationRequest object
+                $createRequest = New-Object Microsoft.Xrm.Sdk.Messages.CreateRequest
+                $createRequest.Target = $entity
+                
+                #put the Microsoft.Xrm.Sdk.OrganizationRequest inside a BatchItemOrganizationRequest object and add it to the request batch.
+                $item = [Microsoft.Xrm.Tooling.Connector.BatchItemOrganizationRequest]::new()
+                $item.Request = $createRequest
+                
+                $requestBatch.BatchItems.Add($item)
+            }
+            Write-Verbose 'Executing Batch on Server. Awaiting Response'
+            #send the batch job to the CRM server for processing.
+            $response = $conn.ExecuteBatch($RequestBatch.BatchId)
+            #error handling.
+            if($response.IsFaulted){throw $response.Responses[0].Fault}
+            elseif(($null -eq $response) -and ($ReturnResults -eq $true)){throw "Server returned null. Try a smaller batch size."}
+            else{$response}
+        }
+
+        
+    }
+    End
+    {
+        
+    }
+}
+
 function Get-CrmRecord{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
