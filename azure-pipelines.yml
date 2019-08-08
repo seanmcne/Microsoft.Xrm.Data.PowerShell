@@ -15,3 +15,12 @@ steps:
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
     artifactName: drop
+
+- task: CopyPublishBuildArtifacts@1
+  displayName: 'Copy Publish Artifact: $(artifactName.ContentDelivery)'
+  inputs:
+    CopyRoot: "$(Build.StagingDirectory)"
+    Contents: "**\\*"
+    ArtifactName: "$(artifactName.ContentDelivery)"
+    ArtifactType: FilePath
+    TargetPath: "\\\\$(Agent.Machinename)\\_drop\\$(octo.PackagePrefix)\\$(Build.BuildId)"
