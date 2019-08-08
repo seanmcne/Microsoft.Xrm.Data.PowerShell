@@ -8,7 +8,7 @@ trigger:
 - '*'
 
 steps:
-- script: ls
+- script: ls *
   displayName: 'Run a one-line script'
 
 - task: PublishBuildArtifacts@1
