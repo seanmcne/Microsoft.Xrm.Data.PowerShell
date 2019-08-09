@@ -21,7 +21,7 @@ steps:
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell'
     Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Microsoft.Xrm.Data.PowerShell'
     CleanTargetFolder: true
     OverWrite: true
 
