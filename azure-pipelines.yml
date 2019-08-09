@@ -8,7 +8,13 @@ trigger:
 - '*'
 
 steps:
+- script: ls
+  displayName: 'Run a one-line script'
+
 - script: ls *
+  displayName: 'Run a one-line script'
+
+- script: echo $(Build.BinariesDirectory)
   displayName: 'Run a one-line script'
 
 - task: PublishBuildArtifacts@1
