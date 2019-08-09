@@ -43,3 +43,9 @@ steps:
       ls $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell
       #Publish-Module -NuGetApiKey $(GalleryKey) -Path $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell -verbose -whatif
     workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
