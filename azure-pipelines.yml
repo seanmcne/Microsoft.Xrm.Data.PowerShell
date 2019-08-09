@@ -25,15 +25,6 @@ steps:
     CleanTargetFolder: true
     OverWrite: true
 
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell'
-    includeRootFolder: true
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/Microsoft.Xrm.Data.PowerShell_$(Build.BuildId).zip'
-    replaceExistingArchive: true
-    verbose: true
-
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
