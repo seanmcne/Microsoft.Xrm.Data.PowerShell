@@ -17,6 +17,14 @@ steps:
 - script: find . -name '*.pssproj' -delete
   displayName: 'Delete pssproj files'
 
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    CleanTargetFolder: true
+    OverWrite: true
+
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell'
@@ -32,5 +40,5 @@ steps:
     script: |
       # Write your PowerShell commands here.
       
-      Publish-Module -NuGetApiKey $(GalleryKey) -Path /Microsoft.Xrm.Data.PowerShell -whatif
+      Publish-Module -NuGetApiKey $(GalleryKey) -Path $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell -whatif
     workingDirectory: '$(Build.SourcesDirectory)'
