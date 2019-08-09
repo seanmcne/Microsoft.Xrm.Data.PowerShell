@@ -14,8 +14,17 @@ steps:
 - script: ls *
   displayName: 'Run a one-line script'
 
-- script: echo $(Build.BinariesDirectory)
+- script: echo 
   displayName: 'Run a one-line script'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.Repository.LocalPath)'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/Microsoft.Xrm.Data.PowerShell_$(Build.BuildId).zip'
+    replaceExistingArchive: true
+    verbose: true
 
 - task: PublishBuildArtifacts@1
   inputs:
