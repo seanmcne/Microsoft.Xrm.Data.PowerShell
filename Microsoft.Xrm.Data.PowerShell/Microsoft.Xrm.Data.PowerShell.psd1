@@ -18,7 +18,7 @@
 RootModule = 'Microsoft.Xrm.Data.Powershell.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.8.3'
+ModuleVersion = '2.8.4'
 
 # ID used to uniquely identify this module
 GUID = '7df9c140-65c3-4862-b3bc-73fad633aae4'
@@ -108,11 +108,10 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Notes are below, hash tagged numbers refer to github Pull Requests
-- Xrm tooling assembly updates to the latest version
-- Fix message trigger issue for Associate and Disassociate Record calls #360
-- Added parameter for isenabledforallroles (#346)
-- Update url pattern (#377)'
+        ReleaseNotes = 'Including newer xrm tooling which has the following improvements:
+- Fixed a bug with how errors are handled when they are raised from ADAL 3.19+. MFA Force Login will now work properly again.
+- Updated default response sizes to support more verbose error messages from CDS
+- source for connector: https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/3.3.0.869'
         # Prerelease = '-alpha'
 
     } # End of PSData hashtable
