@@ -32,6 +32,10 @@
     <Content Include="Microsoft.Xrm.Sdk.Deployment.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="functions\Enable-CrmLanguagePack.ps1" />
+    <Compile Include="functions\Import-CrmSolution.ps1" />
+    <Compile Include="functions\Import-CrmSolutionAsync.ps1" />
+    <Compile Include="functions\Disable-CrmLanguagePack.ps1" />
     <Compile Include="Microsoft.Crm.Sdk.Proxy.dll" />
     <Compile Include="Microsoft.Xrm.Data.PowerShell.Help.pshproj" />
     <Compile Include="Microsoft.Xrm.Data.PowerShell.Help.xml" />
@@ -42,6 +46,9 @@
     <Compile Include="Microsoft.Xrm.Tooling.CrmConnectControl.dll" />
     <Compile Include="Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll" />
     <Compile Include="Microsoft.Xrm.Tooling.Ui.Styles.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="functions\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="Build" />

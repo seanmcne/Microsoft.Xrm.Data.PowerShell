@@ -57,7 +57,18 @@ DotNetFrameworkVersion = '4.0.0.0'
 #RequiredModules = @("Microsoft.Xrm.Tooling.CrmConnector.Powershell")
 
 # Assemblies that must be loaded prior to importing this module
-RequiredAssemblies = @("Microsoft.Crm.Sdk.Proxy.dll", "Microsoft.IdentityModel.Clients.ActiveDirectory.dll", "Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll","Microsoft.Xrm.Sdk.dll","Microsoft.Xrm.Tooling.Connector.dll","Microsoft.Xrm.Tooling.CrmConnectControl.dll","Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll","Microsoft.Xrm.Tooling.Ui.Styles.dll","Microsoft.Rest.ClientRuntime.dll","Newtonsoft.Json.dll")
+RequiredAssemblies = @(
+	"Microsoft.Crm.Sdk.Proxy.dll", 
+	"Microsoft.IdentityModel.Clients.ActiveDirectory.dll", 
+	"Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll",
+	"Microsoft.Xrm.Sdk.dll",
+	"Microsoft.Xrm.Tooling.Connector.dll",
+	"Microsoft.Xrm.Tooling.CrmConnectControl.dll",
+	"Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll",
+	"Microsoft.Xrm.Tooling.Ui.Styles.dll",
+	"Microsoft.Rest.ClientRuntime.dll",
+	"Newtonsoft.Json.dll"
+)
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
 #ScriptsToProcess = @()
@@ -69,7 +80,20 @@ RequiredAssemblies = @("Microsoft.Crm.Sdk.Proxy.dll", "Microsoft.IdentityModel.C
 #FormatsToProcess = @('Microsoft.Xrm.Data.PowerShell.Format.ps1xml')
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-NestedModules = @('Microsoft.Xrm.Tooling.CrmConnector.Powershell')
+#Generate the function list using follow command (assuming the 'functions' directory)
+<# 
+$files = @('''Microsoft.Xrm.Tooling.CrmConnector.Powershell''','''Microsoft.Xrm.Data.PowerShell.ps1''')
+get-ChildItem .\Source\GitHub\Microsoft.Xrm.Data.PowerShell\Microsoft.Xrm.Data.PowerShell\functions\ -Filter *.ps1|%{$files+="'.\functions\$($_.name)'"}
+("NestedModules = @(`r`n`t$($files -join ',')`r`n)") -replace ",", ",`r`n`t"|write-output
+#>
+NestedModules = @(
+	'Microsoft.Xrm.Tooling.CrmConnector.Powershell', 
+	'Microsoft.Xrm.Data.PowerShell.psm1', 
+	'.\functions\Import-CrmSolution.ps1', 
+	'.\functions\Import-CrmSolutionAsync.ps1', 
+	'.\functions\Disable-CrmLanguagePack.ps1', 
+	'.\functions\Enable-CrmLanguagePack.ps1'
+)
 
 # Functions to export from this module - only include functions with a dash
 FunctionsToExport = @('*-*')
@@ -90,7 +114,13 @@ AliasesToExport = @('*')
 ModuleList = @("Microsoft.Xrm.Data.Powershell")
 
 # List of all files packaged with this module
-FileList = @("Microsoft.Xrm.Data.Powershell.psm1","Microsoft.Xrm.Data.Powershell.psd1","Microsoft.Crm.Sdk.Proxy.dll", "Microsoft.IdentityModel.Clients.ActiveDirectory.dll", "Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll","Microsoft.Xrm.Data.PowerShell.Help.xml", "Microsoft.Xrm.Sdk.Deployment.dll","Microsoft.Xrm.Sdk.dll","Microsoft.Xrm.Tooling.Connector.dll","Microsoft.Xrm.Tooling.CrmConnectControl.dll","Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll","Microsoft.Xrm.Tooling.Ui.Styles.dll","Microsoft.Rest.ClientRuntime.dll","Newtonsoft.Json.dll","Microsoft.QualityTools.Testing.Fakes.dll","Microsoft.Xrm.Sdk.Deployment.dll")
+FileList = @(
+	"Microsoft.Xrm.Data.Powershell.psm1",
+	"Microsoft.Xrm.Data.Powershell.psd1",
+	"Microsoft.Crm.Sdk.Proxy.dll",
+	"Microsoft.IdentityModel.Clients.ActiveDirectory.dll",
+	"Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll",
+	"Microsoft.Xrm.Data.PowerShell.Help.xml", "Microsoft.Xrm.Sdk.Deployment.dll","Microsoft.Xrm.Sdk.dll","Microsoft.Xrm.Tooling.Connector.dll","Microsoft.Xrm.Tooling.CrmConnectControl.dll","Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll","Microsoft.Xrm.Tooling.Ui.Styles.dll","Microsoft.Rest.ClientRuntime.dll","Newtonsoft.Json.dll","Microsoft.QualityTools.Testing.Fakes.dll","Microsoft.Xrm.Sdk.Deployment.dll")
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
 PrivateData = @{
