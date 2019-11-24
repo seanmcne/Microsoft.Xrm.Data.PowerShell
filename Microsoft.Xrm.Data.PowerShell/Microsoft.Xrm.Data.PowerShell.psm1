@@ -4645,7 +4645,9 @@ function Set-CrmSystemSettings {
 		[parameter(Mandatory=$false)]
 		[bool]$SuppressSLA,
 		[parameter(Mandatory=$false)]
-		[bool]$IsAuditEnabled
+		[bool]$IsAuditEnabled,
+		[parameter(Mandatory=$false)]
+		[bool]$AllowLegacyClientExperience
     )
 
 	$conn = VerifyCrmConnectionParam $conn
