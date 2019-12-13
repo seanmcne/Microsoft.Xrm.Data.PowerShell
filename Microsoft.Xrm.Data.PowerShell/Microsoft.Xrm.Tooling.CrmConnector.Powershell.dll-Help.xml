@@ -1,0 +1,822 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<helpItems xmlns="http://msh" schema="maml">
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10"
+                   xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10"
+                   xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10"
+                   xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Get-CrmConnection</command:name>
+      <maml:description>
+        <maml:para>Returns a connection to a Microsoft Dynamics CRM instance.</maml:para>
+      </maml:description>
+      <maml:copyright>
+        <maml:para />
+      </maml:copyright>
+      <command:verb>Get</command:verb>
+      <command:noun>CrmConnection</command:noun>
+      <dev:version />
+    </command:details>
+    <maml:description>
+      <maml:para>The Get-CrmConnection cmdlet returns a connection to a CRM instance. Upon successful connection to CRM, it returns an initialized instance of the Microsoft.Xrm.Tooling.CrmServiceClient class.</maml:para>
+      <maml:para>This cmdlet applies to Microsoft Dynamics CRM Online and on-premises versions of Microsoft Dynamics CRM.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-CrmConnection</maml:name>
+        <command:parameter 
+          required="false" 
+          variableLength="false" 
+          globbing="false" 
+          pipelineInput="false" 
+          position="named">
+          <maml:name>ConnectionString</maml:name>
+          <maml:description>
+            <maml:para>Connection string used to connect to CRM. Valid parameters are:</maml:para>
+            <maml:para>Server/Url/ServiceUri/Service Uri: URL to the Microsoft Dynamics CRM server.</maml:para>
+              <maml:para>UserName/User Name/UserId/User Id: User name to connect to the CRM server.</maml:para>
+              <maml:para>Password: Password for the specified user name.</maml:para>
+              <maml:para>Domain: Domain name for the specified user name.</maml:para>
+              <maml:para>HomeRealmUri/Home Realm Uri: Home Realm Url to access the delegated AD FS instance.</maml:para>
+              <maml:para>AuthType/AuthenticationType: Authentication type to use. Default is AD. Valid values are: AD, IFD, Office365, or OAuth.</maml:para>
+              <maml:para>RequireNewInstance: Specifies whether to force the creation of a new instance when the connection is created. Possible values are true or false. Default is true.</maml:para>
+              <maml:para>CientId/AppId/ApplicationId: Specifies the ClientID assigned when you registered your application in Microsoft Azure Active Directory or Active Directory Federation Services (AD FS). This is applicable for OAuth authentication type.</maml:para>
+              <maml:para>RedirectUri/ReplyUrl: Specifies the redirect URI of the application you registered in Microsoft Azure Active Directory or Active Directory Federation Services (AD FS). This is applicable for OAuth authentication type.</maml:para>
+              <maml:para>TokenCacheStorePath: (Optional). Specifies the full path to the location where the user token cache should be stored. This is applicable for OAuth authentication type.</maml:para>
+              <maml:para>LoginPrompt = Specifies whether the user is prompted for credentials if the credentials are not supplied. Default is Auto.
+              Valid values are: Auto, Always, or Never.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">string</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="true"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="1"
+                           aliases="">
+          <maml:name>ServerUrl</maml:name>
+          <maml:description>
+            <maml:para>URL of the CRM discovery server specified in the following format: http://&lt;server&gt;:&lt;port&gt;</maml:para>
+          </maml:description>
+          <command:parameterValue required="true"
+                                  variableLength="false">Uri</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="false"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="2"
+                           aliases="">
+          <maml:name>Credential</maml:name>
+          <maml:description>
+            <maml:para>User credential for signing in to Microsoft Dynamics CRM.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true"
+                                  variableLength="false">PSCredential</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="true"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="3"
+                           aliases="">
+          <maml:name>OrganizationName</maml:name>
+          <maml:description>
+            <maml:para>Unique or friendly name of the CRM organization to connect to.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true"
+                                  variableLength="false">String</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="false"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="4"
+                           aliases="">
+          <maml:name>HomeRealmUrl</maml:name>
+          <maml:description>
+            <maml:para>URI of the WS-Trust metadata endpoint.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true"
+                                  variableLength="false">Uri</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="false"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="6"
+                           aliases="">
+          <maml:name>ProfileName</maml:name>
+          <maml:description>
+            <maml:para>For internal use only.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true"
+                                  variableLength="false">String</command:parameterValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Get-CrmConnection</maml:name>
+        <command:parameter required="false"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="2"
+                           aliases="">
+          <maml:name>Credential</maml:name>
+          <maml:description>
+            <maml:para>User credential for signing in to Microsoft Dynamics CRM.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true"
+                                  variableLength="false">PSCredential</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="true"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="2"
+                           aliases="">
+          <maml:name>OnLineType</maml:name>
+          <maml:description>
+            <maml:para>Type of online deployment. Valid value is Office365.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true"
+                                  variableLength="false">OnlineType</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="true"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="5"
+                           aliases="">
+          <maml:name>DeploymentRegion</maml:name>
+          <maml:description>
+            <maml:para>Geographic region of your Microsoft Dynamics CRM online deployment. Valid values are NorthAmerica, EMEA, APAC, SouthAmerica, Oceania, JPN, CAN, IND, or NorthAmerica2.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true"
+                                  variableLength="false">String</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="false"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="6"
+                           aliases="">
+          <maml:name>ProfileName</maml:name>
+          <maml:description>
+            <maml:para>For internal use only.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true"
+                                  variableLength="false">String</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="true"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="named"
+                           aliases="">
+          <maml:name>OrganizationName</maml:name>
+          <maml:description>
+            <maml:para>Unique or friendly name of the CRM organization to connect to.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true"
+                                  variableLength="false">String</command:parameterValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Get-CrmConnection</maml:name>
+        <command:parameter required="false"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="1"
+                           aliases="">
+          <maml:name>InteractiveMode</maml:name>
+          <maml:description>
+            <maml:para>Enables you to use the common sign-in control dialog box to specify credentials for connecting to a CRM instance.</maml:para>
+          </maml:description>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false"
+                         variableLength="false"
+                         globbing="false"
+                         pipelineInput="True (ByValue, ByPropertyName)"
+                         position="2"
+                         aliases="">
+        <maml:name>Credential</maml:name>
+        <maml:description>
+          <maml:para>User credential for signing in to Microsoft Dynamics CRM.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true"
+                                variableLength="false">PSCredential</command:parameterValue>
+        <dev:type>
+          <maml:name>PSCredential</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue></dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true"
+                         variableLength="false"
+                         globbing="false"
+                         pipelineInput="True (ByValue, ByPropertyName)"
+                         position="5"
+                         aliases="">
+        <maml:name>DeploymentRegion</maml:name>
+        <maml:description>
+          <maml:para>Geographic region of your Microsoft Dynamics CRM online deployment. Valid values are NorthAmerica, EMEA, APAC, SouthAmerica, Oceania, JPN, CAN, IND, or NorthAmerica2.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true"
+                                variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue></dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false"
+                         variableLength="false"
+                         globbing="false"
+                         pipelineInput="True (ByValue, ByPropertyName)"
+                         position="4"
+                         aliases="">
+        <maml:name>HomeRealmUrl</maml:name>
+        <maml:description>
+          <maml:para>URI of the WS-Trust metadata endpoint.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true"
+                                variableLength="false">Uri</command:parameterValue>
+        <dev:type>
+          <maml:name>Uri</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue></dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false"
+                         variableLength="false"
+                         globbing="false"
+                         pipelineInput="True (ByValue, ByPropertyName)"
+                         position="1"
+                         aliases="">
+        <maml:name>InteractiveMode</maml:name>
+        <maml:description>
+          <maml:para>Enables you to use the common sign-in control dialog box to specify credentials for connecting to a CRM instance.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false"
+                                variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue></dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true"
+                         variableLength="false"
+                         globbing="false"
+                         pipelineInput="True (ByValue, ByPropertyName)"
+                         position="2"
+                         aliases="">
+        <maml:name>OnLineType</maml:name>
+        <maml:description>
+          <maml:para>Type of online deployment. Valid value is Office365.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true"
+                                variableLength="false">OnlineType</command:parameterValue>
+        <dev:type>
+          <maml:name>OnlineType</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue></dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true"
+                         variableLength="false"
+                         globbing="false"
+                         pipelineInput="True (ByValue, ByPropertyName)"
+                         position="named"
+                         aliases="">
+        <maml:name>OrganizationName</maml:name>
+        <maml:description>
+          <maml:para>Unique or friendly name of the CRM organization to connect to.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true"
+                                variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue></dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false"
+                         variableLength="false"
+                         globbing="false"
+                         pipelineInput="True (ByValue, ByPropertyName)"
+                         position="6"
+                         aliases="">
+        <maml:name>ProfileName</maml:name>
+        <maml:description>
+          <maml:para>For internal use only.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true"
+                                variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue></dev:defaultValue>
+      </command:parameter>
+      <command:parameter
+          required="false"
+          variableLength="false"
+          globbing="false"
+          pipelineInput="false"
+          position="named">
+        <maml:name>ConnectionString</maml:name>
+        <maml:description>
+          <maml:para>Connection string used to connect to CRM. Valid parameters are:</maml:para>
+          <maml:para>Server/Url/ServiceUri/Service Uri: URL to the Microsoft Dynamics CRM server.</maml:para>
+          <maml:para>UserName/User Name/UserId/User Id: User name to connect to the CRM server.</maml:para>
+          <maml:para>Password: Password for the specified user name.</maml:para>
+          <maml:para>Domain: Domain name for the specified user name.</maml:para>
+          <maml:para>HomeRealmUri/Home Realm Uri: Home Realm Url to access the delegated AD FS instance.</maml:para>
+          <maml:para>AuthType/AuthenticationType: Authentication type to use. Default is AD. Valid values are: AD, IFD, Office365, or OAuth.</maml:para>
+          <maml:para>RequireNewInstance: Specifies whether to force the creation of a new instance when the connection is created. Possible values are true or false. Default is true.</maml:para>
+          <maml:para>CientId/AppId/ApplicationId: Specifies the ClientID assigned when you registered your application in Microsoft Azure Active Directory or Active Directory Federation Services (AD FS). This is applicable for OAuth authentication type.</maml:para>
+          <maml:para>RedirectUri/ReplyUrl: Specifies the redirect URI of the application you registered in Microsoft Azure Active Directory or Active Directory Federation Services (AD FS). This is applicable for OAuth authentication type.</maml:para>
+          <maml:para>TokenCacheStorePath: (Optional). Specifies the full path to the location where the user token cache should be stored. This is applicable for OAuth authentication type.</maml:para>
+          <maml:para>
+            LoginPrompt = Specifies whether the user is prompted for credentials if the credentials are not supplied. Default is Auto.
+            Valid values are: Auto, Always, or Never.
+          </maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">string</command:parameterValue>
+      </command:parameter>
+      <command:parameter required="true"
+                         variableLength="false"
+                         globbing="false"
+                         pipelineInput="True (ByValue, ByPropertyName)"
+                         position="1"
+                         aliases="">
+        <maml:name>ServerUrl</maml:name>
+        <maml:description>
+          <maml:para>URL of the CRM discovery server specified in the following format: http://&lt;server&gt;:&lt;port&gt;</maml:para>
+        </maml:description>
+        <command:parameterValue required="true"
+                                variableLength="false">Uri</command:parameterValue>
+        <dev:type>
+          <maml:name>Uri</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue></dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name></maml:name>
+          <maml:uri></maml:uri>
+          <maml:description>
+            <maml:para />
+          </maml:description>
+        </dev:type>
+        <maml:description></maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Microsoft.Xrm.Tooling.CrmServiceClient</maml:name>
+          <maml:uri></maml:uri>
+          <maml:description>
+            <maml:para />
+          </maml:description>
+        </dev:type>
+        <maml:description></maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <command:terminatingErrors />
+    <command:nonTerminatingErrors />
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para></maml:para>
+        </maml:introduction>
+        <dev:code>
+          PS C:\&gt;$CRMConn = Get-CrmConnection -InteractiveMode
+        </dev:code>
+        <dev:remarks>
+          <maml:para>This example shows how to connect to an instance of CRM using the common sign-in control dialog box. The connection information is stored in the $CRMConn variable that you can use later.</maml:para>
+        </dev:remarks>
+        <command:commandLines>
+          <command:commandLine>
+            <command:commandText />
+          </command:commandLine>
+        </command:commandLines>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para></maml:para>
+        </maml:introduction>
+        <dev:code>
+          PS C:\&gt;$CRMConn = Get-CrmConnection –ServerUrl http://&lt;CRM_Server_Host&gt; -Credential $Cred -OrganizationName &lt;OrgName&gt;
+        </dev:code>
+        <dev:remarks>
+          <maml:para>This example shows how to connect to an on-premises instance of CRM. The connection information is stored in the $CRMConn variable that you can use later.</maml:para>
+        </dev:remarks>
+        <command:commandLines>
+          <command:commandLine>
+            <command:commandText />
+          </command:commandLine>
+        </command:commandLines>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para></maml:para>
+        </maml:introduction>
+        <dev:code>
+          PS C:\&gt;$CRMConn = Get-CrmConnection -Credential $Cred -DeploymentRegion NorthAmerica –OnlineType Office365 –OrganizationName &lt;OrgName&gt;
+        </dev:code>
+        <dev:remarks>
+          <maml:para>
+            This example shows how to connect to an online (Office 365) instance of CRM. The connection information is stored in the $CRMConn variable that you can use later.
+          </maml:para>
+        </dev:remarks>
+        <command:commandLines>
+          <command:commandLine>
+            <command:commandText />
+          </command:commandLine>
+        </command:commandLines>
+      </command:example>
+    </command:examples>
+    <maml:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online version:</maml:linkText>
+        <maml:uri>https://technet.microsoft.com/library/dn756303.aspx</maml:uri>
+      </maml:navigationLink>
+    </maml:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10"
+                   xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10"
+                   xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10"
+                   xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Get-CrmOrganizations</command:name>
+      <maml:description>
+        <maml:para>Returns a list of Microsoft Dynamics CRM organizations that the current user has access to.</maml:para>
+      </maml:description>
+      <maml:copyright>
+        <maml:para />
+      </maml:copyright>
+      <command:verb>Get</command:verb>
+      <command:noun>CrmOrganizations</command:noun>
+      <dev:version />
+    </command:details>
+    <maml:description>
+      <maml:para>The Get-CrmOrganizations cmdlet returns a list of CRM organizations that the current user has access to.</maml:para>
+      <maml:para>This cmdlet applies to Microsoft Dynamics CRM Online and on-premises versions of Microsoft Dynamics CRM.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-CrmOrganizations</maml:name>
+        
+        <command:parameter required="false"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="2"
+                           aliases="">
+          <maml:name>Credential</maml:name>
+          <maml:description>
+            <maml:para>User credential for signing in to Microsoft Dynamics CRM.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true"
+                                  variableLength="false">PSCredential</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="false"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="4"
+                           aliases="">
+          <maml:name>HomeRealmUrl</maml:name>
+          <maml:description>
+            <maml:para>
+              URI of the WS-Trust metadata endpoint.
+            </maml:para>
+          </maml:description>
+          <command:parameterValue required="true"
+                                  variableLength="false">Uri</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="false"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="6"
+                           aliases="">
+          <maml:name>ProfileName</maml:name>
+          <maml:description>
+            <maml:para>For internal use only.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true"
+                                  variableLength="false">String</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="false"
+                           variableLength="true"
+                           globbing="false"
+                           pipelineInput="false"
+                           position="named">
+          <maml:name>Confirm</maml:name>
+          <maml:description>
+            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+          </maml:description>
+        </command:parameter>
+        <command:parameter required="false"
+                           variableLength="true"
+                           globbing="false"
+                           pipelineInput="false"
+                           position="named">
+          <maml:name>WhatIf</maml:name>
+          <maml:description>
+            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+          </maml:description>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Get-CrmOrganizations</maml:name>
+        <command:parameter required="false"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="2"
+                           aliases="">
+          <maml:name>Credential</maml:name>
+          <maml:description>
+            <maml:para>User credential for signing in to Microsoft Dynamics CRM.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true"
+                                  variableLength="false">PSCredential</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="true"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="2"
+                           aliases="">
+          <maml:name>OnLineType</maml:name>
+          <maml:description>
+            <maml:para>Type of online deployment. Valid values is Office365.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true"
+                                  variableLength="false">OnlineType</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="true"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="5"
+                           aliases="">
+          <maml:name>DeploymentRegion</maml:name>
+          <maml:description>
+            <maml:para>Geographic region of your Microsoft Dynamics CRM online deployment. Valid values are NorthAmerica, EMEA, APAC, SouthAmerica, Oceania, JPN, CAN, IND, or NorthAmerica2.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true"
+                                  variableLength="false">String</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="false"
+                           variableLength="false"
+                           globbing="false"
+                           pipelineInput="True (ByValue, ByPropertyName)"
+                           position="6"
+                           aliases="">
+          <maml:name>ProfileName</maml:name>
+          <maml:description>
+            <maml:para>For internal use only.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true"
+                                  variableLength="false">String</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="false"
+                           variableLength="true"
+                           globbing="false"
+                           pipelineInput="false"
+                           position="named">
+          <maml:name>Confirm</maml:name>
+          <maml:description>
+            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+          </maml:description>
+        </command:parameter>
+        <command:parameter required="false"
+                           variableLength="true"
+                           globbing="false"
+                           pipelineInput="false"
+                           position="named">
+          <maml:name>WhatIf</maml:name>
+          <maml:description>
+            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+          </maml:description>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false"
+                         variableLength="false"
+                         globbing="false"
+                         pipelineInput="True (ByValue, ByPropertyName)"
+                         position="2"
+                         aliases="">
+        <maml:name>Credential</maml:name>
+        <maml:description>
+          <maml:para>User credential for signing in to Microsoft Dynamics CRM.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true"
+                                variableLength="false">PSCredential</command:parameterValue>
+        <dev:type>
+          <maml:name>PSCredential</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue></dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true"
+                         variableLength="false"
+                         globbing="false"
+                         pipelineInput="True (ByValue, ByPropertyName)"
+                         position="5"
+                         aliases="">
+        <maml:name>DeploymentRegion</maml:name>
+        <maml:description>
+          <maml:para>Geographic region of your Microsoft Dynamics CRM online deployment. Valid values are NorthAmerica, EMEA, APAC, SouthAmerica, Oceania, JPN, CAN, IND, or NorthAmerica2.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true"
+                                variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue></dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false"
+                         variableLength="false"
+                         globbing="false"
+                         pipelineInput="True (ByValue, ByPropertyName)"
+                         position="4"
+                         aliases="">
+        <maml:name>HomeRealmUrl</maml:name>
+        <maml:description>
+          <maml:para>
+            URI of the WS-Trust metadata endpoint.
+          </maml:para>
+        </maml:description>
+        <command:parameterValue required="true"
+                                variableLength="false">Uri</command:parameterValue>
+        <dev:type>
+          <maml:name>Uri</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue></dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true"
+                         variableLength="false"
+                         globbing="false"
+                         pipelineInput="True (ByValue, ByPropertyName)"
+                         position="2"
+                         aliases="">
+        <maml:name>OnLineType</maml:name>
+        <maml:description>
+          <maml:para>Type of online deployment. Valid value is Office365.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true"
+                                variableLength="false">OnlineType</command:parameterValue>
+        <dev:type>
+          <maml:name>OnlineType</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue></dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false"
+                         variableLength="false"
+                         globbing="false"
+                         pipelineInput="True (ByValue, ByPropertyName)"
+                         position="6"
+                         aliases="">
+        <maml:name>ProfileName</maml:name>
+        <maml:description>
+          <maml:para>For internal use only.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true"
+                                variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue></dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false"
+                         variableLength="true"
+                         globbing="false"
+                         pipelineInput="false"
+                         position="named">
+        <maml:name>Confirm</maml:name>
+        <maml:description>
+          <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false"
+                                variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>false</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false"
+                         variableLength="true"
+                         globbing="false"
+                         pipelineInput="false"
+                         position="named">
+        <maml:name>WhatIf</maml:name>
+        <maml:description>
+          <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false"
+                                variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>false</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name></maml:name>
+          <maml:uri></maml:uri>
+          <maml:description>
+            <maml:para />
+          </maml:description>
+        </dev:type>
+        <maml:description></maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Microsoft.Xrm.Sdk.Discovery.OrganizationDetailCollection</maml:name>
+          <maml:uri></maml:uri>
+          <maml:description>
+            <maml:para />
+          </maml:description>
+        </dev:type>
+        <maml:description>
+          <maml:para>Returns an initialized array of CRM organizations.</maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <command:terminatingErrors />
+    <command:nonTerminatingErrors />
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para></maml:para>
+        </maml:introduction>
+        <dev:code>
+          C:\PS&gt;$CRMOrgs = Get-CrmOrganizations –ServerUrl http://&lt;CRM_Server_Host&gt; –Credential $Cred
+
+        </dev:code>
+        <dev:remarks>
+          <maml:para>This example shows how to retrieve the organizations from an on-premises instance of CRM and store the information in a variable, $CRMOrgs.</maml:para>
+        </dev:remarks>
+        <command:commandLines>
+          <command:commandLine>
+            <command:commandText />
+          </command:commandLine>
+        </command:commandLines>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para></maml:para>
+        </maml:introduction>
+        <dev:code>
+          C:\PS&gt;$CRMOrgs = Get-CrmOrganizations -Credential $Cred -DeploymentRegion NorthAmerica –OnlineType Office365
+
+        </dev:code>
+        <dev:remarks>
+          <maml:para>This example shows how to retrieve the organizations from an online (Office 365) instance of CRM, and store the information in a variable, $CRMOrgs.</maml:para>
+        </dev:remarks>
+        <command:commandLines>
+          <command:commandLine>
+            <command:commandText />
+          </command:commandLine>
+        </command:commandLines>
+      </command:example>
+    </command:examples>
+    <maml:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online version:</maml:linkText>
+        <maml:uri>https://technet.microsoft.com/library/dn756300.aspx</maml:uri>
+      </maml:navigationLink>      
+    </maml:relatedLinks>
+  </command:command>
+</helpItems>
