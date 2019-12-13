@@ -13,12 +13,18 @@
 # (i) to not use Our name, logo, or trademarks to market Your software product in which the Sample Code is embedded; 
 # (ii) to include a valid copyright notice on Your software product in which the Sample Code is embedded; 
 # and (iii) to indemnify, hold harmless, and defend Us and Our suppliers from and against any claims or lawsuits, including attorneys’ fees, that arise or result from the use or distribution of the Sample Code 
+
+#
+# Update connector/assembly dll's from: 
+# https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/
+#
+
 @{
 # Script module or binary module file associated with this manifest.
 RootModule = 'Microsoft.Xrm.Data.Powershell.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.8.4'
+ModuleVersion = '2.8.5'
 
 # ID used to uniquely identify this module
 GUID = '7df9c140-65c3-4862-b3bc-73fad633aae4'
