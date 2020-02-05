@@ -24,19 +24,19 @@
 RootModule = 'Microsoft.Xrm.Data.Powershell.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.8.5'
+ModuleVersion = '2.8.6'
 
 # ID used to uniquely identify this module
 GUID = '7df9c140-65c3-4862-b3bc-73fad633aae4'
 
 # Author of this module
-Author = 'Kenichiro Nakamura, Sean McNellis'
+Author = 'Sean McNellis, Kenichiro Nakamura'
 
 # Company or vendor of this module
 CompanyName = 'Microsoft Corporation'
 
 # Copyright statement for this module
-Copyright = '(c) 2019 Microsoft Corporation All rights reserved.'
+Copyright = '(c) 2020 Microsoft Corporation All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'This module uses the CRM connection from Microsoft.Xrm.Tooling.CrmConnector.Powershell and provides common functions to create, delete, query, and update data as well as functions for common tasks such as publishing, and manipulating System and CRM User Settings, etc. The module should function for both Dynamics CRM Online and On-Premise environment.'

@@ -4407,6 +4407,7 @@ function Set-CrmConnectionTimeout{
 	    try{
 			Write-Verbose "Updating Timeout on OrganizationServiceProxy"
 			$conn.OrganizationServiceProxy.Timeout = $newTimeout
+			[Microsoft.Xrm.Tooling.Connector.CrmServiceClient]::MaxConnectionTimeout = $newTimeout
 	    }
 	    catch{
 			Write-Verbose "Failed to set the timeout value"        
@@ -4419,6 +4420,7 @@ function Set-CrmConnectionTimeout{
 			$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.CloseTimeout = $newTimeout
 			$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.ReceiveTimeout = $newTimeout
 			$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.SendTimeout = $newTimeout
+			[Microsoft.Xrm.Tooling.Connector.CrmServiceClient]::MaxConnectionTimeout = $newTimeout
 	    }
 	    catch{
 			Write-Verbose "Failed to set the timeout values"
