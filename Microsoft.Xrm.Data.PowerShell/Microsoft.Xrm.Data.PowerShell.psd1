@@ -102,7 +102,7 @@ FileList = @("Microsoft.Xrm.Data.Powershell.psm1","Microsoft.Xrm.Data.Powershell
 PrivateData = @{
     PSData = @{
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('Dynamics', 'Xrm', 'CRM', 'Dynamics365')
+        Tags = @('Dynamics', 'Xrm', 'CRM', 'Dynamics365','PowerApps','CDS', 'Common Data Service')
 
         # A URL to the license for this module.
         # LicenseUri = ''
