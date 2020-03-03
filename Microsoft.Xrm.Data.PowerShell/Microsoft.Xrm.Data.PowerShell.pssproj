@@ -29,16 +29,12 @@
   <ItemGroup>
     <Content Include="Microsoft.IdentityModel.Clients.ActiveDirectory.dll" />
     <Content Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll" />
-    <Content Include="Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll" />
-    <Content Include="Microsoft.IdentityModel.dll" />
     <Content Include="Microsoft.QualityTools.Testing.Fakes.dll" />
     <Content Include="Microsoft.Rest.ClientRuntime.dll" />
     <Content Include="Microsoft.Xrm.Sdk.Deployment.dll" />
     <Content Include="Microsoft.Xrm.Sdk.Workflow.dll" />
     <Content Include="Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll-Help.xml" />
-    <Content Include="Microsoft.Xrm.Tooling.WebResourceUtility.dll" />
     <Content Include="Newtonsoft.Json.dll" />
-    <Content Include="System.Management.Automation.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Microsoft.Crm.Sdk.Proxy.dll" />

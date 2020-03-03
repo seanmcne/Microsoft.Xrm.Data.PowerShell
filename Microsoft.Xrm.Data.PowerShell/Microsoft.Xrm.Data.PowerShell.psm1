@@ -72,17 +72,19 @@ function Connect-CrmOnlineDiscovery{
 function Connect-CrmOnline{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
-    PARAM(
-        [parameter(Position=1, Mandatory=$true)]
+    PARAM( 
+        [parameter(Position=1, Mandatory=$true, ParameterSetName="Creds")]
         [PSCredential]$Credential, 
-        [Parameter(Position=2,Mandatory=$true)]
+        [parameter(Position=2, Mandatory=$true, ParameterSetName="Secret")]
+        [Parameter(Position=2,Mandatory=$true, ParameterSetName="Creds")]
         [ValidatePattern('([\w-]+).crm([0-9]*).(microsoftdynamics|dynamics|crm[\w-]*).(com|de|us)')]
         [string]$ServerUrl, 
-		[Parameter(Position=3,Mandatory=$false)]
+		[Parameter(Position=1,Mandatory=$false, ParameterSetName="Creds")]
         [switch]$ForceDiscovery,
-		[Parameter(Position=4,Mandatory=$false)]
+		[Parameter(Position=4,Mandatory=$false, ParameterSetName="Creds")]
         [switch]$ForceOAuth, 
-		[Parameter(Position=5,Mandatory=$false)]
+        [parameter(Position=2, Mandatory=$true, ParameterSetName="Secret")]
+		[Parameter(Position=5,Mandatory=$false, ParameterSetName="Creds")]
         [ValidateScript({
             try {
                 [System.Guid]::Parse($_) | Out-Null
@@ -92,8 +94,11 @@ function Connect-CrmOnline{
             }
         })]
         [string]$OAuthClientId,
-		[Parameter(Position=6,Mandatory=$false)]
-        [string]$OAuthRedirectUri
+        [parameter(Position=3, Mandatory=$true, ParameterSetName="Secret")]
+		[Parameter(Position=6,Mandatory=$false, ParameterSetName="Creds")]
+        [string]$OAuthRedirectUri, 
+		[parameter(Position=4, Mandatory=$true, ParameterSetName="Secret")]
+        [string]$ClientSecret
     )
     AddTls12Support #make sure tls12 is enabled 
 	if($ServerUrl.StartsWith("https://","CurrentCultureIgnoreCase") -ne $true){
@@ -101,54 +106,80 @@ function Connect-CrmOnline{
 		$ServerUrl = "https://" + $ServerUrl
 	}
 	Write-Verbose "Connecting to: $ServerUrl"
-    $cs = "RequireNewInstance=True"
-	$cs+= ";Username=$($Credential.UserName)"
-	$cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
-	$cs+= ";Url=$ServerUrl"
-	
-	#Default to Office365 Auth, allow oAuth to be used
-	if(!$OAuthClientId -and !$ForceOAuth){
-		Write-Verbose "Using AuthType=Office365"
-		$cs += ";AuthType=Office365"
+
+	if($ClientSecret){
+		$cs = "RequireNewInstance=True"
+		$cs += ";Url=$ServerUrl"
+		$cs += ";AuthType=ClientSecret"
+		$cs += ";ClientId=$OAuthClientId"
+		$cs += ";redirecturi=$OAuthRedirectUri"
+		$cs += ";SkipDiscovery=True"
+		$cs += ";ClientSecret=$ClientSecret"
+		Write-Verbose ($cs.Replace($ClientSecret, "*******"))
+		try
+		{
+			if(!$cs -or $cs.Length -eq 0){
+				throw "Cannot create the CrmServiceClient, the connection string is null"
+			}
+
+			$global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $cs
+			return $global:conn
+		}
+		catch
+		{
+			throw $_
+		}   
 	}
 	else{
-		Write-Verbose "Params -> ForceOAuth: {$ForceOAuth} ClientId: {$OAuthClientId} RedirectUri: {$OAuthRedirectUri}"
-		#use the clientid if provided, else use a provided clientid 
-		if($OAuthClientId){
-			Write-Verbose "Using provide "
-			$cs += ";AuthType=OAuth;ClientId=$OAuthClientId"
-			if($OAuthRedirectUri){
-				$cs += ";redirecturi=$OAuthRedirectUri"
-			}
+		$cs = "RequireNewInstance=True"
+		$cs+= ";Username=$($Credential.UserName)"
+		$cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
+		$cs+= ";Url=$ServerUrl"
+	
+		#Default to Office365 Auth, allow oAuth to be used
+		if(!$OAuthClientId -and !$ForceOAuth){
+			Write-Verbose "Using AuthType=Office365"
+			$cs += ";AuthType=Office365"
 		}
 		else{
-			$cs+=";AuthType=OAuth;ClientId=2ad88395-b77d-4561-9441-d0e40824f9bc"
-			$cs+=";redirecturi=app://5d3e90d6-aa8e-48a8-8f2c-58b45cc67315"
+			Write-Verbose "Params -> ForceOAuth: {$ForceOAuth} ClientId: {$OAuthClientId} RedirectUri: {$OAuthRedirectUri}"
+			#use the clientid if provided, else use a provided clientid 
+			if($OAuthClientId){
+				Write-Verbose "Using provide "
+				$cs += ";AuthType=OAuth;ClientId=$OAuthClientId"
+				if($OAuthRedirectUri){
+					$cs += ";redirecturi=$OAuthRedirectUri"
+				}
+			}
+			else{
+				$cs+=";AuthType=OAuth;ClientId=2ad88395-b77d-4561-9441-d0e40824f9bc"
+				$cs+=";redirecturi=app://5d3e90d6-aa8e-48a8-8f2c-58b45cc67315"
+			}
 		}
-	}
-	#disable the discovery check by default 
-	if($ForceDiscovery){ 
-		Write-Verbose "ForceDiscovery: SkipDiscovery=False"
-		$cs+=";SkipDiscovery=False" 
-	}
-	else{ 
-		Write-Verbose "Default: SkipDiscovery=True"
-		$cs+=";SkipDiscovery=True" 
-	}
-    try
-    {
-		if(!$cs -or $cs.Length -eq 0){
-			throw "Cannot create the CrmServiceClient, the connection string is null"
+		#disable the discovery check by default 
+		if($ForceDiscovery){ 
+			Write-Verbose "ForceDiscovery: SkipDiscovery=False"
+			$cs+=";SkipDiscovery=False" 
 		}
-		Write-Verbose ($cs.Replace($Credential.GetNetworkCredential().Password, "")) 
+		else{ 
+			Write-Verbose "Default: SkipDiscovery=True"
+			$cs+=";SkipDiscovery=True" 
+		}
+		try
+		{
+			if(!$cs -or $cs.Length -eq 0){
+				throw "Cannot create the CrmServiceClient, the connection string is null"
+			}
+			Write-Verbose ($cs.Replace($Credential.GetNetworkCredential().Password, "")) 
 
-        $global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $cs
-        return $global:conn
-    }
-    catch
-    {
-        throw $_
-    }    
+			$global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $cs
+			return $global:conn
+		}
+		catch
+		{
+			throw $_
+		}  
+	}  
 }
 
 function Connect-CrmOnPremDiscovery{
