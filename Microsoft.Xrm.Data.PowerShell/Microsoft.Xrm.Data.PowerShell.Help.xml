@@ -1990,18 +1990,18 @@ You can use Get-Credential to create Credential information.</maml:para>
 		<command:syntaxItem>
 			<maml:name>Connect-CrmOnline</maml:name>
 			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
-				<maml:name>Credential</maml:name>
-				<maml:description>
-					<maml:para>A PS-Credential. You can invoke Get-Credential.</maml:para>
-				</maml:description>
-				<command:parameterValue required="true" variableLength="false">PSCredential</command:parameterValue>
-			</command:parameter>
-			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="2">
 				<maml:name>ServerUrl</maml:name>
 				<maml:description>
 					<maml:para>A Url of your Dynamics CRM Online organization.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="2">
+				<maml:name>Credential</maml:name>
+				<maml:description>
+					<maml:para>A PS-Credential. You can invoke Get-Credential.</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">PSCredential</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
 				<maml:name>ForceDiscovery</maml:name>
@@ -2027,14 +2027,45 @@ You can use Get-Credential to create Credential information.</maml:para>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="6">
 				<maml:name>OAuthRedirectUri</maml:name>
 				<maml:description>
-					<maml:para />
+					<maml:para>Azure Active Directory Redirect Uri (Must match the Applications redirect uri) </maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+		</command:syntaxItem>
+		<command:syntaxItem>
+			<maml:name>Connect-CrmOnline</maml:name>
+			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
+				<maml:name>ServerUrl</maml:name>
+				<maml:description>
+					<maml:para>A Url of your Dynamics CRM Online organization.</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="5">
+				<maml:name>OAuthClientId</maml:name>
+				<maml:description>
+					<maml:para>Azure Active Directory Native Application Id</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="6">
+				<maml:name>OAuthRedirectUri</maml:name>
+				<maml:description>
+					<maml:para>Azure Active Directory Redirect Uri (Must match the Applications redirect uri) </maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="4">
+				<maml:name>ClientSecret</maml:name>
+				<maml:description>
+					<maml:para>Client Secret value when using AzureAD ClientSecret auth and an application user</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
 		</command:syntaxItem>
 	</command:syntax>
 	<command:parameters>
-		<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
+		<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="2">
 			<maml:name>Credential</maml:name>
 			<maml:description>
 				<maml:para>A PS-Credential. You can invoke Get-Credential.</maml:para>
@@ -2044,9 +2075,9 @@ You can use Get-Credential to create Credential information.</maml:para>
 				<maml:name>PSCredential</maml:name>
 				<maml:uri/>
 			</dev:type>
-			<dev:defaultValue></dev:defaultValue>
+			<dev:defaultValue>Get-Credential</dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="2">
+		<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
 			<maml:name>ServerUrl</maml:name>
 			<maml:description>
 				<maml:para>A Url of your Dynamics CRM Online organization.</maml:para>
@@ -2097,7 +2128,19 @@ You can use Get-Credential to create Credential information.</maml:para>
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="6">
 			<maml:name>OAuthRedirectUri</maml:name>
 			<maml:description>
-				<maml:para />
+				<maml:para>Azure Active Directory Redirect Uri (Must match the Applications redirect uri) </maml:para>
+			</maml:description>
+			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			<dev:type>
+				<maml:name>String</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="4">
+			<maml:name>ClientSecret</maml:name>
+			<maml:description>
+				<maml:para>Client Secret value when using AzureAD ClientSecret auth and an application user</maml:para>
 			</maml:description>
 			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			<dev:type>
@@ -2206,6 +2249,58 @@ ConnectionLockObject           : System.Object
 ConnectedOrgVersion            : 8.2.1.359
 DisableCrossThreadSafeties     : False
 CallerId                       : 00000000-0000-0000-0000-000000000000</maml:para>
+			</dev:remarks>
+			<command:commandLines>
+				<command:commandLine>
+					<command:commandText>
+						<maml:para />
+					</command:commandText>
+				</command:commandLine>
+			</command:commandLines>
+		</command:example>
+		<command:example>
+			<maml:title>--------------------------  Example 3  --------------------------</maml:title>
+			<maml:introduction>
+				<maml:paragraph>PS C:\&gt;</maml:paragraph>
+			</maml:introduction>
+			<dev:code>PS C:\&gt; Connect-CrmOnline -ServerUrl &quot;https://contoso.crm.dynamics.com&quot; -ClientSecret &quot;T_DA0EY+DdfaJFH3/DFLK@QoFbY&quot; -OAuthClientId &quot;812fad6d-4727-44f5-b02e-f35d74efb78e&quot; -OAuthRedirectUri &quot;https://tempuri.org&quot;</dev:code>
+			<dev:remarks>
+				<maml:para>Connect to a CDS instance as an application user, using ClientSecret authentication </maml:para>
+				<maml:para />
+				<maml:para />
+				<maml:para>MaxRetryCount                       : 10
+RetryPauseTime                      : 00:00:05
+IsReady                             : True
+IsBatchOperationsAvailable          : True
+Authority                           : https://login.microsoftonline.com/03cd4258-2030-45a3-aea9-508adbed80b6/oauth2/authorize/
+OAuthUserId                         :
+ActiveAuthenticationType            : ClientSecret
+OrganizationServiceProxy            :
+OrganizationWebProxyClient          : Microsoft.Xrm.Sdk.WebServiceClient.OrganizationWebProxyClient
+CurrentAccessToken                  : eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IkhsQzBSMTJza3hOWjFXUXdtak9GXzZ0X3RER
+                                      pIrvb2bp0TV6PL1SUw79pXYW-Krtg
+LastCrmError                        :
+LastCrmException                    :
+CrmConnectOrgUriActual              : https://contoso.crm.dynamics.com/XRMServices/2011/Organization.svc/web?SDKClientV
+                                      ersion=9.0.44.892
+ConnectedOrgFriendlyName            : [9.1] contoso seanmcn
+ConnectedOrgUniqueName              : contoso
+ConnectedOrgPublishedEndpoints      : {[WebApplication, https://contoso.crm.dynamics.com/], [OrganizationService,
+                                      https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc],
+                                      [OrganizationDataService,
+                                      https://contoso.api.crm.dynamics.com/XRMServices/2011/OrganizationData.svc]}
+ConnectionLockObject                : System.Object
+ConnectedOrgVersion                 : 9.1.0.13535
+ConnectedOrgId                      : b283ca00-d54d-4dd0-ba1a-ee8e51d5256a
+DisableCrossThreadSafeties          : False
+CallerId                            : 00000000-0000-0000-0000-000000000000
+CallerAADObjectId                   :
+SessionTrackingId                   :
+ForceServerMetadataCacheConsistency : False
+SdkVersionProperty                  : 9.0.44.892
+TenantId                            : 03cd4258-2030-45a3-aea9-508adbed80b6
+EnvironmentId                       : 11537934-8ab9-4721-aba1-0feff3133e38
+_sdkVersionProperty                 : 9.0.44.892</maml:para>
 			</dev:remarks>
 			<command:commandLines>
 				<command:commandLine>
@@ -8932,7 +9027,7 @@ To omit conn parameter, you need creating $conn in advance, then cmdlets automat
 		<command:name>Import-CrmSolution</command:name>
 		<maml:description>
 			<maml:para>Imports solution file to CRM Organization.
-</maml:para>
+NOTE: Under most circumstances you should use Import-CrmSolutionAsync instead of this cmdlet</maml:para>
 		</maml:description>
 		<maml:copyright>
 			<maml:para />
@@ -9192,11 +9287,11 @@ To omit conn parameter, you need creating $conn in advance, then cmdlets automat
 			<maml:introduction>
 				<maml:paragraph>PS C:\&gt;</maml:paragraph>
 			</maml:introduction>
-			<dev:code>Import-CrmSolution &quot;C:\SampleSolution_1_0_0_0.zip&quot; $True
-</dev:code>
+			<dev:code>Import-CrmSolution &quot;C:\SampleSolution_1_0_0_0.zip&quot; $True -AsyncOperationImportMethod</dev:code>
 			<dev:remarks>
 				<maml:para>This example imports solution by activating plug-ins and returns JobId by omitting parameter names.
-When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.</maml:para>
+When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
+Also, the Async Operation Import will be used instead of waiting for a response, which is preferred. </maml:para>
 				<maml:para />
 				<maml:para />
 				<maml:para></maml:para>
@@ -14562,6 +14657,13 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="66">
+				<maml:name>isenabledforallroles</maml:name>
+				<maml:description>
+					<maml:para />
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="67">
 				<maml:name>IsFolderBasedTrackingEnabled</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Use folder-level tracking for Exchange folders&quot; setting. Supported at v7.1 or above.
@@ -14569,7 +14671,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="67">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="68">
 				<maml:name>IsFullTextSearchEnabled</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Enable full-text search for Quick Find&quot; setting.
@@ -14577,7 +14679,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="68">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="69">
 				<maml:name>IsHierarchicalSecurityModelEnabled</maml:name>
 				<maml:description>
 					<maml:para>Indicates whether the hierarchical security model is enabled.
@@ -14585,7 +14687,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="69">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="70">
 				<maml:name>IsPresenceEnabled</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Enable presence for the system&quot; setting.
@@ -14593,7 +14695,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="70">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="71">
 				<maml:name>IsUserAccessAuditEnabled</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Audit user access&quot; setting.
@@ -14601,7 +14703,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="71">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="72">
 				<maml:name>KbPrefix</maml:name>
 				<maml:description>
 					<maml:para>Prefix to use for all articles in Microsoft Dynamics CRM.
@@ -14609,7 +14711,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="72">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="73">
 				<maml:name>MaxAppointmentDurationDays</maml:name>
 				<maml:description>
 					<maml:para>Set &quot;Maximum durations of an appointment in days&quot; setting.
@@ -14617,7 +14719,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="73">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="74">
 				<maml:name>MaxDepthForHierarchicalSecurityModel</maml:name>
 				<maml:description>
 					<maml:para>Maximum depth for hierarchy security propagation.
@@ -14625,7 +14727,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="74">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="75">
 				<maml:name>MaximumActiveBusinessProcessFlowsAllowedPerEntity</maml:name>
 				<maml:description>
 					<maml:para>Maximum number of active business process flows allowed per entity.
@@ -14633,14 +14735,14 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="75">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="76">
 				<maml:name>MaximumDynamicPropertiesAllowed</maml:name>
 				<maml:description>
 					<maml:para>Maximum number of product properties for a product family or bundle.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="76">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="77">
 				<maml:name>MaximumTrackingNumber</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Number of digits for incremental message counter&quot; setting. Specify 999 will set 3 as setting, 9999 will set 4 as setting and you can set up to 999999999. You can disable &quot;Use Tracking Token&quot; by setting 0.
@@ -14648,14 +14750,14 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="77">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="78">
 				<maml:name>MaxProductsInBundle</maml:name>
 				<maml:description>
 					<maml:para>Maximum number of items in a bundle.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="78">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="79">
 				<maml:name>MaxRecordsForExportToExcel</maml:name>
 				<maml:description>
 					<maml:para>Maximum number of records that will be exported to a static Microsoft Office Excel worksheet when exporting from the grid.
@@ -14663,7 +14765,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="79">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="80">
 				<maml:name>MaxRecordsForLookupFilters</maml:name>
 				<maml:description>
 					<maml:para>Maximum number of lookup and picklist records that can be selected by user for filtering.
@@ -14671,7 +14773,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="80">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="81">
 				<maml:name>MaxUploadFileSize</maml:name>
 				<maml:description>
 					<maml:para>Maximum allowed size of an attachment.
@@ -14679,7 +14781,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="81">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="82">
 				<maml:name>MinAddressBookSyncInterval</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Minimum time between address book synchronizations&quot; setting.
@@ -14687,7 +14789,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="82">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="83">
 				<maml:name>MinOfflineSyncInterval</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Minimum time between background local data synchronizations&quot; setting.
@@ -14695,7 +14797,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="83">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="84">
 				<maml:name>MinOutlookSyncInterval</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Minimum time between synchronizations&quot; setting.
@@ -14703,7 +14805,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="84">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="85">
 				<maml:name>NotifyMailboxOwnerOfEmailServerLevelAlerts</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Notify mailbox owner&quot; setting.
@@ -14711,7 +14813,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="85">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="86">
 				<maml:name>OrderPrefix</maml:name>
 				<maml:description>
 					<maml:para>Prefix to use for all orders throughout Microsoft Dynamics CRM.
@@ -14719,7 +14821,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="86">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="87">
 				<maml:name>OutgoingEmailDeliveryMethod</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Outgoing Email&quot; setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox outgoingemaildeliverymethod | % Items command and use PickListItemId.
@@ -14727,7 +14829,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="87">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="88">
 				<maml:name>PluginTraceLogSetting</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Enable logging to plug-in trace log&quot; setting. 0:Off 1:Exception 2:All
@@ -14735,7 +14837,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="88">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="89">
 				<maml:name>PricingDecimalPrecision</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Pricing Decimal Precision&quot; setting.
@@ -14743,7 +14845,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="89">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="90">
 				<maml:name>QuickFindRecordLimitEnabled</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Enable Quick Find record limits&quot; setting.
@@ -14751,7 +14853,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="90">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="91">
 				<maml:name>QuotePrefix</maml:name>
 				<maml:description>
 					<maml:para>Prefix to use for all quotes throughout Microsoft Dynamics CRM.
@@ -14759,42 +14861,42 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="91">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="92">
 				<maml:name>RequireApprovalForUserEmail</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Process emails only for approved users&quot; setting.</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="92">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="93">
 				<maml:name>RequireApprovalForQueueEmail</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Process emails only for approved queues&quot; setting.</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="93">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="94">
 				<maml:name>ShareToPreviousOwnerOnAssign</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Share reassigned records with original owner&quot; setting.</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="94">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="95">
 				<maml:name>TrackingPrefix</maml:name>
 				<maml:description>
 					<maml:para>Change Tracking Token &quot;Prefix&quot; setting.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="95">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="96">
 				<maml:name>TrackingTokenIdBase</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Deployment base tracking number&quot; setting.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="96">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="97">
 				<maml:name>TrackingTokenIdDigits</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Number of digits for user numbers&quot; setting
@@ -14802,7 +14904,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="97">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="98">
 				<maml:name>UniqueSpecifierLength</maml:name>
 				<maml:description>
 					<maml:para>Number of characters appended to invoice, quote, and order numbers.
@@ -14810,7 +14912,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="98">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="99">
 				<maml:name>UseLegacyRendering</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Use legacy form rendering&quot; setting.
@@ -14818,7 +14920,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="99">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="100">
 				<maml:name>UsePositionHierarchy</maml:name>
 				<maml:description>
 					<maml:para>Indicates whether to use position hierarchy.
@@ -14826,7 +14928,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="100">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="101">
 				<maml:name>UseSkypeProtocol</maml:name>
 				<maml:description>
 					<maml:para>Change &quot;Select provider for Click to call&quot; setting. $true: Skype $false: Lync
@@ -14834,42 +14936,41 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
 			</command:parameter>
-      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="103">
-        <maml:name>UseAllowUsersSeeAppdownloadMessage</maml:name>
-        <maml:description>
-          <maml:para>
-            Change &quot;Users see app download message&quot; setting.
-          </maml:para>
-        </maml:description>
-        <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="103">
-        <maml:name>DefaultCrmCustomName</maml:name>
-        <maml:description>
-          <maml:para>
-            Change &quot;Default app name&quot; setting.
-          </maml:para>
-        </maml:description>
-        <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="104">
-        <maml:name>SuppressSLA</maml:name>
-        <maml:description>
-          <maml:para>
-            Change &quot;Disable service level agreements(SLAs) on SLA-enabled entity records&quot; setting. $true: Yes $false: False
-          </maml:para>
-        </maml:description>
-        <command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="106">
-        <maml:name>IsAuditEnabled</maml:name>
-        <maml:description>
-          <maml:para>
-            Change &quot; Start Auditing&quot; setting. $true: Yes $false: No
-          </maml:para>
-        </maml:description>
-        <command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
-      </command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="102">
+				<maml:name>UseAllowUsersSeeAppdownloadMessage</maml:name>
+				<maml:description>
+					<maml:para />
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="103">
+				<maml:name>DefaultCrmCustomName</maml:name>
+				<maml:description>
+					<maml:para />
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="104">
+				<maml:name>SuppressSLA</maml:name>
+				<maml:description>
+					<maml:para />
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="105">
+				<maml:name>IsAuditEnabled</maml:name>
+				<maml:description>
+					<maml:para />
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="106">
+				<maml:name>AllowLegacyClientExperience</maml:name>
+				<maml:description>
+					<maml:para />
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
+			</command:parameter>
 		</command:syntaxItem>
 	</command:syntax>
 	<command:parameters>
@@ -15574,7 +15675,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="66">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="67">
 			<maml:name>IsFolderBasedTrackingEnabled</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Use folder-level tracking for Exchange folders&quot; setting. Supported at v7.1 or above.
@@ -15587,7 +15688,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="67">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="68">
 			<maml:name>IsFullTextSearchEnabled</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Enable full-text search for Quick Find&quot; setting.
@@ -15600,7 +15701,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="68">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="69">
 			<maml:name>IsHierarchicalSecurityModelEnabled</maml:name>
 			<maml:description>
 				<maml:para>Indicates whether the hierarchical security model is enabled.
@@ -15613,7 +15714,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="69">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="70">
 			<maml:name>IsPresenceEnabled</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Enable presence for the system&quot; setting.
@@ -15626,7 +15727,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="70">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="71">
 			<maml:name>IsUserAccessAuditEnabled</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Audit user access&quot; setting.
@@ -15639,7 +15740,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="71">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="72">
 			<maml:name>KbPrefix</maml:name>
 			<maml:description>
 				<maml:para>Prefix to use for all articles in Microsoft Dynamics CRM.
@@ -15652,7 +15753,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="72">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="73">
 			<maml:name>MaxAppointmentDurationDays</maml:name>
 			<maml:description>
 				<maml:para>Set &quot;Maximum durations of an appointment in days&quot; setting.
@@ -15665,7 +15766,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="73">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="74">
 			<maml:name>MaxDepthForHierarchicalSecurityModel</maml:name>
 			<maml:description>
 				<maml:para>Maximum depth for hierarchy security propagation.
@@ -15678,7 +15779,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="74">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="75">
 			<maml:name>MaximumActiveBusinessProcessFlowsAllowedPerEntity</maml:name>
 			<maml:description>
 				<maml:para>Maximum number of active business process flows allowed per entity.
@@ -15691,7 +15792,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="75">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="76">
 			<maml:name>MaximumDynamicPropertiesAllowed</maml:name>
 			<maml:description>
 				<maml:para>Maximum number of product properties for a product family or bundle.</maml:para>
@@ -15703,7 +15804,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="76">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="77">
 			<maml:name>MaximumTrackingNumber</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Number of digits for incremental message counter&quot; setting. Specify 999 will set 3 as setting, 9999 will set 4 as setting and you can set up to 999999999. You can disable &quot;Use Tracking Token&quot; by setting 0.
@@ -15716,7 +15817,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="77">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="78">
 			<maml:name>MaxProductsInBundle</maml:name>
 			<maml:description>
 				<maml:para>Maximum number of items in a bundle.</maml:para>
@@ -15728,7 +15829,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="78">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="79">
 			<maml:name>MaxRecordsForExportToExcel</maml:name>
 			<maml:description>
 				<maml:para>Maximum number of records that will be exported to a static Microsoft Office Excel worksheet when exporting from the grid.
@@ -15741,7 +15842,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="79">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="80">
 			<maml:name>MaxRecordsForLookupFilters</maml:name>
 			<maml:description>
 				<maml:para>Maximum number of lookup and picklist records that can be selected by user for filtering.
@@ -15754,7 +15855,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="80">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="81">
 			<maml:name>MaxUploadFileSize</maml:name>
 			<maml:description>
 				<maml:para>Maximum allowed size of an attachment.
@@ -15767,7 +15868,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="81">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="82">
 			<maml:name>MinAddressBookSyncInterval</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Minimum time between address book synchronizations&quot; setting.
@@ -15780,7 +15881,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="82">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="83">
 			<maml:name>MinOfflineSyncInterval</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Minimum time between background local data synchronizations&quot; setting.
@@ -15793,7 +15894,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="83">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="84">
 			<maml:name>MinOutlookSyncInterval</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Minimum time between synchronizations&quot; setting.
@@ -15806,7 +15907,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="84">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="85">
 			<maml:name>NotifyMailboxOwnerOfEmailServerLevelAlerts</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Notify mailbox owner&quot; setting.
@@ -15819,7 +15920,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="85">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="86">
 			<maml:name>OrderPrefix</maml:name>
 			<maml:description>
 				<maml:para>Prefix to use for all orders throughout Microsoft Dynamics CRM.
@@ -15832,7 +15933,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="86">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="87">
 			<maml:name>OutgoingEmailDeliveryMethod</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Outgoing Email&quot; setting for Configure default synchronization method. This parameter accepts int. To get all options, use Get-CrmEntityOptionSet mailbox outgoingemaildeliverymethod | % Items command and use PickListItemId.
@@ -15845,7 +15946,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="87">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="88">
 			<maml:name>PluginTraceLogSetting</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Enable logging to plug-in trace log&quot; setting. 0:Off 1:Exception 2:All
@@ -15858,7 +15959,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="88">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="89">
 			<maml:name>PricingDecimalPrecision</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Pricing Decimal Precision&quot; setting.
@@ -15871,7 +15972,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="89">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="90">
 			<maml:name>QuickFindRecordLimitEnabled</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Enable Quick Find record limits&quot; setting.
@@ -15884,7 +15985,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="90">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="91">
 			<maml:name>QuotePrefix</maml:name>
 			<maml:description>
 				<maml:para>Prefix to use for all quotes throughout Microsoft Dynamics CRM.
@@ -15897,7 +15998,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="91">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="92">
 			<maml:name>RequireApprovalForUserEmail</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Process emails only for approved users&quot; setting.</maml:para>
@@ -15909,7 +16010,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="92">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="93">
 			<maml:name>RequireApprovalForQueueEmail</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Process emails only for approved queues&quot; setting.</maml:para>
@@ -15921,7 +16022,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="93">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="94">
 			<maml:name>ShareToPreviousOwnerOnAssign</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Share reassigned records with original owner&quot; setting.</maml:para>
@@ -15933,7 +16034,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="94">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="95">
 			<maml:name>TrackingPrefix</maml:name>
 			<maml:description>
 				<maml:para>Change Tracking Token &quot;Prefix&quot; setting.</maml:para>
@@ -15945,7 +16046,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="95">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="96">
 			<maml:name>TrackingTokenIdBase</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Deployment base tracking number&quot; setting.</maml:para>
@@ -15957,7 +16058,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="96">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="97">
 			<maml:name>TrackingTokenIdDigits</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Number of digits for user numbers&quot; setting
@@ -15970,7 +16071,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="97">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="98">
 			<maml:name>UniqueSpecifierLength</maml:name>
 			<maml:description>
 				<maml:para>Number of characters appended to invoice, quote, and order numbers.
@@ -15983,7 +16084,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="98">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="99">
 			<maml:name>UseLegacyRendering</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Use legacy form rendering&quot; setting.
@@ -15996,7 +16097,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="99">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="100">
 			<maml:name>UsePositionHierarchy</maml:name>
 			<maml:description>
 				<maml:para>Indicates whether to use position hierarchy.
@@ -16009,7 +16110,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="100">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="101">
 			<maml:name>UseSkypeProtocol</maml:name>
 			<maml:description>
 				<maml:para>Change &quot;Select provider for Click to call&quot; setting. $true: Skype $false: Lync
@@ -16162,6 +16263,78 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</dev:code>
 			<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			<dev:type>
 				<maml:name>Int32</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="66">
+			<maml:name>isenabledforallroles</maml:name>
+			<maml:description>
+				<maml:para />
+			</maml:description>
+			<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
+			<dev:type>
+				<maml:name>Boolean</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="102">
+			<maml:name>UseAllowUsersSeeAppdownloadMessage</maml:name>
+			<maml:description>
+				<maml:para />
+			</maml:description>
+			<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
+			<dev:type>
+				<maml:name>Boolean</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="103">
+			<maml:name>DefaultCrmCustomName</maml:name>
+			<maml:description>
+				<maml:para />
+			</maml:description>
+			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			<dev:type>
+				<maml:name>String</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="104">
+			<maml:name>SuppressSLA</maml:name>
+			<maml:description>
+				<maml:para />
+			</maml:description>
+			<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
+			<dev:type>
+				<maml:name>Boolean</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="105">
+			<maml:name>IsAuditEnabled</maml:name>
+			<maml:description>
+				<maml:para />
+			</maml:description>
+			<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
+			<dev:type>
+				<maml:name>Boolean</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="106">
+			<maml:name>AllowLegacyClientExperience</maml:name>
+			<maml:description>
+				<maml:para />
+			</maml:description>
+			<command:parameterValue required="false" variableLength="false">Boolean</command:parameterValue>
+			<dev:type>
+				<maml:name>Boolean</maml:name>
 				<maml:uri/>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
@@ -17529,6 +17702,13 @@ Performance  : The operation took 00:00:00.3948901</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="true (ByValue, ByPropertyName)" position="0">
+				<maml:name>ProfileName</maml:name>
+				<maml:description>
+					<maml:para />
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="true (ByValue, ByPropertyName)" position="20">
 				<maml:name>MaxCrmConnectionTimeOutMinutes</maml:name>
 				<maml:description>
@@ -17553,7 +17733,7 @@ Performance  : The operation took 00:00:00.3948901</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="true (ByValue, ByPropertyName)" position="5">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="true (ByValue, ByPropertyName)" position="0">
 				<maml:name>ProfileName</maml:name>
 				<maml:description>
 					<maml:para />
@@ -17605,7 +17785,7 @@ Performance  : The operation took 00:00:00.3948901</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="true (ByValue, ByPropertyName)" position="5">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="true (ByValue, ByPropertyName)" position="0">
 				<maml:name>ProfileName</maml:name>
 				<maml:description>
 					<maml:para />
@@ -17698,7 +17878,7 @@ Performance  : The operation took 00:00:00.3948901</maml:para>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="true (ByValue, ByPropertyName)" position="5">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="true (ByValue, ByPropertyName)" position="0">
 			<maml:name>ProfileName</maml:name>
 			<maml:description>
 				<maml:para />
@@ -20085,7 +20265,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 	<command:details>
 		<command:name>Import-CrmSolutionAsync</command:name>
 		<maml:description>
-			<maml:para />
+			<maml:para>Import a solution using an import job.</maml:para>
 		</maml:description>
 		<maml:copyright>
 			<maml:para />
@@ -20095,7 +20275,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 		<dev:version />
 	</command:details>
 	<maml:description>
-		<maml:para />
+		<maml:para>Import a solution using an import job and poll for the result (success or failure).  This is the preferred method of importing. </maml:para>
 	</maml:description>
 	<command:syntax>
 		<command:syntaxItem>
@@ -20316,6 +20496,26 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 		</maml:alert>
 	</maml:alertSet>
 	<command:examples>
+		<command:example>
+			<maml:title>--------------------------  Example 1  --------------------------</maml:title>
+			<maml:introduction>
+				<maml:paragraph>PS C:\&gt;</maml:paragraph>
+			</maml:introduction>
+			<dev:code>Import-CrmSolutionAsync -SolutionFilePath c:\temp\mysolution.zip -ActivateWorkflows -OverwriteUnManagedCustomizations -MaxWaitTimeInSeconds 600</dev:code>
+			<dev:remarks>
+				<maml:para>Import a solution using an import job, poll for the result for up to 600 seconds</maml:para>
+				<maml:para />
+				<maml:para />
+				<maml:para></maml:para>
+			</dev:remarks>
+			<command:commandLines>
+				<command:commandLine>
+					<command:commandText>
+						<maml:para />
+					</command:commandText>
+				</command:commandLine>
+			</command:commandLines>
+		</command:example>
 	</command:examples>
 	<maml:relatedLinks>
 	</maml:relatedLinks>
@@ -21272,7 +21472,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 	<command:details>
 		<command:name>Invoke-CrmAction</command:name>
 		<maml:description>
-			<maml:para />
+			<maml:para>Invoke a CDS or CRM Action</maml:para>
 		</maml:description>
 		<maml:copyright>
 			<maml:para />
@@ -21282,7 +21482,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
 		<dev:version />
 	</command:details>
 	<maml:description>
-		<maml:para />
+		<maml:para>Invoke a CDS or CRM Action</maml:para>
 	</maml:description>
 	<command:syntax>
 		<command:syntaxItem>

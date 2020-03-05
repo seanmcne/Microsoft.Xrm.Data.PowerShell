@@ -893,7 +893,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
     <CmdletObject verb="Connect" noun="CrmOnline">
       <Name>Connect-CrmOnline</Name>
       <Syntax>
-        <string>Connect-CrmOnline [-Credential] &lt;PSCredential&gt; [-ServerUrl] &lt;String&gt; [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;String&gt;]</string>
+        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [-Credential] &lt;PSCredential&gt; [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;String&gt;]</string>
         <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [-OAuthClientId] &lt;String&gt; [-OAuthRedirectUri] &lt;String&gt; [-ClientSecret] &lt;String&gt;</string>
       </Syntax>
       <GeneralHelp>
@@ -909,11 +909,11 @@ You can use Get-Credential to create Credential information.</Description>
         <ReturnTypeDescription />
       </GeneralHelp>
       <ParamSets>
-        <CommandParameterSetInfo2 Name="Creds" Params="Credential ServerUrl ForceDiscovery ForceOAuth OAuthClientId OAuthRedirectUri Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="Creds" Params="ServerUrl Credential ForceDiscovery ForceOAuth OAuthClientId OAuthRedirectUri Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
         <CommandParameterSetInfo2 Name="Secret" Params="ServerUrl OAuthClientId OAuthRedirectUri ClientSecret Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
       </ParamSets>
       <Parameters>
-        <ParameterDescription type="PSCredential" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
+        <ParameterDescription type="PSCredential" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
           <Name>Credential</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -924,7 +924,7 @@ You can use Get-Credential to create Credential information.</Description>
           <Description>A PS-Credential. You can invoke Get-Credential.</Description>
           <DefaultValue>Get-Credential</DefaultValue>
         </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
           <Name>ServerUrl</Name>
           <Attributes>
             <string>System.Management.Automation.ValidatePatternAttribute</string>
@@ -936,7 +936,7 @@ You can use Get-Credential to create Credential information.</Description>
           <Description>A Url of your Dynamics CRM Online organization.</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="3" globbing="false">
           <Name>ForceDiscovery</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>

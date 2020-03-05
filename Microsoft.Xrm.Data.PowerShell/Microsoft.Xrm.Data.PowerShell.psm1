@@ -73,13 +73,13 @@ function Connect-CrmOnline{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM( 
-        [parameter(Position=1, Mandatory=$true, ParameterSetName="Creds")]
-        [PSCredential]$Credential, 
-        [parameter(Position=2, Mandatory=$true, ParameterSetName="Secret")]
-        [Parameter(Position=2,Mandatory=$true, ParameterSetName="Creds")]
+        [parameter(Position=1, Mandatory=$true, ParameterSetName="Secret")]
+        [Parameter(Position=1,Mandatory=$true, ParameterSetName="Creds")]
         [ValidatePattern('([\w-]+).crm([0-9]*).(microsoftdynamics|dynamics|crm[\w-]*).(com|de|us)')]
         [string]$ServerUrl, 
-		[Parameter(Position=1,Mandatory=$false, ParameterSetName="Creds")]
+		[parameter(Position=2, Mandatory=$true, ParameterSetName="Creds")]
+        [PSCredential]$Credential, 
+		[Parameter(Position=3,Mandatory=$false, ParameterSetName="Creds")]
         [switch]$ForceDiscovery,
 		[Parameter(Position=4,Mandatory=$false, ParameterSetName="Creds")]
         [switch]$ForceOAuth, 
