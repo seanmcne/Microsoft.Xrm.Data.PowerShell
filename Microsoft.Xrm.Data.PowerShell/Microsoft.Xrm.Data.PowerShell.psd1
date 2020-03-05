@@ -102,7 +102,7 @@ FileList = @("Microsoft.Xrm.Data.Powershell.psm1","Microsoft.Xrm.Data.Powershell
 PrivateData = @{
     PSData = @{
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('Dynamics', 'Xrm', 'CRM', 'Dynamics365','PowerApps','CDS', 'CommonDataService')
+        Tags = @('Dynamics', 'Xrm', 'CRM', 'Dynamics365','PowerApps','CDS', 'CommonDataService', 'PowerPlatform')
 
         # A URL to the license for this module.
         # LicenseUri = ''
@@ -117,7 +117,10 @@ PrivateData = @{
         ReleaseNotes = 'Including newer xrm tooling which has the following improvements:
 - Fixed a bug with how errors are handled when they are raised from ADAL 3.19+. MFA Force Login will now work properly again.
 - Updated default response sizes to support more verbose error messages from CDS
-- source for connector: https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/3.3.0.869'
+- Added Support for ClientID Secret Auth when using oAuth flows. (connection string support)
+- Added Support for Current User ID login when using Online flows with oAuth
+- Updated default response sizes to support more verbose error messages from CDS
+- source for connector: https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/'
         # Prerelease = '-alpha'
 
     } # End of PSData hashtable
