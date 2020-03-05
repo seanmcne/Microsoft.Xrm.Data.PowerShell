@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <ModuleObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" fVersion="1.1" type="Script" mclass="Module" useSupports="false">
   <Name>Microsoft.Xrm.Data.PowerShell</Name>
-  <Version>2.8.2</Version>
+  <Version>2.8.8</Version>
   <Description />
   <HasManifest>true</HasManifest>
   <OverridePostCount>false</OverridePostCount>
@@ -894,6 +894,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
       <Name>Connect-CrmOnline</Name>
       <Syntax>
         <string>Connect-CrmOnline [-Credential] &lt;PSCredential&gt; [-ServerUrl] &lt;String&gt; [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;String&gt;]</string>
+        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [-OAuthClientId] &lt;String&gt; [-OAuthRedirectUri] &lt;String&gt; [-ClientSecret] &lt;String&gt;</string>
       </Syntax>
       <GeneralHelp>
         <Synopsis>Connects to CRM Online organization without using Discovery Service.</Synopsis>
@@ -908,7 +909,8 @@ You can use Get-Credential to create Credential information.</Description>
         <ReturnTypeDescription />
       </GeneralHelp>
       <ParamSets>
-        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Credential ServerUrl ForceDiscovery ForceOAuth OAuthClientId OAuthRedirectUri Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="Creds" Params="Credential ServerUrl ForceDiscovery ForceOAuth OAuthClientId OAuthRedirectUri Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="Secret" Params="ServerUrl OAuthClientId OAuthRedirectUri ClientSecret Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
       </ParamSets>
       <Parameters>
         <ParameterDescription type="PSCredential" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
@@ -920,12 +922,13 @@ You can use Get-Credential to create Credential information.</Description>
           </Attributes>
           <Aliases />
           <Description>A PS-Credential. You can invoke Get-Credential.</Description>
-          <DefaultValue />
+          <DefaultValue>Get-Credential</DefaultValue>
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
           <Name>ServerUrl</Name>
           <Attributes>
             <string>System.Management.Automation.ValidatePatternAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
@@ -933,7 +936,7 @@ You can use Get-Credential to create Credential information.</Description>
           <Description>A Url of your Dynamics CRM Online organization.</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="3" globbing="false">
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
           <Name>ForceDiscovery</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -958,6 +961,7 @@ You can use Get-Credential to create Credential information.</Description>
           <Attributes>
             <string>System.Management.Automation.ValidateScriptAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
@@ -968,10 +972,21 @@ You can use Get-Credential to create Credential information.</Description>
           <Name>OAuthRedirectUri</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Azure Active Directory Redirect Uri (Must match the Applications redirect uri) </Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="4" globbing="false">
+          <Name>ClientSecret</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Client Secret value when using AzureAD ClientSecret auth and an application user</Description>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
@@ -1022,6 +1037,44 @@ ConnectionLockObject           : System.Object
 ConnectedOrgVersion            : 8.2.1.359
 DisableCrossThreadSafeties     : False
 CallerId                       : 00000000-0000-0000-0000-000000000000</Output>
+        </Example>
+        <Example>
+          <Name>Example 3</Name>
+          <Cmd>PS C:\&gt; Connect-CrmOnline -ServerUrl "https://contoso.crm.dynamics.com" -ClientSecret "T_DA0EY+DdfaJFH3/DFLK@QoFbY" -OAuthClientId "812fad6d-4727-44f5-b02e-f35d74efb78e" -OAuthRedirectUri "https://tempuri.org"</Cmd>
+          <Description>Connect to a CDS instance as an application user, using ClientSecret authentication </Description>
+          <Output>MaxRetryCount                       : 10
+RetryPauseTime                      : 00:00:05
+IsReady                             : True
+IsBatchOperationsAvailable          : True
+Authority                           : https://login.microsoftonline.com/03cd4258-2030-45a3-aea9-508adbed80b6/oauth2/authorize/
+OAuthUserId                         :
+ActiveAuthenticationType            : ClientSecret
+OrganizationServiceProxy            :
+OrganizationWebProxyClient          : Microsoft.Xrm.Sdk.WebServiceClient.OrganizationWebProxyClient
+CurrentAccessToken                  : eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IkhsQzBSMTJza3hOWjFXUXdtak9GXzZ0X3RER
+                                      pIrvb2bp0TV6PL1SUw79pXYW-Krtg
+LastCrmError                        :
+LastCrmException                    :
+CrmConnectOrgUriActual              : https://contoso.crm.dynamics.com/XRMServices/2011/Organization.svc/web?SDKClientV
+                                      ersion=9.0.44.892
+ConnectedOrgFriendlyName            : [9.1] contoso seanmcn
+ConnectedOrgUniqueName              : contoso
+ConnectedOrgPublishedEndpoints      : {[WebApplication, https://contoso.crm.dynamics.com/], [OrganizationService,
+                                      https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc],
+                                      [OrganizationDataService,
+                                      https://contoso.api.crm.dynamics.com/XRMServices/2011/OrganizationData.svc]}
+ConnectionLockObject                : System.Object
+ConnectedOrgVersion                 : 9.1.0.13535
+ConnectedOrgId                      : b283ca00-d54d-4dd0-ba1a-ee8e51d5256a
+DisableCrossThreadSafeties          : False
+CallerId                            : 00000000-0000-0000-0000-000000000000
+CallerAADObjectId                   :
+SessionTrackingId                   :
+ForceServerMetadataCacheConsistency : False
+SdkVersionProperty                  : 9.0.44.892
+TenantId                            : 03cd4258-2030-45a3-aea9-508adbed80b6
+EnvironmentId                       : 11537934-8ab9-4721-aba1-0feff3133e38
+_sdkVersionProperty                 : 9.0.44.892</Output>
         </Example>
       </Examples>
       <RelatedLinks />
@@ -4388,7 +4441,7 @@ To omit conn parameter, you need creating $conn in advance, then cmdlets automat
       </Syntax>
       <GeneralHelp>
         <Synopsis>Imports solution file to CRM Organization.
-</Synopsis>
+NOTE: Under most circumstances you should use Import-CrmSolutionAsync instead of this cmdlet</Synopsis>
         <Description>The Import-CrmSolution cmdlet lets you import solution file to CRM Organization and returns Job Id. You can use the Job Id to check import progress.
 </Description>
         <Notes />
@@ -4509,10 +4562,10 @@ To omit conn parameter, you need creating $conn in advance, then cmdlets automat
         </Example>
         <Example>
           <Name>Example 2</Name>
-          <Cmd>Import-CrmSolution "C:\SampleSolution_1_0_0_0.zip" $True
-</Cmd>
+          <Cmd>Import-CrmSolution "C:\SampleSolution_1_0_0_0.zip" $True -AsyncOperationImportMethod</Cmd>
           <Description>This example imports solution by activating plug-ins and returns JobId by omitting parameter names.
-When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.</Description>
+When omitting parameter names, you do not provide $conn, cmdlets automatically finds it.
+Also, the Async Operation Import will be used instead of waiting for a response, which is preferred. </Description>
           <Output />
         </Example>
       </Examples>
@@ -6718,7 +6771,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
     <CmdletObject verb="Set" noun="CrmSystemSettings">
       <Name>Set-CrmSystemSettings</Name>
       <Syntax>
-        <string>Set-CrmSystemSettings [[-conn] &lt;CrmServiceClient&gt;] [[-AcknowledgementTemplateId] &lt;Guid&gt;] [[-ACTDeliveryMethod] &lt;Int32&gt;] [[-AllowAddressBookSyncs] &lt;Boolean&gt;] [[-AllowAutoResponseCreation] &lt;Boolean&gt;] [[-AllowAutoUnsubscribe] &lt;Boolean&gt;] [[-AllowAutoUnsubscribeAcknowledgement] &lt;Boolean&gt;] [[-AllowClientMessageBarAd] &lt;Boolean&gt;] [[-AllowEntityOnlyAudit] &lt;Boolean&gt;] [[-AllowMarketingEmailExecution] &lt;Boolean&gt;] [[-AllowOfflineScheduledSyncs] &lt;Boolean&gt;] [[-AllowOutlookScheduledSyncs] &lt;Boolean&gt;] [[-AllowUnresolvedPartiesOnEmailSend] &lt;Boolean&gt;] [[-AllowUserFormModePreference] &lt;Boolean&gt;] [[-AllowUsersSeeAppdownloadMessage] &lt;Boolean&gt;] [[-AllowWebExcelExport] &lt;Boolean&gt;] [[-AMDesignator] &lt;String&gt;] [[-AutoApplyDefaultonCaseCreate] &lt;Boolean&gt;] [[-AutoApplyDefaultonCaseUpdate] &lt;Boolean&gt;] [[-AutoApplySLA] &lt;Boolean&gt;] [[-BingMapsApiKey] &lt;String&gt;] [[-BlockedAttachments] &lt;String&gt;] [[-BusinessClosureCalendarId] &lt;Guid&gt;] [[-CampaignPrefix] &lt;String&gt;] [[-CascadeStatusUpdate] &lt;Boolean&gt;] [[-CasePrefix] &lt;String&gt;] [[-ContractPrefix] &lt;String&gt;] [[-CortanaProactiveExperienceEnabled] &lt;Boolean&gt;] [[-CreateProductsWithoutParentInActiveState] &lt;Boolean&gt;] [[-CurrencyDecimalPrecision] &lt;Int32&gt;] [[-CurrencyDisplayOption] &lt;Int32&gt;] [[-CurrentCampaignNumber] &lt;Int32&gt;] [[-CurrentCaseNumber] &lt;Int32&gt;] [[-CurrentContractNumber] &lt;Int32&gt;] [[-CurrentInvoiceNumber] &lt;Int32&gt;] [[-CurrentKbNumber] &lt;Int32&gt;] [[-CurrentOrderNumber] &lt;Int32&gt;] [[-CurrentQuoteNumber] &lt;Int32&gt;] [[-DefaultCountryCode] &lt;String&gt;] [[-DefaultEmailServerProfileId] &lt;Guid&gt;] [[-DisableSocialCare] &lt;Boolean&gt;] [[-DisplayNavigationTour] &lt;Boolean&gt;] [[-EmailConnectionChannel] &lt;Int32&gt;] [[-EmailCorrelationEnabled] &lt;Int32&gt;] [[-EnableBingMapsIntegration] &lt;Boolean&gt;] [[-EnableSmartMatching] &lt;Boolean&gt;] [[-FullNameConventionCode] &lt;Int32&gt;] [[-GenerateAlertsForErrors] &lt;Boolean&gt;] [[-GenerateAlertsForWarnings] &lt;Boolean&gt;] [[-GenerateAlertsForInformation] &lt;Boolean&gt;] [[-GlobalAppendUrlParametersEnabled] &lt;Boolean&gt;] [[-GlobalHelpUrl] &lt;String&gt;] [[-GlobalHelpUrlEnabled] &lt;Boolean&gt;] [[-HashDeltaSubjectCount] &lt;Int32&gt;] [[-HashFilterKeywords] &lt;String&gt;] [[-HashMaxCount] &lt;Int32&gt;] [[-HashMinAddressCount] &lt;Int32&gt;] [[-IgnoreInternalEmail] &lt;Boolean&gt;] [[-IncomingEmailDeliveryMethod] &lt;Int32&gt;] [[-InvoicePrefix] &lt;String&gt;] [[-IsAutoSaveEnabled] &lt;Boolean&gt;] [[-IsDefaultCountryCodeCheckEnabled] &lt;Boolean&gt;] [[-IsDuplicateDetectionEnabled] &lt;Boolean&gt;] [[-IsDuplicateDetectionEnabledForImport] &lt;Boolean&gt;] [[-IsDuplicateDetectionEnabledForOfflineSync] &lt;Boolean&gt;] [[-IsDuplicateDetectionEnabledForOnlineCreateUpdate] &lt;Boolean&gt;] [[-IsFolderBasedTrackingEnabled] &lt;Boolean&gt;] [[-IsFullTextSearchEnabled] &lt;Boolean&gt;] [[-IsHierarchicalSecurityModelEnabled] &lt;Boolean&gt;] [[-IsPresenceEnabled] &lt;Boolean&gt;] [[-IsUserAccessAuditEnabled] &lt;Boolean&gt;] [[-KbPrefix] &lt;String&gt;] [[-MaxAppointmentDurationDays] &lt;Int32&gt;] [[-MaxDepthForHierarchicalSecurityModel] &lt;Int32&gt;] [[-MaximumActiveBusinessProcessFlowsAllowedPerEntity] &lt;Int32&gt;] [[-MaximumDynamicPropertiesAllowed] &lt;Int32&gt;] [[-MaximumTrackingNumber] &lt;Int32&gt;] [[-MaxProductsInBundle] &lt;Int32&gt;] [[-MaxRecordsForExportToExcel] &lt;Int32&gt;] [[-MaxRecordsForLookupFilters] &lt;Int32&gt;] [[-MaxUploadFileSize] &lt;Int32&gt;] [[-MinAddressBookSyncInterval] &lt;Int32&gt;] [[-MinOfflineSyncInterval] &lt;Int32&gt;] [[-MinOutlookSyncInterval] &lt;Int32&gt;] [[-NotifyMailboxOwnerOfEmailServerLevelAlerts] &lt;Boolean&gt;] [[-OrderPrefix] &lt;String&gt;] [[-OutgoingEmailDeliveryMethod] &lt;Int32&gt;] [[-PluginTraceLogSetting] &lt;Int32&gt; {0 | 1 | 2} ] [[-PricingDecimalPrecision] &lt;Int32&gt; {0 | 1 | 2 | 3 | 4} ] [[-QuickFindRecordLimitEnabled] &lt;Boolean&gt;] [[-QuotePrefix] &lt;String&gt;] [[-RequireApprovalForUserEmail] &lt;Boolean&gt;] [[-RequireApprovalForQueueEmail] &lt;Boolean&gt;] [[-ShareToPreviousOwnerOnAssign] &lt;Boolean&gt;] [[-TrackingPrefix] &lt;String&gt;] [[-TrackingTokenIdBase] &lt;Int32&gt;] [[-TrackingTokenIdDigits] &lt;Int32&gt;] [[-UniqueSpecifierLength] &lt;Int32&gt;] [[-UseLegacyRendering] &lt;Boolean&gt;] [[-UsePositionHierarchy] &lt;Boolean&gt;] [[-UseSkypeProtocol] &lt;Boolean&gt;]</string>
+        <string>Set-CrmSystemSettings [[-conn] &lt;CrmServiceClient&gt;] [[-AcknowledgementTemplateId] &lt;Guid&gt;] [[-ACTDeliveryMethod] &lt;Int32&gt;] [[-AllowAddressBookSyncs] &lt;Boolean&gt;] [[-AllowAutoResponseCreation] &lt;Boolean&gt;] [[-AllowAutoUnsubscribe] &lt;Boolean&gt;] [[-AllowAutoUnsubscribeAcknowledgement] &lt;Boolean&gt;] [[-AllowClientMessageBarAd] &lt;Boolean&gt;] [[-AllowEntityOnlyAudit] &lt;Boolean&gt;] [[-AllowMarketingEmailExecution] &lt;Boolean&gt;] [[-AllowOfflineScheduledSyncs] &lt;Boolean&gt;] [[-AllowOutlookScheduledSyncs] &lt;Boolean&gt;] [[-AllowUnresolvedPartiesOnEmailSend] &lt;Boolean&gt;] [[-AllowUserFormModePreference] &lt;Boolean&gt;] [[-AllowUsersSeeAppdownloadMessage] &lt;Boolean&gt;] [[-AllowWebExcelExport] &lt;Boolean&gt;] [[-AMDesignator] &lt;String&gt;] [[-AutoApplyDefaultonCaseCreate] &lt;Boolean&gt;] [[-AutoApplyDefaultonCaseUpdate] &lt;Boolean&gt;] [[-AutoApplySLA] &lt;Boolean&gt;] [[-BingMapsApiKey] &lt;String&gt;] [[-BlockedAttachments] &lt;String&gt;] [[-BusinessClosureCalendarId] &lt;Guid&gt;] [[-CampaignPrefix] &lt;String&gt;] [[-CascadeStatusUpdate] &lt;Boolean&gt;] [[-CasePrefix] &lt;String&gt;] [[-ContractPrefix] &lt;String&gt;] [[-CortanaProactiveExperienceEnabled] &lt;Boolean&gt;] [[-CreateProductsWithoutParentInActiveState] &lt;Boolean&gt;] [[-CurrencyDecimalPrecision] &lt;Int32&gt;] [[-CurrencyDisplayOption] &lt;Int32&gt;] [[-CurrentCampaignNumber] &lt;Int32&gt;] [[-CurrentCaseNumber] &lt;Int32&gt;] [[-CurrentContractNumber] &lt;Int32&gt;] [[-CurrentInvoiceNumber] &lt;Int32&gt;] [[-CurrentKbNumber] &lt;Int32&gt;] [[-CurrentOrderNumber] &lt;Int32&gt;] [[-CurrentQuoteNumber] &lt;Int32&gt;] [[-DefaultCountryCode] &lt;String&gt;] [[-DefaultEmailServerProfileId] &lt;Guid&gt;] [[-DisableSocialCare] &lt;Boolean&gt;] [[-DisplayNavigationTour] &lt;Boolean&gt;] [[-EmailConnectionChannel] &lt;Int32&gt;] [[-EmailCorrelationEnabled] &lt;Int32&gt;] [[-EnableBingMapsIntegration] &lt;Boolean&gt;] [[-EnableSmartMatching] &lt;Boolean&gt;] [[-FullNameConventionCode] &lt;Int32&gt;] [[-GenerateAlertsForErrors] &lt;Boolean&gt;] [[-GenerateAlertsForWarnings] &lt;Boolean&gt;] [[-GenerateAlertsForInformation] &lt;Boolean&gt;] [[-GlobalAppendUrlParametersEnabled] &lt;Boolean&gt;] [[-GlobalHelpUrl] &lt;String&gt;] [[-GlobalHelpUrlEnabled] &lt;Boolean&gt;] [[-HashDeltaSubjectCount] &lt;Int32&gt;] [[-HashFilterKeywords] &lt;String&gt;] [[-HashMaxCount] &lt;Int32&gt;] [[-HashMinAddressCount] &lt;Int32&gt;] [[-IgnoreInternalEmail] &lt;Boolean&gt;] [[-IncomingEmailDeliveryMethod] &lt;Int32&gt;] [[-InvoicePrefix] &lt;String&gt;] [[-IsAutoSaveEnabled] &lt;Boolean&gt;] [[-IsDefaultCountryCodeCheckEnabled] &lt;Boolean&gt;] [[-IsDuplicateDetectionEnabled] &lt;Boolean&gt;] [[-IsDuplicateDetectionEnabledForImport] &lt;Boolean&gt;] [[-IsDuplicateDetectionEnabledForOfflineSync] &lt;Boolean&gt;] [[-IsDuplicateDetectionEnabledForOnlineCreateUpdate] &lt;Boolean&gt;] [[-isenabledforallroles] &lt;Boolean&gt;] [[-IsFolderBasedTrackingEnabled] &lt;Boolean&gt;] [[-IsFullTextSearchEnabled] &lt;Boolean&gt;] [[-IsHierarchicalSecurityModelEnabled] &lt;Boolean&gt;] [[-IsPresenceEnabled] &lt;Boolean&gt;] [[-IsUserAccessAuditEnabled] &lt;Boolean&gt;] [[-KbPrefix] &lt;String&gt;] [[-MaxAppointmentDurationDays] &lt;Int32&gt;] [[-MaxDepthForHierarchicalSecurityModel] &lt;Int32&gt;] [[-MaximumActiveBusinessProcessFlowsAllowedPerEntity] &lt;Int32&gt;] [[-MaximumDynamicPropertiesAllowed] &lt;Int32&gt;] [[-MaximumTrackingNumber] &lt;Int32&gt;] [[-MaxProductsInBundle] &lt;Int32&gt;] [[-MaxRecordsForExportToExcel] &lt;Int32&gt;] [[-MaxRecordsForLookupFilters] &lt;Int32&gt;] [[-MaxUploadFileSize] &lt;Int32&gt;] [[-MinAddressBookSyncInterval] &lt;Int32&gt;] [[-MinOfflineSyncInterval] &lt;Int32&gt;] [[-MinOutlookSyncInterval] &lt;Int32&gt;] [[-NotifyMailboxOwnerOfEmailServerLevelAlerts] &lt;Boolean&gt;] [[-OrderPrefix] &lt;String&gt;] [[-OutgoingEmailDeliveryMethod] &lt;Int32&gt;] [[-PluginTraceLogSetting] &lt;Int32&gt; {0 | 1 | 2} ] [[-PricingDecimalPrecision] &lt;Int32&gt; {0 | 1 | 2 | 3 | 4} ] [[-QuickFindRecordLimitEnabled] &lt;Boolean&gt;] [[-QuotePrefix] &lt;String&gt;] [[-RequireApprovalForUserEmail] &lt;Boolean&gt;] [[-RequireApprovalForQueueEmail] &lt;Boolean&gt;] [[-ShareToPreviousOwnerOnAssign] &lt;Boolean&gt;] [[-TrackingPrefix] &lt;String&gt;] [[-TrackingTokenIdBase] &lt;Int32&gt;] [[-TrackingTokenIdDigits] &lt;Int32&gt;] [[-UniqueSpecifierLength] &lt;Int32&gt;] [[-UseLegacyRendering] &lt;Boolean&gt;] [[-UsePositionHierarchy] &lt;Boolean&gt;] [[-UseSkypeProtocol] &lt;Boolean&gt;] [[-UseAllowUsersSeeAppdownloadMessage] &lt;Boolean&gt;] [[-DefaultCrmCustomName] &lt;String&gt;] [[-SuppressSLA] &lt;Boolean&gt;] [[-IsAuditEnabled] &lt;Boolean&gt;] [[-AllowLegacyClientExperience] &lt;Boolean&gt;]</string>
       </Syntax>
       <GeneralHelp>
         <Synopsis> Update CRM Organization's System Settings.
@@ -6734,7 +6787,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
         <ReturnTypeDescription />
       </GeneralHelp>
       <ParamSets>
-        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="conn AcknowledgementTemplateId ACTDeliveryMethod AllowAddressBookSyncs AllowAutoResponseCreation AllowAutoUnsubscribe AllowAutoUnsubscribeAcknowledgement AllowClientMessageBarAd AllowEntityOnlyAudit AllowMarketingEmailExecution AllowOfflineScheduledSyncs AllowOutlookScheduledSyncs AllowUnresolvedPartiesOnEmailSend AllowUserFormModePreference AllowUsersSeeAppdownloadMessage AllowWebExcelExport AMDesignator AutoApplyDefaultonCaseCreate AutoApplyDefaultonCaseUpdate AutoApplySLA BingMapsApiKey BlockedAttachments BusinessClosureCalendarId CampaignPrefix CascadeStatusUpdate CasePrefix ContractPrefix CortanaProactiveExperienceEnabled CreateProductsWithoutParentInActiveState CurrencyDecimalPrecision CurrencyDisplayOption CurrentCampaignNumber CurrentCaseNumber CurrentContractNumber CurrentInvoiceNumber CurrentKbNumber CurrentOrderNumber CurrentQuoteNumber DefaultCountryCode DefaultEmailServerProfileId DisableSocialCare DisplayNavigationTour EmailConnectionChannel EmailCorrelationEnabled EnableBingMapsIntegration EnableSmartMatching FullNameConventionCode GenerateAlertsForErrors GenerateAlertsForWarnings GenerateAlertsForInformation GlobalAppendUrlParametersEnabled GlobalHelpUrl GlobalHelpUrlEnabled HashDeltaSubjectCount HashFilterKeywords HashMaxCount HashMinAddressCount IgnoreInternalEmail IncomingEmailDeliveryMethod InvoicePrefix IsAutoSaveEnabled IsDefaultCountryCodeCheckEnabled IsDuplicateDetectionEnabled IsDuplicateDetectionEnabledForImport IsDuplicateDetectionEnabledForOfflineSync IsDuplicateDetectionEnabledForOnlineCreateUpdate IsFolderBasedTrackingEnabled IsFullTextSearchEnabled IsHierarchicalSecurityModelEnabled IsPresenceEnabled IsUserAccessAuditEnabled KbPrefix MaxAppointmentDurationDays MaxDepthForHierarchicalSecurityModel MaximumActiveBusinessProcessFlowsAllowedPerEntity MaximumDynamicPropertiesAllowed MaximumTrackingNumber MaxProductsInBundle MaxRecordsForExportToExcel MaxRecordsForLookupFilters MaxUploadFileSize MinAddressBookSyncInterval MinOfflineSyncInterval MinOutlookSyncInterval NotifyMailboxOwnerOfEmailServerLevelAlerts OrderPrefix OutgoingEmailDeliveryMethod PluginTraceLogSetting PricingDecimalPrecision QuickFindRecordLimitEnabled QuotePrefix RequireApprovalForUserEmail RequireApprovalForQueueEmail ShareToPreviousOwnerOnAssign TrackingPrefix TrackingTokenIdBase TrackingTokenIdDigits UniqueSpecifierLength UseLegacyRendering UsePositionHierarchy UseSkypeProtocol Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="conn AcknowledgementTemplateId ACTDeliveryMethod AllowAddressBookSyncs AllowAutoResponseCreation AllowAutoUnsubscribe AllowAutoUnsubscribeAcknowledgement AllowClientMessageBarAd AllowEntityOnlyAudit AllowMarketingEmailExecution AllowOfflineScheduledSyncs AllowOutlookScheduledSyncs AllowUnresolvedPartiesOnEmailSend AllowUserFormModePreference AllowUsersSeeAppdownloadMessage AllowWebExcelExport AMDesignator AutoApplyDefaultonCaseCreate AutoApplyDefaultonCaseUpdate AutoApplySLA BingMapsApiKey BlockedAttachments BusinessClosureCalendarId CampaignPrefix CascadeStatusUpdate CasePrefix ContractPrefix CortanaProactiveExperienceEnabled CreateProductsWithoutParentInActiveState CurrencyDecimalPrecision CurrencyDisplayOption CurrentCampaignNumber CurrentCaseNumber CurrentContractNumber CurrentInvoiceNumber CurrentKbNumber CurrentOrderNumber CurrentQuoteNumber DefaultCountryCode DefaultEmailServerProfileId DisableSocialCare DisplayNavigationTour EmailConnectionChannel EmailCorrelationEnabled EnableBingMapsIntegration EnableSmartMatching FullNameConventionCode GenerateAlertsForErrors GenerateAlertsForWarnings GenerateAlertsForInformation GlobalAppendUrlParametersEnabled GlobalHelpUrl GlobalHelpUrlEnabled HashDeltaSubjectCount HashFilterKeywords HashMaxCount HashMinAddressCount IgnoreInternalEmail IncomingEmailDeliveryMethod InvoicePrefix IsAutoSaveEnabled IsDefaultCountryCodeCheckEnabled IsDuplicateDetectionEnabled IsDuplicateDetectionEnabledForImport IsDuplicateDetectionEnabledForOfflineSync IsDuplicateDetectionEnabledForOnlineCreateUpdate isenabledforallroles IsFolderBasedTrackingEnabled IsFullTextSearchEnabled IsHierarchicalSecurityModelEnabled IsPresenceEnabled IsUserAccessAuditEnabled KbPrefix MaxAppointmentDurationDays MaxDepthForHierarchicalSecurityModel MaximumActiveBusinessProcessFlowsAllowedPerEntity MaximumDynamicPropertiesAllowed MaximumTrackingNumber MaxProductsInBundle MaxRecordsForExportToExcel MaxRecordsForLookupFilters MaxUploadFileSize MinAddressBookSyncInterval MinOfflineSyncInterval MinOutlookSyncInterval NotifyMailboxOwnerOfEmailServerLevelAlerts OrderPrefix OutgoingEmailDeliveryMethod PluginTraceLogSetting PricingDecimalPrecision QuickFindRecordLimitEnabled QuotePrefix RequireApprovalForUserEmail RequireApprovalForQueueEmail ShareToPreviousOwnerOnAssign TrackingPrefix TrackingTokenIdBase TrackingTokenIdDigits UniqueSpecifierLength UseLegacyRendering UsePositionHierarchy UseSkypeProtocol UseAllowUsersSeeAppdownloadMessage DefaultCrmCustomName SuppressSLA IsAuditEnabled AllowLegacyClientExperience Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
       </ParamSets>
       <Parameters>
         <ParameterDescription type="CrmServiceClient" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="0" globbing="false">
@@ -7332,7 +7385,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="66" globbing="false">
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="67" globbing="false">
           <Name>IsFolderBasedTrackingEnabled</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7343,7 +7396,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="67" globbing="false">
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="68" globbing="false">
           <Name>IsFullTextSearchEnabled</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7354,7 +7407,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="68" globbing="false">
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="69" globbing="false">
           <Name>IsHierarchicalSecurityModelEnabled</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7365,7 +7418,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="69" globbing="false">
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="70" globbing="false">
           <Name>IsPresenceEnabled</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7376,7 +7429,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="70" globbing="false">
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="71" globbing="false">
           <Name>IsUserAccessAuditEnabled</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7387,7 +7440,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="71" globbing="false">
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="72" globbing="false">
           <Name>KbPrefix</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7398,7 +7451,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="72" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="73" globbing="false">
           <Name>MaxAppointmentDurationDays</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7409,7 +7462,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="73" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="74" globbing="false">
           <Name>MaxDepthForHierarchicalSecurityModel</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7420,7 +7473,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="74" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="75" globbing="false">
           <Name>MaximumActiveBusinessProcessFlowsAllowedPerEntity</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7431,7 +7484,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="75" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="76" globbing="false">
           <Name>MaximumDynamicPropertiesAllowed</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7441,7 +7494,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
           <Description>Maximum number of product properties for a product family or bundle.</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="76" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="77" globbing="false">
           <Name>MaximumTrackingNumber</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7452,7 +7505,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="77" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="78" globbing="false">
           <Name>MaxProductsInBundle</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7462,7 +7515,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
           <Description>Maximum number of items in a bundle.</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="78" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="79" globbing="false">
           <Name>MaxRecordsForExportToExcel</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7473,7 +7526,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="79" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="80" globbing="false">
           <Name>MaxRecordsForLookupFilters</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7484,7 +7537,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="80" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="81" globbing="false">
           <Name>MaxUploadFileSize</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7495,7 +7548,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="81" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="82" globbing="false">
           <Name>MinAddressBookSyncInterval</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7506,7 +7559,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="82" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="83" globbing="false">
           <Name>MinOfflineSyncInterval</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7517,7 +7570,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="83" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="84" globbing="false">
           <Name>MinOutlookSyncInterval</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7528,7 +7581,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="84" globbing="false">
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="85" globbing="false">
           <Name>NotifyMailboxOwnerOfEmailServerLevelAlerts</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7539,7 +7592,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="85" globbing="false">
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="86" globbing="false">
           <Name>OrderPrefix</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7550,7 +7603,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="86" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="87" globbing="false">
           <Name>OutgoingEmailDeliveryMethod</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7561,7 +7614,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="87" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="88" globbing="false">
           <Name>PluginTraceLogSetting</Name>
           <Attributes>
             <string>System.Management.Automation.ValidateSetAttribute</string>
@@ -7573,7 +7626,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="88" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="89" globbing="false">
           <Name>PricingDecimalPrecision</Name>
           <Attributes>
             <string>System.Management.Automation.ValidateSetAttribute</string>
@@ -7585,7 +7638,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="89" globbing="false">
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="90" globbing="false">
           <Name>QuickFindRecordLimitEnabled</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7596,7 +7649,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="90" globbing="false">
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="91" globbing="false">
           <Name>QuotePrefix</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7607,7 +7660,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="91" globbing="false">
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="92" globbing="false">
           <Name>RequireApprovalForUserEmail</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7617,7 +7670,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
           <Description>Change "Process emails only for approved users" setting.</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="92" globbing="false">
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="93" globbing="false">
           <Name>RequireApprovalForQueueEmail</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7627,7 +7680,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
           <Description>Change "Process emails only for approved queues" setting.</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="93" globbing="false">
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="94" globbing="false">
           <Name>ShareToPreviousOwnerOnAssign</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7637,7 +7690,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
           <Description>Change "Share reassigned records with original owner" setting.</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="94" globbing="false">
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="95" globbing="false">
           <Name>TrackingPrefix</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7647,7 +7700,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
           <Description>Change Tracking Token "Prefix" setting.</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="95" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="96" globbing="false">
           <Name>TrackingTokenIdBase</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7657,7 +7710,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
           <Description>Change "Deployment base tracking number" setting.</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="96" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="97" globbing="false">
           <Name>TrackingTokenIdDigits</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7668,7 +7721,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="97" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="98" globbing="false">
           <Name>UniqueSpecifierLength</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7679,7 +7732,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="98" globbing="false">
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="99" globbing="false">
           <Name>UseLegacyRendering</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7690,7 +7743,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="99" globbing="false">
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="100" globbing="false">
           <Name>UsePositionHierarchy</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7701,7 +7754,7 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
 </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="100" globbing="false">
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="101" globbing="false">
           <Name>UseSkypeProtocol</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -7824,6 +7877,66 @@ PS C:\&gt;Set-CrmRecordState $contact Inactive Inactive</Cmd>
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="29" globbing="false">
           <Name>CurrencyDecimalPrecision</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description />
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="66" globbing="false">
+          <Name>isenabledforallroles</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description />
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="102" globbing="false">
+          <Name>UseAllowUsersSeeAppdownloadMessage</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description />
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="103" globbing="false">
+          <Name>DefaultCrmCustomName</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description />
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="104" globbing="false">
+          <Name>SuppressSLA</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description />
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="105" globbing="false">
+          <Name>IsAuditEnabled</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description />
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="Boolean" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="106" globbing="false">
+          <Name>AllowLegacyClientExperience</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
@@ -8397,7 +8510,7 @@ Performance  : The operation took 00:00:00.3948901</Output>
     <CmdletObject verb="Get" noun="CrmConnection">
       <Name>Get-CrmConnection</Name>
       <Syntax>
-        <string>Get-CrmConnection [[-InteractiveMode] &lt;SwitchParameter&gt;] [[-MaxCrmConnectionTimeOutMinutes] &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
+        <string>Get-CrmConnection [[-InteractiveMode] &lt;SwitchParameter&gt;] [[-ProfileName] &lt;String&gt;] [[-MaxCrmConnectionTimeOutMinutes] &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
         <string>Get-CrmConnection [-OrganizationName] &lt;String&gt; [[-ProfileName] &lt;String&gt;] [[-HomeRealmUrl] &lt;Uri&gt;] [-ServerUrl] &lt;Uri&gt; [[-Credential] &lt;PSCredential&gt;] [[-MaxCrmConnectionTimeOutMinutes] &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
         <string>Get-CrmConnection -OrganizationName &lt;String&gt; [[-ProfileName] &lt;String&gt;] [[-DeploymentRegion] &lt;String&gt;] [-OnLineType] &lt;CommonAuth+OnlineType&gt; [[-Credential] &lt;PSCredential&gt;] [[-MaxCrmConnectionTimeOutMinutes] &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
         <string>Get-CrmConnection [-ConnectionString] &lt;String&gt; [[-MaxCrmConnectionTimeOutMinutes] &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
@@ -8414,7 +8527,7 @@ Performance  : The operation took 00:00:00.3948901</Output>
         <ReturnTypeDescription />
       </GeneralHelp>
       <ParamSets>
-        <CommandParameterSetInfo2 Name="UIOnly" Params="InteractiveMode MaxCrmConnectionTimeOutMinutes LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="UIOnly" Params="InteractiveMode ProfileName MaxCrmConnectionTimeOutMinutes LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
         <CommandParameterSetInfo2 Name="OnPrem" Params="OrganizationName ProfileName HomeRealmUrl ServerUrl Credential MaxCrmConnectionTimeOutMinutes LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
         <CommandParameterSetInfo2 Name="OnLine" Params="OrganizationName ProfileName DeploymentRegion OnLineType Credential MaxCrmConnectionTimeOutMinutes LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
         <CommandParameterSetInfo2 Name="ConnectionStringOnly" Params="ConnectionString MaxCrmConnectionTimeOutMinutes LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
@@ -8439,9 +8552,10 @@ Performance  : The operation took 00:00:00.3948901</Output>
           <Description />
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="5" globbing="false">
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="0" globbing="false">
           <Name>ProfileName</Name>
           <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
           </Attributes>
@@ -8581,8 +8695,8 @@ Performance  : The operation took 00:00:00.3948901</Output>
         <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
           <Name>WhatIf</Name>
           <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.AliasAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
           </Attributes>
           <Aliases>
             <string>wi</string>
@@ -8593,8 +8707,8 @@ Performance  : The operation took 00:00:00.3948901</Output>
         <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
           <Name>Confirm</Name>
           <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.AliasAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
           </Attributes>
           <Aliases>
             <string>cf</string>
@@ -9567,8 +9681,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
         <string>Import-CrmSolutionAsync [-conn &lt;CrmServiceClient&gt;] [-SolutionFilePath] &lt;String&gt; [[-ActivateWorkflows] &lt;SwitchParameter&gt;] [[-OverwriteUnManagedCustomizations] &lt;SwitchParameter&gt;] [[-SkipDependancyOnProductUpdateCheckOnInstall] &lt;SwitchParameter&gt;] [[-PublishChanges] &lt;SwitchParameter&gt;] [[-MaxWaitTimeInSeconds] &lt;Int64&gt;] [[-ImportAsHoldingSolution] &lt;SwitchParameter&gt;] [[-BlockUntilImportComplete] &lt;SwitchParameter&gt;]</string>
       </Syntax>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Import a solution using an import job.</Synopsis>
+        <Description>Import a solution using an import job and poll for the result (success or failure).  This is the preferred method of importing. </Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -9676,7 +9790,14 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
-      <Examples />
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Import-CrmSolutionAsync -SolutionFilePath c:\temp\mysolution.zip -ActivateWorkflows -OverwriteUnManagedCustomizations -MaxWaitTimeInSeconds 600</Cmd>
+          <Description>Import a solution using an import job, poll for the result for up to 600 seconds</Description>
+          <Output />
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
@@ -10097,8 +10218,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
         <string>Invoke-CrmAction [-conn &lt;CrmServiceClient&gt;] [-Name] &lt;String&gt; [[-Parameters] &lt;Hashtable&gt;] [[-Target] &lt;EntityReference&gt;] [-Raw]</string>
       </Syntax>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Invoke a CDS or CRM Action</Synopsis>
+        <Description>Invoke a CDS or CRM Action</Description>
         <Notes />
         <InputType />
         <InputUrl />
