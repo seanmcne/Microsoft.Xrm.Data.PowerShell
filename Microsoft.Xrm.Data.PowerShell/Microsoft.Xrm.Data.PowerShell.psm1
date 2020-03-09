@@ -1820,7 +1820,7 @@ function Get-CrmEntityOptionSet{
 }
 
 #ImportSolutionToCrmAsync
-function Import-CrmSolutionAsync{
+function Import-CrmSolutionAsync {
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
@@ -1841,7 +1841,9 @@ function Import-CrmSolutionAsync{
 		[parameter(Mandatory=$false, Position=7)]
         [switch]$ImportAsHoldingSolution, 
 		[parameter(Mandatory=$false, Position=8)]
-        [switch]$BlockUntilImportComplete
+        [switch]$BlockUntilImportComplete,
+        [parameter(Mandatory=$false, Position=9)]
+        [int64]$PollingDelayInSeconds = 5
     )
 	$conn = VerifyCrmConnectionParam $conn
 	$importId = [guid]::Empty
@@ -1891,7 +1893,7 @@ function Import-CrmSolutionAsync{
 			Write-Verbose "Async Operation ID (asyncoperationid): $importId" 
 			if($importId -eq $null -or $importId -eq [Guid]::Empty)
 			{
-				throw "Import request failed!"
+				throw "Import request failed for Async Operation {$importId}"
 			}
 			#if the caller wants to get the ID and does NOT want to wait 
 			if($BlockUntilImportComplete -eq $false){
@@ -1906,14 +1908,13 @@ function Import-CrmSolutionAsync{
         $pollingStart = Get-Date
         $isProcessing = $true
 		$secondsSpentPolling = 0
-        $pollingDelaySeconds = 60
 		$transientFailureCount = 0; 
-        Write-Verbose "Solution import requested, waiting on completion..."
+        Write-Verbose "Solution import requested, waiting on completion of Async Operation {$importId}..."
 
 		try{
 			while(($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds) -or ($isProcessing -and $MaxWaitTimeInSeconds -eq -1)){
 				#delay
-				Start-Sleep -Seconds $pollingDelaySeconds
+				Start-Sleep -Seconds $PollingDelayInSeconds
 
 				#check the import job for success/fail/inProgress
 				try{
@@ -1932,7 +1933,7 @@ function Import-CrmSolutionAsync{
 				}
 				elseif($statuscode -eq 31 -or $statuscode -eq 32 ){
 					$isProcessing = $false
-					throw "Status: $($import.statuscode) ($statuscode) | Operation has been either cancelled or has failed.`n$($import.friendlymessage)"
+					throw "Status: $($import.statuscode) ($statuscode) | Operation has been either cancelled or has failed for Async Operation {$importId}.`n$($import.friendlymessage)"
 					break; 
 				}
 				elseif($statuscode -eq 30){
@@ -2163,20 +2164,22 @@ function Import-CrmSolution{
 }
 
 #MergeHoldingSolution
-function Merge-HoldingSolution {
+function Merge-HoldingSolutionAsync {
     [CmdletBinding()]
 	PARAM(
         [parameter(Mandatory=$true)]
-        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$Connection,
-        [parameter(Mandatory=$true)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1)]
         [string]$CrmSolutionName,
-        [parameter(Mandatory=$false)]
+        [parameter(Mandatory=$false, Position=2)]
         [int64]$TimeoutInSeconds,
-        [parameter(Mandatory=$false)]
-        [switch]$BlockAsync
+        [parameter(Mandatory=$false, Position=3)]
+        [switch]$BlockAsync,
+        [parameter(Mandatory=$false, Position=4)]
+        [int64]$PollingDelayInSeconds = 5
 	)
 
-    $Connection = VerifyCrmConnectionParam $Connection
+    $conn = VerifyCrmConnectionParam $conn
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.DeleteAndPromoteRequest
     $request.UniqueName = $CrmSolutionName
@@ -2187,7 +2190,7 @@ function Merge-HoldingSolution {
     try
     {
         Write-Verbose "Applying async solution upgrade for solution '$CrmSolutionName'"
-        $asyncResponse = ($Connection.ExecuteCrmOrganizationRequest($asyncRequest, "AsyncImportRequest") -as [Microsoft.Xrm.Sdk.Messages.ExecuteAsyncResponse]) 
+        $asyncResponse = ($conn.ExecuteCrmOrganizationRequest($asyncRequest, "AsyncImportRequest") -as [Microsoft.Xrm.Sdk.Messages.ExecuteAsyncResponse]) 
         $asyncOperationId = $asyncResponse.AsyncJobId
         
         Write-Verbose "Async Operation ID (asyncoperationid): $asyncOperationId" 
@@ -2203,24 +2206,23 @@ function Merge-HoldingSolution {
     }
     catch
     {
-        throw LastCrmConnectorException($Connection)
+        throw LastCrmConnectorException($conn)
     }
 
     $pollingStart = Get-Date
     $isProcessing = $true
     $secondsSpentPolling = 0
-    $pollingDelaySeconds = 60
     $transientFailureCount = 0; 
     Write-Verbose "Async Delete and Promote requested, waiting on completion..."
 
     try{
         while(($isProcessing -and $secondsSpentPolling -lt $TimeoutInSeconds) -or ($isProcessing -and $TimeoutInSeconds -eq -1)) {
             #delay
-            Start-Sleep -Seconds $pollingDelaySeconds
+            Start-Sleep -Seconds $PollingDelayInSeconds
 
             #check the async job for success/fail/inProgress
             try{
-                $asyncOperation = Get-CrmRecord -conn $Connection -EntityLogicalName asyncoperation -Id $asyncOperationId -Fields statuscode,completedon,friendlymessage
+                $asyncOperation = Get-CrmRecord -conn $conn -EntityLogicalName asyncoperation -Id $asyncOperationId -Fields statuscode,completedon,friendlymessage
             } catch {
                 $transientFailureCount++; 
                 Write-Verbose "Async job status check did not succeed:  $($_.Exception)"
