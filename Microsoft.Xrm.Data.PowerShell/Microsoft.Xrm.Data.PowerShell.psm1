@@ -1851,7 +1851,7 @@ function Get-CrmEntityOptionSet{
 }
 
 #ImportSolutionToCrmAsync
-function Import-CrmSolutionAsync{
+function Import-CrmSolutionAsync {
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM(
@@ -1872,7 +1872,9 @@ function Import-CrmSolutionAsync{
 		[parameter(Mandatory=$false, Position=7)]
         [switch]$ImportAsHoldingSolution, 
 		[parameter(Mandatory=$false, Position=8)]
-        [switch]$BlockUntilImportComplete
+        [switch]$BlockUntilImportComplete,
+        [parameter(Mandatory=$false, Position=9)]
+        [int64]$PollingDelayInSeconds = 5
     )
 	$conn = VerifyCrmConnectionParam $conn
 	$importId = [guid]::Empty
@@ -1884,7 +1886,7 @@ function Import-CrmSolutionAsync{
             throw [System.IO.FileNotFoundException] "$SolutionFilePath not found."
         }
 		
-        Write-Output  "Importing solution file  $SolutionFilePath into: $($conn.CrmConnectOrgUriActual)" 
+        Write-Verbose  "Importing solution file  $SolutionFilePath into: $($conn.CrmConnectOrgUriActual)" 
         Write-Verbose "OverwriteCustomizations: $OverwriteUnManagedCustomizations"
         Write-Verbose "SkipDependancyCheck:     $SkipDependancyOnProductUpdateCheckOnInstall"
 		Write-Verbose "ImportAsHoldingSolution: $ImportAsHoldingSolution"
@@ -1913,16 +1915,16 @@ function Import-CrmSolutionAsync{
 		$asyncRequest = New-Object Microsoft.Xrm.Sdk.Messages.ExecuteAsyncRequest
 		$asyncRequest.Request = $request; 
 
-		Write-Verbose "ExecuteCrmOrganizationRequest with ExecuteAsyncRequest containing ImportSolutionRequest() this process can take a while..."
+		Write-Verbose "Importing solution. This process can take a while..."
 		try
 		{
 			$asyncResponse = ($conn.ExecuteCrmOrganizationRequest($asyncRequest, "AsyncImportRequest") -as [Microsoft.Xrm.Sdk.Messages.ExecuteAsyncResponse]) 
 			$importId = $asyncResponse.AsyncJobId
 			
-			Write-Verbose "ImportId (asyncoperationid): $importId" 
+			Write-Verbose "Async Operation ID (asyncoperationid): $importId" 
 			if($importId -eq $null -or $importId -eq [Guid]::Empty)
 			{
-				throw "Import request failed, asyncoperationid is: $importId"
+				throw "Import request failed for Async Operation {$importId}"
 			}
 			#if the caller wants to get the ID and does NOT want to wait 
 			if($BlockUntilImportComplete -eq $false){
@@ -1932,52 +1934,55 @@ function Import-CrmSolutionAsync{
 		catch
 		{
 			throw LastCrmConnectorException($conn)
-		}    
+		}
+
         $pollingStart = Get-Date
         $isProcessing = $true
 		$secondsSpentPolling = 0
-        $pollingDelaySeconds = 5
 		$transientFailureCount = 0; 
-        Write-Verbose "Import of file completed, waiting on completion of AsyncOperationId: $importId"
+        Write-Verbose "Solution import requested, waiting on completion of Async Operation {$importId}..."
 
 		try{
 			while(($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds) -or ($isProcessing -and $MaxWaitTimeInSeconds -eq -1)){
 				#delay
-				Start-Sleep -Seconds $pollingDelaySeconds
+				Start-Sleep -Seconds $PollingDelayInSeconds
+
 				#check the import job for success/fail/inProgress
 				try{
-					$import = Get-CrmRecord -conn $conn -EntityLogicalName asyncoperation -Id $importId -Fields statuscode
+					$import = Get-CrmRecord -conn $conn -EntityLogicalName asyncoperation -Id $importId -Fields statuscode,completedon,friendlymessage
 				} catch {
 					$transientFailureCount++; 
 					Write-Verbose "Import Job status check did not succeed:  $($_.Exception)"
 				}
-				$status = $import.statuscode_Property.value.Value; 
+
+                $statuscode = $import.statuscode_Property.value.Value;
+				
 				#Check for import completion - https://msdn.microsoft.com/en-us/library/gg309288.aspx
-				if($status -lt 30){
-					$isProcessing = $true
+				if($statuscode -lt 30){
 					$secondsSpentPolling = ([Int]((Get-Date) - $pollingStart).TotalSeconds)
-					Write-Output "$($secondsSPentPolling.ToString("000")) sec of: $MaxWaitTimeInSeconds - ImportStatus: $($import.statuscode)"
+					Write-Verbose "Executing for $($secondsSPentPolling.ToString("000"))/$MaxWaitTimeInSeconds seconds | Status: $($import.statuscode) ($statuscode)"
 				}
-				elseif($status -eq 31 -or $status -eq 32 ){
+				elseif($statuscode -eq 31 -or $statuscode -eq 32 ){
 					$isProcessing = $false
-					throw "$($import.statuscode) - AsyncOperation with Id: $importId has been either cancelled or has failed."
+					throw "Status: $($import.statuscode) ($statuscode) | Operation has been either cancelled or has failed for Async Operation {$importId}.`n$($import.friendlymessage)"
 					break; 
 				}
-				elseif($status -eq 30){
+				elseif($statuscode -eq 30){
 					$isProcessing = $false
-					Write-Verbose "Processing Completed at: $($import.completedon)" 
+					Write-Verbose "Processing Completed at: $($import.completedon)"
 					if($PublishChanges){
-						Write-Verbose "PublishChanges set, executing: Publish-CrmAllCustomization using the same connection."
+						Write-Verbose "SUCCESS: PublishChanges set, executing: Publish-CrmAllCustomization using the same connection."
 						Publish-CrmAllCustomization -conn $conn
-						return $asyncResponse
+						return $import
 					}
 					else{
-						Write-Output "Import Complete, don't forget to publish customizations."
-						return $asyncResponse
+						Write-Verbose "SUCCESS: Import Complete, don't forget to publish customizations."
+						return $import
 					}
 					break; 
 				}
 			}
+            
 			#User provided timeout and exit function with an error
 			if($secondsSpentPolling -gt $MaxWaitTimeInSeconds){
 				Write-Warning "Import-CrmSolutionAsync exited due to exceeding the maximum timeout of $MaxWaitTimeInSeconds. The import will continue in CRM async until it either succeeds or fails."
@@ -2026,7 +2031,7 @@ function Import-CrmSolution{
         {
             throw [System.IO.FileNotFoundException] "$SolutionFilePath not found."
         }
-        Write-Host "Importing solution file $SolutionFilePath into: $($conn.CrmConnectOrgUriActual)" 
+        Write-Verbose "Importing solution file $SolutionFilePath into: $($conn.CrmConnectOrgUriActual)" 
         Write-Verbose "OverwriteCustomizations: $OverwriteUnManagedCustomizations"
         Write-Verbose "SkipDependancyCheck: $SkipDependancyOnProductUpdateCheckOnInstall"
 		Write-Verbose "ImportAsHoldingSolution: $ImportAsHoldingSolution"
@@ -2187,6 +2192,103 @@ function Import-CrmSolution{
     {
         Write-Error $_.Exception
     }    
+}
+
+#MergeHoldingSolution
+function Merge-HoldingSolutionAsync {
+    [CmdletBinding()]
+	PARAM(
+        [parameter(Mandatory=$true)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1)]
+        [string]$CrmSolutionName,
+        [parameter(Mandatory=$false, Position=2)]
+        [int64]$TimeoutInSeconds,
+        [parameter(Mandatory=$false, Position=3)]
+        [switch]$BlockAsync,
+        [parameter(Mandatory=$false, Position=4)]
+        [int64]$PollingDelayInSeconds = 5
+	)
+
+    $conn = VerifyCrmConnectionParam $conn
+
+    $request = New-Object Microsoft.Crm.Sdk.Messages.DeleteAndPromoteRequest
+    $request.UniqueName = $CrmSolutionName
+
+    $asyncRequest = New-Object Microsoft.Xrm.Sdk.Messages.ExecuteAsyncRequest
+    $asyncRequest.Request = $request;
+
+    try
+    {
+        Write-Verbose "Applying async solution upgrade for solution '$CrmSolutionName'"
+        $asyncResponse = ($conn.ExecuteCrmOrganizationRequest($asyncRequest, "AsyncImportRequest") -as [Microsoft.Xrm.Sdk.Messages.ExecuteAsyncResponse]) 
+        $asyncOperationId = $asyncResponse.AsyncJobId
+        
+        Write-Verbose "Async Operation ID (asyncoperationid): $asyncOperationId" 
+        if(($asyncOperationId -eq $null) -or ($asyncOperationId -eq [Guid]::Empty))
+        {
+            throw "Async request failed!"
+        }
+
+        #if the caller wants to get the ID and does NOT want to wait 
+        if($BlockAsync -eq $false){
+            return $asyncResponse; 
+        }
+    }
+    catch
+    {
+        throw LastCrmConnectorException($conn)
+    }
+
+    $pollingStart = Get-Date
+    $isProcessing = $true
+    $secondsSpentPolling = 0
+    $transientFailureCount = 0; 
+    Write-Verbose "Async Delete and Promote requested, waiting on completion..."
+
+    try{
+        while(($isProcessing -and $secondsSpentPolling -lt $TimeoutInSeconds) -or ($isProcessing -and $TimeoutInSeconds -eq -1)) {
+            #delay
+            Start-Sleep -Seconds $PollingDelayInSeconds
+
+            #check the async job for success/fail/inProgress
+            try{
+                $asyncOperation = Get-CrmRecord -conn $conn -EntityLogicalName asyncoperation -Id $asyncOperationId -Fields statuscode,completedon,friendlymessage
+            } catch {
+                $transientFailureCount++; 
+                Write-Verbose "Async job status check did not succeed:  $($_.Exception)"
+            }
+
+            $statuscode = $asyncOperation.statuscode_Property.value.Value;
+            
+            #Check for import completion - https://msdn.microsoft.com/en-us/library/gg309288.aspx
+            if($statuscode -lt 30){
+                $secondsSpentPolling = ([Int]((Get-Date) - $pollingStart).TotalSeconds)
+                Write-Verbose "Executing for $($secondsSPentPolling.ToString("000"))/$TimeoutInSeconds seconds | Status: $($asyncOperation.statuscode) ($statuscode)"
+            }
+            elseif($statuscode -eq 31 -or $statuscode -eq 32 ){
+                $isProcessing = $false
+                throw "Status: $($asyncOperation.statuscode) ($statuscode) | Operation has been either cancelled or has failed.`n$($asyncOperation.friendlymessage)"
+                break;
+            }
+            elseif($statuscode -eq 30){
+                $isProcessing = $false
+                Write-Verbose "Processing Completed at: $($asyncOperation.completedon)"
+                Write-Verbose "SUCCESS: Delete and Promote successfully completed."
+                return $asyncOperation
+            }
+        }
+        
+        #User provided timeout and exit function with an error
+        if($secondsSpentPolling -gt $TimeoutInSeconds){
+            Write-Warning "Delete and Promote request exited due to exceeding the maximum timeout of $TimeoutInSeconds. The import will continue in CRM asynchronously until it either succeeds or fails."
+        }
+
+        #at this point request appears to have succeeded 
+        return $asyncResponse; 
+    } catch {
+        throw "AsyncOperation with ID: $asyncOperationId has encountered an exception: $_"
+    }
 }
 
 #InstallSampleDataToCrm    
