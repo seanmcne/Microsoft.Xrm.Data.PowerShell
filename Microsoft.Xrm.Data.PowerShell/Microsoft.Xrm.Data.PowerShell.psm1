@@ -2195,7 +2195,7 @@ function Import-CrmSolution{
 }
 
 #MergeHoldingSolution
-function Merge-HoldingSolutionAsync {
+function Merge-CrmHoldingSolutionAsync {
     [CmdletBinding()]
 	PARAM(
         [parameter(Mandatory=$true)]
@@ -2203,9 +2203,9 @@ function Merge-HoldingSolutionAsync {
         [parameter(Mandatory=$true, Position=1)]
         [string]$CrmSolutionName,
         [parameter(Mandatory=$false, Position=2)]
-        [int64]$TimeoutInSeconds,
+        [int64]$MaxWaitTimeInSeconds,
         [parameter(Mandatory=$false, Position=3)]
-        [switch]$BlockAsync,
+        [switch]$BlockUntilImportComplete,
         [parameter(Mandatory=$false, Position=4)]
         [int64]$PollingDelayInSeconds = 5
 	)
@@ -2216,7 +2216,7 @@ function Merge-HoldingSolutionAsync {
     $request.UniqueName = $CrmSolutionName
 
     $asyncRequest = New-Object Microsoft.Xrm.Sdk.Messages.ExecuteAsyncRequest
-    $asyncRequest.Request = $request;
+    $asyncRequest.Request = $request
 
     try
     {
@@ -2231,8 +2231,8 @@ function Merge-HoldingSolutionAsync {
         }
 
         #if the caller wants to get the ID and does NOT want to wait 
-        if($BlockAsync -eq $false){
-            return $asyncResponse; 
+        if($BlockUntilImportComplete -eq $false){
+            return $asyncResponse
         }
     }
     catch
@@ -2243,11 +2243,11 @@ function Merge-HoldingSolutionAsync {
     $pollingStart = Get-Date
     $isProcessing = $true
     $secondsSpentPolling = 0
-    $transientFailureCount = 0; 
+    $transientFailureCount = 0
     Write-Verbose "Async Delete and Promote requested, waiting on completion..."
 
     try{
-        while(($isProcessing -and $secondsSpentPolling -lt $TimeoutInSeconds) -or ($isProcessing -and $TimeoutInSeconds -eq -1)) {
+        while(($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds) -or ($isProcessing -and $MaxWaitTimeInSeconds -eq -1)) {
             #delay
             Start-Sleep -Seconds $PollingDelayInSeconds
 
@@ -2280,8 +2280,8 @@ function Merge-HoldingSolutionAsync {
         }
         
         #User provided timeout and exit function with an error
-        if($secondsSpentPolling -gt $TimeoutInSeconds){
-            Write-Warning "Delete and Promote request exited due to exceeding the maximum timeout of $TimeoutInSeconds. The import will continue in CRM asynchronously until it either succeeds or fails."
+        if($secondsSpentPolling -gt $MaxWaitTimeInSeconds){
+            Write-Warning "Delete and Promote request exited due to exceeding the maximum timeout of $MaxWaitTimeInSeconds. The import will continue in CRM asynchronously until it either succeeds or fails."
         }
 
         #at this point request appears to have succeeded 

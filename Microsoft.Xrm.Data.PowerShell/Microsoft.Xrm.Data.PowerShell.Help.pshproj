@@ -9678,7 +9678,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
     <CmdletObject verb="Import" noun="CrmSolutionAsync">
       <Name>Import-CrmSolutionAsync</Name>
       <Syntax>
-        <string>Import-CrmSolutionAsync [-conn &lt;CrmServiceClient&gt;] [-SolutionFilePath] &lt;String&gt; [[-ActivateWorkflows] &lt;SwitchParameter&gt;] [[-OverwriteUnManagedCustomizations] &lt;SwitchParameter&gt;] [[-SkipDependancyOnProductUpdateCheckOnInstall] &lt;SwitchParameter&gt;] [[-PublishChanges] &lt;SwitchParameter&gt;] [[-MaxWaitTimeInSeconds] &lt;Int64&gt;] [[-ImportAsHoldingSolution] &lt;SwitchParameter&gt;] [[-BlockUntilImportComplete] &lt;SwitchParameter&gt;]</string>
+        <string>Import-CrmSolutionAsync [-conn &lt;CrmServiceClient&gt;] [-SolutionFilePath] &lt;String&gt; [[-ActivateWorkflows] &lt;SwitchParameter&gt;] [[-OverwriteUnManagedCustomizations] &lt;SwitchParameter&gt;] [[-SkipDependancyOnProductUpdateCheckOnInstall] &lt;SwitchParameter&gt;] [[-PublishChanges] &lt;SwitchParameter&gt;] [[-MaxWaitTimeInSeconds] &lt;Int64&gt;] [[-ImportAsHoldingSolution] &lt;SwitchParameter&gt;] [[-BlockUntilImportComplete] &lt;SwitchParameter&gt;] [[-PollingDelayInSeconds] &lt;Int64&gt;]</string>
       </Syntax>
       <GeneralHelp>
         <Synopsis>Import a solution using an import job.</Synopsis>
@@ -9692,7 +9692,7 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
         <ReturnTypeDescription />
       </GeneralHelp>
       <ParamSets>
-        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="conn SolutionFilePath ActivateWorkflows OverwriteUnManagedCustomizations SkipDependancyOnProductUpdateCheckOnInstall PublishChanges MaxWaitTimeInSeconds ImportAsHoldingSolution BlockUntilImportComplete Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="conn SolutionFilePath ActivateWorkflows OverwriteUnManagedCustomizations SkipDependancyOnProductUpdateCheckOnInstall PublishChanges MaxWaitTimeInSeconds ImportAsHoldingSolution BlockUntilImportComplete PollingDelayInSeconds Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
       </ParamSets>
       <Parameters>
         <ParameterDescription type="CrmServiceClient" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -9787,6 +9787,16 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
           </Attributes>
           <Aliases />
           <Description>Rather than return the import ID - block and poll until the command is complete</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="Int64" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="9" globbing="false">
+          <Name>PollingDelayInSeconds</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description />
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
@@ -10075,8 +10085,8 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
         <string>Set-CrmSolutionVersionNumber [-conn &lt;CrmServiceClient&gt;] [-SolutionName] &lt;String&gt; [-VersionNumber] &lt;String&gt;</string>
       </Syntax>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Sets a CDS Solutions version number.</Synopsis>
+        <Description>Sets a CDS Solutions version number in the CDS Database via an api call </Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -10576,6 +10586,95 @@ When omitting conn parameter, cmdlets automatically finds it.</Description>
       </ParamSets>
       <Parameters />
       <Examples />
+      <RelatedLinks />
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Merge" noun="CrmHoldingSolutionAsync">
+      <Name>Merge-CrmHoldingSolutionAsync</Name>
+      <Syntax>
+        <string>Merge-CrmHoldingSolutionAsync -conn &lt;CrmServiceClient&gt; [-CrmSolutionName] &lt;String&gt; [[-MaxWaitTimeInSeconds] &lt;Int64&gt;] [[-BlockUntilImportComplete] &lt;SwitchParameter&gt;] [[-PollingDelayInSeconds] &lt;Int64&gt;]</string>
+      </Syntax>
+      <GeneralHelp>
+        <Synopsis>Merges a holding solution.</Synopsis>
+        <Description>Merges a holding solution using the DeleteAndPromoteRequest</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType />
+        <ReturnUrl />
+        <ReturnTypeDescription />
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="conn CrmSolutionName MaxWaitTimeInSeconds BlockUntilImportComplete PollingDelayInSeconds Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+      </ParamSets>
+      <Parameters>
+        <ParameterDescription type="CrmServiceClient" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>conn</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>The connection to the CRM organization. Use Get-CrmConnection or one of the other connection functions to get it.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
+          <Name>CrmSolutionName</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>The unique name of the base solution to apply the upgrade.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="Int64" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="4" globbing="false">
+          <Name>PollingDelayInSeconds</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>The polling delay in seconds, to check wether the delete and promote async operation has finished. If specified, it will override the default value of 5 seconds.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="Int64" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
+          <Name>MaxWaitTimeInSeconds</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>The polling delay in seconds, to check wether the delete and promote async operation has finished. If specified, it will override the default value of 5 seconds. After the max time expires, the command will still execute in the background but the powershell code will continue</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="3" globbing="false">
+          <Name>BlockUntilImportComplete</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>If specified, the execution will poll and wait for the delete and promote async operation to complete. If not specified, it will return the asyncoperationid immediatelly and the operation will continue to execute asynchronously on Dynamics organization.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example1</Name>
+          <Cmd>Merge-CrmHoldingSolutionAsync -conn $conn -CrmSolutionName "SampleSolution"</Cmd>
+          <Description>This example requests a delete and promote message regarding a Dynamics solution named "SampleSolution" and returns the system job id.</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example2</Name>
+          <Cmd>Merge-CrmHoldingSolutionAsync -conn $conn -CrmSolutionName "SampleSolution" -MaxWaitTimeInSeconds 900 -PollingDelayInSeconds 60 -BlockUntilImportComplete</Cmd>
+          <Description>This example requests a delete and promote message regarding a Dynamics solution named "SampleSolution", while specifying that the execution should wait for the system job to finish and should poll the job every 60 seconds. It also sets a maximum blocking/polling time of 15 minutes (900 seconds). After the max time expires, the command will still execute in the background but the powershell code will continue</Description>
+          <Output />
+        </Example>
+      </Examples>
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
