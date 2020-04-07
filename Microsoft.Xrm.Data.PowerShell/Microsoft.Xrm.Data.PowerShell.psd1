@@ -24,7 +24,7 @@
 RootModule = 'Microsoft.Xrm.Data.Powershell.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.8.9'
+ModuleVersion = '2.8.8'
 
 # ID used to uniquely identify this module
 GUID = '7df9c140-65c3-4862-b3bc-73fad633aae4'
@@ -114,15 +114,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '
-Including newer xrm tooling which has the following improvements:
-- 3.3.0.891 Fixed an error where discovery would be used when using AD and IFD to connect to onpremise even if connection strings where used.
-- 3.3.0.890 Fixed an error where timeout property was not properly assigned when using Non-oAuth types
-- 3.3.0.890 Fixed an error with setting CallerId when ClientSecret Auth type is used.  
-Other Changes: 
-- Updated security role functions 
-- Added new formatting for the conn object to avoid showing the current auth token
-- source for connector: https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/'
+        ReleaseNotes = ''
         # Prerelease = '-alpha'
 
     } # End of PSData hashtable
