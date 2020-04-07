@@ -114,13 +114,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Including newer xrm tooling which has the following improvements:
-- Fixed a bug with how errors are handled when they are raised from ADAL 3.19+. MFA Force Login will now work properly again.
-- Updated default response sizes to support more verbose error messages from CDS
-- Added Support for ClientID Secret Auth when using oAuth flows. (connection string support)
-- Added Support for Current User ID login when using Online flows with oAuth
-- Updated default response sizes to support more verbose error messages from CDS
-- source for connector: https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/'
+        ReleaseNotes = ''
         # Prerelease = '-alpha'
 
     } # End of PSData hashtable
