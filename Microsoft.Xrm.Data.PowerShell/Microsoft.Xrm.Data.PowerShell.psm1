@@ -26,6 +26,9 @@ function Connect-CrmOnlineDiscovery{
         $global:conn = Get-CrmConnection -InteractiveMode -Verbose
         
         Write-Verbose "You are now connected and may run any of the CRM Commands."
+        
+        ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
+        
         return $global:conn 
     }
     else
@@ -64,6 +67,9 @@ function Connect-CrmOnlineDiscovery{
 			#yes, we know this isn't recommended BUT this cmdlet is only valid for user interaction in the console and shouldn't be used for non-interactive scenarios
             Write-Host "`nYou are now connected to: $(($crmOrganizations[$orgNumber]).UniqueName)" -foregroundcolor yellow
 			Write-Host "For a list of commands run: Get-Command -Module Microsoft.Xrm.Data.Powershell" -foregroundcolor yellow
+            
+            ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
+            
             return $global:conn    
         }
     }
@@ -123,6 +129,9 @@ function Connect-CrmOnline{
 			}
 
 			$global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $cs
+            
+            ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
+
 			return $global:conn
 		}
 		catch
@@ -173,6 +182,9 @@ function Connect-CrmOnline{
 			Write-Verbose ($cs.Replace($Credential.GetNetworkCredential().Password, "")) 
 
 			$global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $cs
+
+            ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
+
 			return $global:conn
 		}
 		catch
@@ -203,6 +215,9 @@ function Connect-CrmOnPremDiscovery{
     {
         $global:conn = Get-CrmConnection -InteractiveMode -Verbose
         Write-Verbose "You are now connected and may run any of the CRM Commands."
+        
+        ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
+
         return $global:conn 
     }
     else
@@ -263,6 +278,9 @@ function Connect-CrmOnPremDiscovery{
 		#yes, we know this isn't recommended BUT this cmdlet is only valid for user interaction in the console and shouldn't be used for non-interactive scenarios
         Write-Host "`nYou are now connected to: $organizationName" -foregroundcolor yellow
 		Write-Host "For a list of commands run: Get-Command -Module Microsoft.Xrm.Data.Powershell" -foregroundcolor yellow
+        
+        ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
+
         return $global:conn    
     }
 }
@@ -2531,153 +2549,6 @@ function Set-CrmRecordState{
 	}
 }
 
-function Add-CrmSecurityRoleToTeam{
-# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
-
-    [CmdletBinding()]
-    PARAM(
-        [parameter(Mandatory=$false)]
-        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
-        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord")]
-        [PSObject]$TeamRecord,
-        [parameter(Mandatory=$false, Position=2, ParameterSetName="CrmRecord")]
-        [PSObject]$SecurityRoleRecord,
-        [parameter(Mandatory=$true, Position=1, ParameterSetName="Id")]
-        [string]$TeamId,
-        [parameter(Mandatory=$false, Position=2, ParameterSetName="Id")]
-        [string]$SecurityRoleId,
-        [parameter(Mandatory=$false, Position=2)]
-        [string]$SecurityRoleName
-    )
-
-	$conn = VerifyCrmConnectionParam $conn
-
-    if($SecurityRoleRecord -eq $null -and $SecurityRoleId -eq "" -and $SecurityRoleName -eq "")
-    {
-        Write-Warning "You need to specify Security Role information"
-        return
-    }
-    
-    if($SecurityRoleName -ne "")
-    {
-        if($TeamRecord -eq $null -or $TeamRecord.businessunitid -eq $null)
-        {
-            $TeamRecord = Get-CrmRecord -conn $conn -EntityLogicalName team -Id $TeamId -Fields businessunitid
-        }
-
-        $fetch = @"
-        <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
-          <entity name="role">
-            <attribute name="businessunitid" />
-            <attribute name="roleid" />
-            <filter type="and">
-              <condition attribute="name" operator="eq" value="{0}" />
-              <condition attribute="businessunitid" operator="eq" value="{1}" />
-            </filter>
-          </entity>
-        </fetch>
-"@ -F $SecurityRoleName, $TeamRecord.businessunitid_Property.Value.Id
-        
-        $roles = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch)
-        if($roles.CrmRecords.Count -eq 0)
-        {
-            Write-Warning "Not Security Role found"
-            return
-        }
-        else
-        {
-            $role = $roles.CrmRecords[0]
-        }
-    }
-
-    if($SecurityRoleName -ne "")
-    {
-        Add-CrmRecordAssociation -conn $conn -CrmRecord1 $TeamRecord -CrmRecord2 $role -RelationshipName teamroles_association
-    }
-    elseif($TeamRecord -ne $null)
-    {
-        Add-CrmRecordAssociation -conn $conn -CrmRecord1 $TeamRecord -CrmRecord2 $SecurityRoleRecord -RelationshipName teamroles_association
-    }
-    else
-    {
-        Add-CrmRecordAssociation -conn $conn -EntityLogicalName1 team -Id1 $TeamId -EntityLogicalName2 role -Id2 $SecurityRoleId -RelationshipName teamroles_association
-    }
-}
-
-### Other Cmdlets added by Dynamics CRM PFE ###
-function Add-CrmSecurityRoleToUser{
-# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
-
-    [CmdletBinding()]
-    PARAM(
-        [parameter(Mandatory=$false)]
-        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
-        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord")]
-        [PSObject]$UserRecord,
-        [parameter(Mandatory=$false, Position=2, ParameterSetName="CrmRecord")]
-        [PSObject]$SecurityRoleRecord,
-        [parameter(Mandatory=$true, Position=1, ParameterSetName="Id")]
-        [string]$UserId,
-        [parameter(Mandatory=$false, Position=2, ParameterSetName="Id")]
-        [string]$SecurityRoleId,
-        [parameter(Mandatory=$false, Position=2)]
-        [string]$SecurityRoleName
-    )
-
-	$conn = VerifyCrmConnectionParam $conn
-
-    if($SecurityRoleRecord -eq $null -and $SecurityRoleId -eq "" -and $SecurityRoleName -eq "")
-    {
-        Write-Warning "You need to specify Security Role information"
-        return
-    }
-    
-    if($SecurityRoleName -ne "")
-    {
-        if($UserRecord -eq $null -or $UserRecord.businessunitid -eq $null)
-        {
-            $UserRecord = Get-CrmRecord -conn $conn -EntityLogicalName systemuser -Id $UserId -Fields businessunitid
-        }
-
-        $fetch = @"
-        <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
-          <entity name="role">
-            <attribute name="businessunitid" />
-            <attribute name="roleid" />
-            <filter type="and">
-              <condition attribute="name" operator="eq" value="{0}" />
-              <condition attribute="businessunitid" operator="eq" value="{1}" />
-            </filter>
-          </entity>
-        </fetch>
-"@ -F $SecurityRoleName, $UserRecord.businessunitid_Property.Value.Id
-        
-        $roles = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch)
-        if($roles.CrmRecords.Count -eq 0)
-        {
-            Write-Warning "Not Security Role found"
-            return
-        }
-        else
-        {
-            $role = $roles.CrmRecords[0]
-        }
-    }
-
-    if($SecurityRoleName -ne "")
-    {
-        Add-CrmRecordAssociation -conn $conn -CrmRecord1 $UserRecord -CrmRecord2 $role -RelationshipName systemuserroles_association
-    }
-    elseif($UserRecord -ne $null)
-    {
-        Add-CrmRecordAssociation -conn $conn -CrmRecord1 $UserRecord -CrmRecord2 $SecurityRoleRecord -RelationshipName systemuserroles_association
-    }
-    else
-    {
-        Add-CrmRecordAssociation -conn $conn -EntityLogicalName1 systemuser -Id1 $UserId -EntityLogicalName2 role -Id2 $SecurityRoleId -RelationshipName systemuserroles_association
-    }
-}
-
 function Approve-CrmEmailAddress{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
 
@@ -4299,6 +4170,152 @@ function Publish-CrmAllCustomization{
     #return $response
 }
 
+function Add-CrmSecurityRoleToTeam{
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+
+    [CmdletBinding()]
+    PARAM(
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord")]
+        [PSObject]$TeamRecord,
+        [parameter(Mandatory=$false, Position=2, ParameterSetName="CrmRecord")]
+        [PSObject]$SecurityRoleRecord,
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="Id")]
+        [string]$TeamId,
+        [parameter(Mandatory=$false, Position=2, ParameterSetName="Id")]
+        [string]$SecurityRoleId,
+        [parameter(Mandatory=$false, Position=2)]
+        [string]$SecurityRoleName
+    )
+
+	$conn = VerifyCrmConnectionParam $conn
+
+    if($SecurityRoleRecord -eq $null -and $SecurityRoleId -eq "" -and $SecurityRoleName -eq "")
+    {
+        Write-Warning "You need to specify Security Role information"
+        return
+    }
+    
+    if($SecurityRoleName -ne "")
+    {
+        if($TeamRecord -eq $null -or $TeamRecord.businessunitid -eq $null)
+        {
+            $TeamRecord = Get-CrmRecord -conn $conn -EntityLogicalName team -Id $TeamId -Fields businessunitid
+        }
+
+        $fetch = @"
+        <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
+          <entity name="role">
+            <attribute name="businessunitid" />
+            <attribute name="roleid" />
+            <filter type="and">
+              <condition attribute="name" operator="eq" value="{0}" />
+              <condition attribute="businessunitid" operator="eq" value="{1}" />
+            </filter>
+          </entity>
+        </fetch>
+"@ -F $SecurityRoleName, $TeamRecord.businessunitid_Property.Value.Id
+        
+        $roles = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch)
+        if($roles.CrmRecords.Count -eq 0)
+        {
+            Write-Warning "Not Security Role found"
+            return
+        }
+        else
+        {
+            $role = $roles.CrmRecords[0]
+        }
+    }
+
+    if($SecurityRoleName -ne "")
+    {
+        Add-CrmRecordAssociation -conn $conn -CrmRecord1 $TeamRecord -CrmRecord2 $role -RelationshipName teamroles_association
+    }
+    elseif($TeamRecord -ne $null)
+    {
+        Add-CrmRecordAssociation -conn $conn -CrmRecord1 $TeamRecord -CrmRecord2 $SecurityRoleRecord -RelationshipName teamroles_association
+    }
+    else
+    {
+        Add-CrmRecordAssociation -conn $conn -EntityLogicalName1 team -Id1 $TeamId -EntityLogicalName2 role -Id2 $SecurityRoleId -RelationshipName teamroles_association
+    }
+}
+
+function Add-CrmSecurityRoleToUser{
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+
+    [CmdletBinding()]
+    PARAM(
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="CrmRecord")]
+        [PSObject]$UserRecord,
+        [parameter(Mandatory=$false, Position=2, ParameterSetName="CrmRecord")]
+        [PSObject]$SecurityRoleRecord,
+        [parameter(Mandatory=$true, Position=1, ParameterSetName="Id")]
+        [string]$UserId,
+        [parameter(Mandatory=$false, Position=2, ParameterSetName="Id")]
+        [string]$SecurityRoleId,
+        [parameter(Mandatory=$false, Position=2)]
+        [string]$SecurityRoleName
+    )
+
+	$conn = VerifyCrmConnectionParam $conn
+
+    if($SecurityRoleRecord -eq $null -and $SecurityRoleId -eq "" -and $SecurityRoleName -eq "")
+    {
+        Write-Warning "You need to specify Security Role information"
+        return
+    }
+    
+    if($SecurityRoleName -ne "")
+    {
+        if($UserRecord -eq $null -or $UserRecord.businessunitid -eq $null)
+        {
+            $UserRecord = Get-CrmRecord -conn $conn -EntityLogicalName systemuser -Id $UserId -Fields businessunitid
+        }
+
+        $fetch = @"
+        <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
+          <entity name="role">
+            <attribute name="businessunitid" />
+            <attribute name="roleid" />
+            <filter type="and">
+              <condition attribute="name" operator="eq" value="{0}" />
+              <condition attribute="businessunitid" operator="eq" value="{1}" />
+            </filter>
+          </entity>
+        </fetch>
+"@ -F $SecurityRoleName, $UserRecord.businessunitid_Property.Value.Id
+        
+        $roles = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch)
+        if($roles.CrmRecords.Count -eq 0)
+        {
+            Write-Warning "Not Security Role found"
+            return
+        }
+        else
+        {
+            $role = $roles.CrmRecords[0]
+        }
+    }
+
+    if($SecurityRoleName -ne "")
+    {
+        Add-CrmRecordAssociation -conn $conn -CrmRecord1 $UserRecord -CrmRecord2 $role -RelationshipName systemuserroles_association
+    }
+    elseif($UserRecord -ne $null)
+    {
+        Add-CrmRecordAssociation -conn $conn -CrmRecord1 $UserRecord -CrmRecord2 $SecurityRoleRecord -RelationshipName systemuserroles_association
+    }
+    else
+    {
+        Add-CrmRecordAssociation -conn $conn -EntityLogicalName1 systemuser -Id1 $UserId -EntityLogicalName2 role -Id2 $SecurityRoleId -RelationshipName systemuserroles_association
+    }
+}
+
 function Remove-CrmSecurityRoleFromTeam{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
 
@@ -4318,9 +4335,9 @@ function Remove-CrmSecurityRoleFromTeam{
 
 	$conn = VerifyCrmConnectionParam $conn
 
-    if($PrincipalRecord -ne $null)
+    if($TeamRecord -ne $null)
     {
-        Remove-CrmRecordAssociation -conn $conn -CrmRecord1 $UserRecord -CrmRecord2 $SecurityRoleRecord -RelationshipName systemuserroles_association
+        Remove-CrmRecordAssociation -conn $conn -CrmRecord1 $TeamRecord -CrmRecord2 $SecurityRoleRecord -RelationshipName teamroles_association
     }
     else
     {
@@ -4347,7 +4364,44 @@ function Remove-CrmSecurityRoleFromUser{
 
 	$conn = VerifyCrmConnectionParam $conn
 
-    if($PrincipalRecord -ne $null)
+	if($SecurityRoleName -ne "")
+    {
+        if($UserRecord -eq $null -or $UserRecord.businessunitid -eq $null)
+        {
+            $UserRecord = Get-CrmRecord -conn $conn -EntityLogicalName systemuser -Id $UserId -Fields businessunitid
+        }
+
+        $fetch = @"
+        <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
+          <entity name="role">
+            <attribute name="businessunitid" />
+            <attribute name="roleid" />
+            <filter type="and">
+              <condition attribute="name" operator="eq" value="{0}" />
+              <condition attribute="businessunitid" operator="eq" value="{1}" />
+            </filter>
+          </entity>
+        </fetch>
+"@ -F $SecurityRoleName, $UserRecord.businessunitid_Property.Value.Id
+        
+        $roles = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch)
+        if($roles.CrmRecords.Count -eq 0)
+        {
+            Write-Warning "Not Security Role found"
+            return
+        }
+        else
+        {
+            $role = $roles.CrmRecords[0]
+        }
+    }
+
+    if($SecurityRoleName -ne "")
+    {
+        Add-CrmRecordAssociation -conn $conn -CrmRecord1 $UserRecord -CrmRecord2 $role -RelationshipName systemuserroles_association
+    }
+
+    if($UserRecord -ne $null)
     {
         Remove-CrmRecordAssociation -conn $conn -CrmRecord1 $UserRecord -CrmRecord2 $SecurityRoleRecord -RelationshipName systemuserroles_association
     }
@@ -5570,6 +5624,45 @@ function LastCrmConnectorException {
 function AddTls12Support {
 	#by default PowerShell will show Ssl3, Tls - since SSL3 is not desirable we will drop it and use Tls + Tls12
 	[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls -bor [System.Net.SecurityProtocolType]::Tls12
+}
+function ApplyCrmServiceClientObjectTemplate {
+    [CmdletBinding()]
+    PARAM( 
+        [parameter(Mandatory=$true)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
+    )
+    try{
+        $defaultPropsCrmServiceClient = @(
+            'IsReady',
+            'IsBatchOperationsAvailable',
+            'MaxRetryCount',
+            'RetryPauseTime', 
+            'Authority',
+            'ActiveAuthenticationType',
+            'OAuthUserId',
+            'TenantId',
+            'EnvironmentId',
+            'ConnectedOrgId',
+            'OrganizationServiceProxy',
+            'OrganizationWebProxyClient',
+            'CrmConnectOrgUriActual',
+            'ConnectedOrgFriendlyName',
+            'ConnectedOrgUniqueName',
+            'ConnectedOrgVersion',
+            'CallerId',
+            'CallerAADObjectId',
+            'DisableCrossThreadSafeties',
+            'SessionTrackingId',
+            'SdkVersionProperty',
+            'SessionTrackingId',
+            'ForceServerMetadataCacheConsistency'
+        )
+        $defaultPropsSetCrmServiceClient=New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultPropsCrmServiceClient)
+        $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultPropsSetCrmServiceClient)
+        $conn| Add-Member MemberSet PSStandardMembers $PSStandardMembers -Force
+    }Catch{
+        Write-Verbose "Failed to set a new PSStandardMember on connection object"
+    }
 }
 ## Taken from CRM SDK sample code
 ## https://msdn.microsoft.com/en-us/library/microsoft.crm.sdk.messages.retrieveentityribbonresponse.compressedentityxml.aspx
