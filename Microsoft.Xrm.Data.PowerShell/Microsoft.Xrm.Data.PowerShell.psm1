@@ -5643,17 +5643,14 @@ function ApplyCrmServiceClientObjectTemplate {
             'TenantId',
             'EnvironmentId',
             'ConnectedOrgId',
-            'OrganizationServiceProxy',
-            'OrganizationWebProxyClient',
             'CrmConnectOrgUriActual',
             'ConnectedOrgFriendlyName',
             'ConnectedOrgUniqueName',
             'ConnectedOrgVersion',
+            'SdkVersionProperty',
             'CallerId',
             'CallerAADObjectId',
             'DisableCrossThreadSafeties',
-            'SessionTrackingId',
-            'SdkVersionProperty',
             'SessionTrackingId',
             'ForceServerMetadataCacheConsistency'
         )
