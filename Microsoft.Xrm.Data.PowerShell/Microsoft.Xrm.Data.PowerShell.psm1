@@ -21,6 +21,9 @@ function Connect-CrmOnlineDiscovery{
         [switch]$InteractiveMode
     )
     AddTls12Support #make sure tls12 is enabled 
+    if ($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent -eq $true) {
+        Enable-CrmConnectorVerboseLogging
+    }
     if($InteractiveMode)
     {
         $global:conn = Get-CrmConnection -InteractiveMode -Verbose
@@ -107,6 +110,9 @@ function Connect-CrmOnline{
         [string]$ClientSecret
     )
     AddTls12Support #make sure tls12 is enabled 
+    if ($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent -eq $true) {
+        Enable-CrmConnectorVerboseLogging
+    }
 	if($ServerUrl.StartsWith("https://","CurrentCultureIgnoreCase") -ne $true){
 		Write-Verbose "ServerUrl is missing https, fixing URL: https://$ServerUrl"
 		$ServerUrl = "https://" + $ServerUrl
@@ -211,6 +217,9 @@ function Connect-CrmOnPremDiscovery{
         [switch]$InteractiveMode
     )
     AddTls12Support #make sure tls12 is enabled 
+    if ($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent -eq $true) {
+        Enable-CrmConnectorVerboseLogging
+    }
     if($InteractiveMode)
     {
         $global:conn = Get-CrmConnection -InteractiveMode -Verbose
@@ -5624,6 +5633,18 @@ function LastCrmConnectorException {
 function AddTls12Support {
 	#by default PowerShell will show Ssl3, Tls - since SSL3 is not desirable we will drop it and use Tls + Tls12
 	[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls -bor [System.Net.SecurityProtocolType]::Tls12
+}
+function Enable-CrmConnectorVerboseLogging {
+    $logfilename = "Microsoft.Xrm.Tooling.Connector.Verbose.log"
+    Write-Verbose "Enabling Microsoft.Xrm.Tooling.Connector verbose logging to $logfilename"
+    [Microsoft.Xrm.Tooling.Connector.TraceControlSettings]::TraceLevel = [System.Diagnostics.SourceLevels]::All
+    if(-not [Microsoft.Xrm.Tooling.Connector.TraceControlSettings]::AddTraceListener((New-Object System.Diagnostics.TextWriterTraceListener -ArgumentList $logfilename))){
+        Write-Warning "Microsoft.Xrm.Tooling.Connector.TraceControlSettings]::AddTraceListener for all levels failed."
+    }
+}
+function Disable-CrmConnectorVerboseLogging {
+    Write-Verbose "Calling: [Microsoft.Xrm.Tooling.Connector.TraceControlSettings]::CloseListeners()"
+    [Microsoft.Xrm.Tooling.Connector.TraceControlSettings]::CloseListeners()
 }
 function ApplyCrmServiceClientObjectTemplate {
     [CmdletBinding()]
