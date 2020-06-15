@@ -86,12 +86,12 @@ function Connect-CrmOnline{
         [Parameter(Position=1,Mandatory=$true, ParameterSetName="Creds")]
         [ValidatePattern('([\w-]+).crm([0-9]*).(microsoftdynamics|dynamics|crm[\w-]*).(com|de|us)')]
         [string]$ServerUrl, 
-		[parameter(Position=2, Mandatory=$true, ParameterSetName="Creds")]
+		[parameter(Position=2, Mandatory=$false, ParameterSetName="Creds")]
         [PSCredential]$Credential, 
 		[Parameter(Position=3,Mandatory=$false, ParameterSetName="Creds")]
         [switch]$ForceDiscovery,
 		[Parameter(Position=4,Mandatory=$false, ParameterSetName="Creds")]
-        [switch]$ForceOAuth, 
+        [switch]$ForceOAuth,
         [parameter(Position=2, Mandatory=$true, ParameterSetName="Secret")]
 		[Parameter(Position=5,Mandatory=$false, ParameterSetName="Creds")]
         [ValidateScript({
@@ -147,17 +147,33 @@ function Connect-CrmOnline{
 	}
 	else{
 		$cs = "RequireNewInstance=True"
-		$cs+= ";Username=$($Credential.UserName)"
-		$cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
 		$cs+= ";Url=$ServerUrl"
 	
 		#Default to Office365 Auth, allow oAuth to be used
 		if(!$OAuthClientId -and !$ForceOAuth){
 			Write-Verbose "Using AuthType=Office365"
+            if(-not $Credential){
+                Write-Verbose "Connection is not oAuth, Credential was not provided - prompting for credential"
+                $Credential = Get-Credential
+                if(-not $Credential){
+                    #user did not provide a credential - throw
+                    throw "Cannot create the CrmServiceClient, no credentials were provided"
+                }
+            }
 			$cs += ";AuthType=Office365"
+            $cs+= ";Username=$($Credential.UserName)"
+		    $cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
 		}
-		else{
-			Write-Verbose "Params -> ForceOAuth: {$ForceOAuth} ClientId: {$OAuthClientId} RedirectUri: {$OAuthRedirectUri}"
+        #use oAuth if requested -ForceOAuth
+		elseif($ForceOAuth){
+			Write-Verbose "Params Provided -> ForceOAuth: {$ForceOAuth} ClientId: {$OAuthClientId} RedirectUri: {$OAuthRedirectUri}"
+            #use credentials if provided
+            if($Credential){
+                Write-Verbose "Using provided credentials for oAuth"
+                $cs+= ";Username=$($Credential.UserName)"
+		        $cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
+            }
+
 			#use the clientid if provided, else use a provided clientid 
 			if($OAuthClientId){
 				Write-Verbose "Using provide "
@@ -171,21 +187,30 @@ function Connect-CrmOnline{
 				$cs+=";redirecturi=app://5d3e90d6-aa8e-48a8-8f2c-58b45cc67315"
 			}
 		}
-		#disable the discovery check by default 
+		#SkipDiscovery is true by default
 		if($ForceDiscovery){ 
 			Write-Verbose "ForceDiscovery: SkipDiscovery=False"
 			$cs+=";SkipDiscovery=False" 
-		}
-		else{ 
-			Write-Verbose "Default: SkipDiscovery=True"
-			$cs+=";SkipDiscovery=True" 
+            if(-not $Credential){
+                Write-Verbose "ForceDiscovery requiresa Credential which was not provided - prompting for credential value"
+                $Credential = Get-Credential
+                if(-not $Credential){
+                    #user did not provide a credential - throw
+                    throw "Cannot create the CrmServiceClient, no credentials were provided"
+                }
+            }
 		}
 		try
 		{
 			if(!$cs -or $cs.Length -eq 0){
 				throw "Cannot create the CrmServiceClient, the connection string is null"
 			}
-			Write-Verbose ($cs.Replace($Credential.GetNetworkCredential().Password, "")) 
+            #log the connection string to be helpful
+            $loggedConnectionString = $cs
+            if($Credential){
+                $loggedConnectionString = $cs.Replace($Credential.GetNetworkCredential().Password, "*******") 
+            }
+            Write-Verbose "ConnectionString:{$loggedConnectionString}"
 
 			$global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $cs
 
