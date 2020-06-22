@@ -4606,6 +4606,7 @@ function Set-CrmConnectionCallerId{
     $conn.OrganizationServiceProxy.CallerId = $CallerId
 }
 
+
 function Set-CrmConnectionTimeout{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
@@ -4618,17 +4619,19 @@ function Set-CrmConnectionTimeout{
         [switch]$SetDefault
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	#$conn = VerifyCrmConnectionParam $conn
 	#powershell 4.0+ is required for New-TimeSpan -Seconds $TimeoutInSeconds 
 	$newTimeout = New-Object System.TimeSpan -ArgumentList 0,0,120
 	if(!$SetDefault){
 	    $newTimeout = New-Object System.TimeSpan -ArgumentList 0,0,$TimeoutInSeconds
 	}
+	#set the timeout on the MaxConnectionTimeout static 
+    [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]::MaxConnectionTimeout = $newTimeout
+
 	if($conn.OrganizationServiceProxy -and $conn.OrganizationServiceProxy.Timeout){
 	    try{
 			Write-Verbose "Updating Timeout on OrganizationServiceProxy"
 			$conn.OrganizationServiceProxy.Timeout = $newTimeout
-			[Microsoft.Xrm.Tooling.Connector.CrmServiceClient]::MaxConnectionTimeout = $newTimeout
 	    }
 	    catch{
 			Write-Verbose "Failed to set the timeout value"        
@@ -4641,12 +4644,12 @@ function Set-CrmConnectionTimeout{
 			$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.CloseTimeout = $newTimeout
 			$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.ReceiveTimeout = $newTimeout
 			$conn.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.SendTimeout = $newTimeout
-			[Microsoft.Xrm.Tooling.Connector.CrmServiceClient]::MaxConnectionTimeout = $newTimeout
 	    }
 	    catch{
 			Write-Verbose "Failed to set the timeout values"
 	    }
 	}
+    Write-Warning "Please reconnect to CDS or CRM after setting the connection timeout or the new value might not be used in operations."
 }
 
 function Set-CrmSystemSettings {
