@@ -1349,7 +1349,6 @@ function Invoke-CrmRecordWorkflow{
         [parameter(ParameterSetName="CrmRecordWithWorkflowId")]
         [string]$WorkflowId
     )
-    write-warning "$WorkflowId"
 	$conn = VerifyCrmConnectionParam $conn
     if($CrmRecord -ne $null)
     {
