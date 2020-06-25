@@ -1351,18 +1351,33 @@ function Invoke-CrmRecordWorkflow{
     )
 	$conn = VerifyCrmConnectionParam $conn
     if($CrmRecord -ne $null)
-    {        
-        $Id = $CrmRecord.($CrmRecord.logicalname + "id")
+    {
+        $fieldName = $CrmRecord.logicalname + "id"
+        if(($CrmRecord|gm).Name.Contains("$fieldName")){
+            $Id = $CrmRecord.($fieldName)
+            Write-Verbose "RecordId set to: $Id"
+        }
+        elseif(($CrmRecord|gm).Name.Contains("activityid")){
+            $Id = $CrmRecord.("activityid")
+            Write-Verbose "RecordId set to: $Id"
+        }
+        else{
+            throw "Cannot determine entities Id attribute"
+        }
+        
     }
     elseif($EntityId -ne $null)
     {
         $Id = [guid]::Parse($EntityId)
+        Write-Verbose "RecordId set to: $Id"
     }
+
     try
     {
         $result = $null 
-        if($WorkflowName -ne $null){
-		        $fetch = @"
+        if(-not [string]::IsNullOrEmpty($WorkflowName)){
+            Write-Verbose "WorkflowName execution for workflow name: $WorkflowName"
+		    $fetch = @"
 <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false">
   <entity name="workflow">
     <attribute name="workflowid" />
@@ -1386,7 +1401,9 @@ function Invoke-CrmRecordWorkflow{
 			}
 			$WorkflowId = $workflowResult.CrmRecords[0].workflowid
         }
+
 		if($WorkflowId -ne $null){
+            Write-Verbose "WorkflowId execution for workflowid: $WorkflowId"
             $execWFReq = New-Object Microsoft.Crm.Sdk.Messages.ExecuteWorkflowRequest
             $execWFReq.EntityId = $Id
             $execWFReq.WorkflowId=$WorkflowId
