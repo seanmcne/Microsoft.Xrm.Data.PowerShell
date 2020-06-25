@@ -893,9 +893,10 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
     <CmdletObject verb="Connect" noun="CrmOnline">
       <Name>Connect-CrmOnline</Name>
       <Syntax>
-        <string>Connect-CrmOnline [-ConnectionString] &lt;String&gt; [[-ConnectionTimeoutInSeconds] &lt;Int32&gt;] [[-LogWriteDirectory] &lt;String&gt;]</string>
-        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [[-Credential] &lt;PSCredential&gt;] [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;String&gt;] [[-ConnectionTimeoutInSeconds] &lt;Int32&gt;] [[-LogWriteDirectory] &lt;String&gt;]</string>
-        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [-OAuthClientId] &lt;String&gt; [[-OAuthRedirectUri] &lt;String&gt;] [-ClientSecret] &lt;String&gt; [[-ConnectionTimeoutInSeconds] &lt;Int32&gt;] [[-LogWriteDirectory] &lt;String&gt;]</string>
+        <string>Connect-CrmOnline [-ConnectionString] &lt;String&gt; [-ConnectionTimeoutInSeconds &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
+        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;String&gt;] [-ConnectionTimeoutInSeconds &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
+        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [-Credential] &lt;PSCredential&gt; [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;String&gt;] [-ConnectionTimeoutInSeconds &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
+        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [-OAuthClientId] &lt;String&gt; [[-OAuthRedirectUri] &lt;String&gt;] [-ClientSecret] &lt;String&gt; [-ConnectionTimeoutInSeconds &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
       </Syntax>
       <GeneralHelp>
         <Synopsis>Connects to CRM Online organization without using Discovery Service.</Synopsis>
@@ -911,11 +912,12 @@ You can use Get-Credential to create Credential information.</Description>
       </GeneralHelp>
       <ParamSets>
         <CommandParameterSetInfo2 Name="connectionstring" Params="ConnectionString ConnectionTimeoutInSeconds LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="NoCreds" Params="ServerUrl ForceDiscovery ForceOAuth OAuthClientId OAuthRedirectUri ConnectionTimeoutInSeconds LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
         <CommandParameterSetInfo2 Name="Creds" Params="ServerUrl Credential ForceDiscovery ForceOAuth OAuthClientId OAuthRedirectUri ConnectionTimeoutInSeconds LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
         <CommandParameterSetInfo2 Name="Secret" Params="ServerUrl OAuthClientId OAuthRedirectUri ClientSecret ConnectionTimeoutInSeconds LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
       </ParamSets>
       <Parameters>
-        <ParameterDescription type="PSCredential" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
+        <ParameterDescription type="PSCredential" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
           <Name>Credential</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -932,15 +934,17 @@ You can use Get-Credential to create Credential information.</Description>
             <string>System.Management.Automation.ValidatePatternAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
           <Description>A Url of your Dynamics CRM Online organization.</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="3" globbing="false">
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
           <Name>ForceDiscovery</Name>
           <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
@@ -948,9 +952,10 @@ You can use Get-Credential to create Credential information.</Description>
           <Description>Forces the connector to verify an org connection with discovery (NOT COMPATIBLE with Partner CSP). </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="4" globbing="false">
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="3" globbing="false">
           <Name>ForceOAuth</Name>
           <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
@@ -958,10 +963,11 @@ You can use Get-Credential to create Credential information.</Description>
           <Description>Forces oAuth authentication via Azure Active Directory. If a credential is not provided, then Single Sign on will be attempted, if you wish to use a credential that is not your currently signed in user you may provide a credential.</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="5" globbing="false">
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="4" globbing="false">
           <Name>OAuthClientId</Name>
           <Attributes>
             <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
@@ -970,9 +976,10 @@ You can use Get-Credential to create Credential information.</Description>
           <Description>Azure Active Directory Native Application Id</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="6" globbing="false">
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="5" globbing="false">
           <Name>OAuthRedirectUri</Name>
           <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
@@ -1001,11 +1008,9 @@ You can use Get-Credential to create Credential information.</Description>
           <Description>Override the connectionstring used to connect to the instance, this can be used to debug scenarios or accomidate new options that may not be supported in the mainstream module. Please proceed with caution using this parameter as it could be removed in the future or may cause unintended consequences when used in combination with connection string parameters that are unexpected. </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
           <Name>ConnectionTimeoutInSeconds</Name>
           <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
@@ -1013,11 +1018,9 @@ You can use Get-Credential to create Credential information.</Description>
           <Description>Integer value for the connection timeout in seconds</Description>
           <DefaultValue>120</DefaultValue>
         </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="3" globbing="false">
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
           <Name>LogWriteDirectory</Name>
           <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
@@ -1055,7 +1058,7 @@ CallerId                       : 00000000-0000-0000-0000-000000000000</Output>
         <Example>
           <Name>Example 2 oAuth Single Sign on</Name>
           <Cmd>PS C:\&gt; Connect-CrmOnline -ServerUrl "https://contoso.crm.dynamics.com" -ForceOAuth</Cmd>
-          <Description>Connect to online using your organization URL using oAuth attempting single sign on.</Description>
+          <Description>Connect to online using your organization URL using oAuth attempting single sign on - sign on using ADAL and the browser is attempted when a credential is not provided. </Description>
           <Output>IsReady                        : True
 IsBatchOperationsAvailable     : True
 Authority                      : https://login.windows.net/{guid}/oauth2/authorize/
@@ -10771,7 +10774,7 @@ When omitting conn parameter, cmdlets automatically finds it.</Description>
     <CmdletObject verb="Enable" noun="CrmConnectorVerboseLogging">
       <Name>Enable-CrmConnectorVerboseLogging</Name>
       <Syntax>
-        <string>Enable-CrmConnectorVerboseLogging</string>
+        <string>Enable-CrmConnectorVerboseLogging [[-filePath] &lt;String&gt;]</string>
       </Syntax>
       <GeneralHelp>
         <Synopsis />
@@ -10785,9 +10788,20 @@ When omitting conn parameter, cmdlets automatically finds it.</Description>
         <ReturnTypeDescription />
       </GeneralHelp>
       <ParamSets>
-        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="" />
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="filePath Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
       </ParamSets>
-      <Parameters />
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="0" globbing="false">
+          <Name>filePath</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description />
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
       <Examples />
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />

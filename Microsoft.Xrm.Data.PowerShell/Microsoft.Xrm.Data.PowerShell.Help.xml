@@ -1996,14 +1996,14 @@ You can use Get-Credential to create Credential information.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 				<maml:name>ConnectionTimeoutInSeconds</maml:name>
 				<maml:description>
 					<maml:para>Integer value for the connection timeout in seconds</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 				<maml:name>LogWriteDirectory</maml:name>
 				<maml:description>
 					<maml:para>Override the directory location to store the Xrm.Tooling.Connector log files. The directory must already exist, and the user who is running the cmdlet must have Write permission to the directory. You must also use the -Verbose parameter along with the -LogWriteDirectory parameter to be able to store the log files in a custom location.</maml:para>
@@ -2021,48 +2021,41 @@ You can use Get-Credential to create Credential information.</maml:para>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
-				<maml:name>Credential</maml:name>
-				<maml:description>
-					<maml:para>A PS-Credential. You can invoke Get-Credential.</maml:para>
-				</maml:description>
-				<command:parameterValue required="true" variableLength="false">PSCredential</command:parameterValue>
-			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
 				<maml:name>ForceDiscovery</maml:name>
 				<maml:description>
 					<maml:para>Forces the connector to verify an org connection with discovery (NOT COMPATIBLE with Partner CSP). </maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="4">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
 				<maml:name>ForceOAuth</maml:name>
 				<maml:description>
 					<maml:para>Forces oAuth authentication via Azure Active Directory. If a credential is not provided, then Single Sign on will be attempted, if you wish to use a credential that is not your currently signed in user you may provide a credential.</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="5">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="4">
 				<maml:name>OAuthClientId</maml:name>
 				<maml:description>
 					<maml:para>Azure Active Directory Native Application Id</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="6">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="5">
 				<maml:name>OAuthRedirectUri</maml:name>
 				<maml:description>
 					<maml:para>Azure Active Directory Redirect Uri (Must match the Applications redirect uri) </maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 				<maml:name>ConnectionTimeoutInSeconds</maml:name>
 				<maml:description>
 					<maml:para>Integer value for the connection timeout in seconds</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 				<maml:name>LogWriteDirectory</maml:name>
 				<maml:description>
 					<maml:para>Override the directory location to store the Xrm.Tooling.Connector log files. The directory must already exist, and the user who is running the cmdlet must have Write permission to the directory. You must also use the -Verbose parameter along with the -LogWriteDirectory parameter to be able to store the log files in a custom location.</maml:para>
@@ -2079,14 +2072,73 @@ You can use Get-Credential to create Credential information.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="5">
+			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="2">
+				<maml:name>Credential</maml:name>
+				<maml:description>
+					<maml:para>A PS-Credential. You can invoke Get-Credential.</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">PSCredential</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
+				<maml:name>ForceDiscovery</maml:name>
+				<maml:description>
+					<maml:para>Forces the connector to verify an org connection with discovery (NOT COMPATIBLE with Partner CSP). </maml:para>
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
+				<maml:name>ForceOAuth</maml:name>
+				<maml:description>
+					<maml:para>Forces oAuth authentication via Azure Active Directory. If a credential is not provided, then Single Sign on will be attempted, if you wish to use a credential that is not your currently signed in user you may provide a credential.</maml:para>
+				</maml:description>
+				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="4">
 				<maml:name>OAuthClientId</maml:name>
 				<maml:description>
 					<maml:para>Azure Active Directory Native Application Id</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="6">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="5">
+				<maml:name>OAuthRedirectUri</maml:name>
+				<maml:description>
+					<maml:para>Azure Active Directory Redirect Uri (Must match the Applications redirect uri) </maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>ConnectionTimeoutInSeconds</maml:name>
+				<maml:description>
+					<maml:para>Integer value for the connection timeout in seconds</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+				<maml:name>LogWriteDirectory</maml:name>
+				<maml:description>
+					<maml:para>Override the directory location to store the Xrm.Tooling.Connector log files. The directory must already exist, and the user who is running the cmdlet must have Write permission to the directory. You must also use the -Verbose parameter along with the -LogWriteDirectory parameter to be able to store the log files in a custom location.</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+		</command:syntaxItem>
+		<command:syntaxItem>
+			<maml:name>Connect-CrmOnline</maml:name>
+			<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="1">
+				<maml:name>ServerUrl</maml:name>
+				<maml:description>
+					<maml:para>A Url of your Dynamics CRM Online organization.</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="4">
+				<maml:name>OAuthClientId</maml:name>
+				<maml:description>
+					<maml:para>Azure Active Directory Native Application Id</maml:para>
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="5">
 				<maml:name>OAuthRedirectUri</maml:name>
 				<maml:description>
 					<maml:para>Azure Active Directory Redirect Uri (Must match the Applications redirect uri) </maml:para>
@@ -2100,14 +2152,14 @@ You can use Get-Credential to create Credential information.</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 				<maml:name>ConnectionTimeoutInSeconds</maml:name>
 				<maml:description>
 					<maml:para>Integer value for the connection timeout in seconds</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 				<maml:name>LogWriteDirectory</maml:name>
 				<maml:description>
 					<maml:para>Override the directory location to store the Xrm.Tooling.Connector log files. The directory must already exist, and the user who is running the cmdlet must have Write permission to the directory. You must also use the -Verbose parameter along with the -LogWriteDirectory parameter to be able to store the log files in a custom location.</maml:para>
@@ -2117,7 +2169,7 @@ You can use Get-Credential to create Credential information.</maml:para>
 		</command:syntaxItem>
 	</command:syntax>
 	<command:parameters>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
+		<command:parameter required="true" variableLength="false" globbing="false" pipelineInput="false" position="2">
 			<maml:name>Credential</maml:name>
 			<maml:description>
 				<maml:para>A PS-Credential. You can invoke Get-Credential.</maml:para>
@@ -2141,7 +2193,7 @@ You can use Get-Credential to create Credential information.</maml:para>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
 			<maml:name>ForceDiscovery</maml:name>
 			<maml:description>
 				<maml:para>Forces the connector to verify an org connection with discovery (NOT COMPATIBLE with Partner CSP). </maml:para>
@@ -2153,7 +2205,7 @@ You can use Get-Credential to create Credential information.</maml:para>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="4">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
 			<maml:name>ForceOAuth</maml:name>
 			<maml:description>
 				<maml:para>Forces oAuth authentication via Azure Active Directory. If a credential is not provided, then Single Sign on will be attempted, if you wish to use a credential that is not your currently signed in user you may provide a credential.</maml:para>
@@ -2165,7 +2217,7 @@ You can use Get-Credential to create Credential information.</maml:para>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="5">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="4">
 			<maml:name>OAuthClientId</maml:name>
 			<maml:description>
 				<maml:para>Azure Active Directory Native Application Id</maml:para>
@@ -2177,7 +2229,7 @@ You can use Get-Credential to create Credential information.</maml:para>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="6">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="5">
 			<maml:name>OAuthRedirectUri</maml:name>
 			<maml:description>
 				<maml:para>Azure Active Directory Redirect Uri (Must match the Applications redirect uri) </maml:para>
@@ -2213,7 +2265,7 @@ You can use Get-Credential to create Credential information.</maml:para>
 			</dev:type>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 			<maml:name>ConnectionTimeoutInSeconds</maml:name>
 			<maml:description>
 				<maml:para>Integer value for the connection timeout in seconds</maml:para>
@@ -2225,7 +2277,7 @@ You can use Get-Credential to create Credential information.</maml:para>
 			</dev:type>
 			<dev:defaultValue>120</dev:defaultValue>
 		</command:parameter>
-		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 			<maml:name>LogWriteDirectory</maml:name>
 			<maml:description>
 				<maml:para>Override the directory location to store the Xrm.Tooling.Connector log files. The directory must already exist, and the user who is running the cmdlet must have Write permission to the directory. You must also use the -Verbose parameter along with the -LogWriteDirectory parameter to be able to store the log files in a custom location.</maml:para>
@@ -2317,7 +2369,7 @@ CallerId                       : 00000000-0000-0000-0000-000000000000</maml:para
 			</maml:introduction>
 			<dev:code>PS C:\&gt; Connect-CrmOnline -ServerUrl &quot;https://contoso.crm.dynamics.com&quot; -ForceOAuth</dev:code>
 			<dev:remarks>
-				<maml:para>Connect to online using your organization URL using oAuth attempting single sign on.</maml:para>
+				<maml:para>Connect to online using your organization URL using oAuth attempting single sign on - sign on using ADAL and the browser is attempted when a credential is not provided. </maml:para>
 				<maml:para />
 				<maml:para />
 				<maml:para>IsReady                        : True
@@ -22780,9 +22832,29 @@ When omitting conn parameter, cmdlets automatically finds it.</maml:para>
 	<command:syntax>
 		<command:syntaxItem>
 			<maml:name>Enable-CrmConnectorVerboseLogging</maml:name>
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="0">
+				<maml:name>filePath</maml:name>
+				<maml:description>
+					<maml:para />
+				</maml:description>
+				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			</command:parameter>
 		</command:syntaxItem>
 	</command:syntax>
-	<command:parameters>	</command:parameters>
+	<command:parameters>
+		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="0">
+			<maml:name>filePath</maml:name>
+			<maml:description>
+				<maml:para />
+			</maml:description>
+			<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+			<dev:type>
+				<maml:name>String</maml:name>
+				<maml:uri/>
+			</dev:type>
+			<dev:defaultValue></dev:defaultValue>
+		</command:parameter>
+	</command:parameters>
 	<command:inputTypes>
 		<command:inputType>
 			<dev:type>

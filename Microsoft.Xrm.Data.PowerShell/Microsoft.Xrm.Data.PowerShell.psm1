@@ -79,23 +79,27 @@ function Connect-CrmOnlineDiscovery{
 }
 
 function Connect-CrmOnline{
-# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+# //// .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM( 
         [parameter(Position=1, Mandatory=$true, ParameterSetName="connectionstring")]
         [string]$ConnectionString, 
         [parameter(Position=1, Mandatory=$true, ParameterSetName="Secret")]
         [Parameter(Position=1,Mandatory=$true, ParameterSetName="Creds")]
+        [Parameter(Position=1,Mandatory=$true, ParameterSetName="NoCreds")]
         [ValidatePattern('([\w-]+).crm([0-9]*).(microsoftdynamics|dynamics|crm[\w-]*).(com|de|us)')]
         [string]$ServerUrl, 
-		[parameter(Position=2, Mandatory=$false, ParameterSetName="Creds")]
+		[parameter(Position=2, Mandatory=$true, ParameterSetName="Creds")]
         [PSCredential]$Credential, 
 		[Parameter(Position=3,Mandatory=$false, ParameterSetName="Creds")]
+		[Parameter(Position=2,Mandatory=$false, ParameterSetName="NoCreds")]
         [switch]$ForceDiscovery,
 		[Parameter(Position=4,Mandatory=$false, ParameterSetName="Creds")]
+		[Parameter(Position=3,Mandatory=$false, ParameterSetName="NoCreds")]
         [switch]$ForceOAuth,
         [parameter(Position=2, Mandatory=$true, ParameterSetName="Secret")]
 		[Parameter(Position=5,Mandatory=$false, ParameterSetName="Creds")]
+		[Parameter(Position=4,Mandatory=$false, ParameterSetName="NoCreds")]
         [ValidateScript({
             try {
                 [System.Guid]::Parse($_) | Out-Null
@@ -107,16 +111,11 @@ function Connect-CrmOnline{
         [string]$OAuthClientId,
         [parameter(Position=3, Mandatory=$false, ParameterSetName="Secret")]
 		[Parameter(Position=6,Mandatory=$false, ParameterSetName="Creds")]
+		[Parameter(Position=5,Mandatory=$false, ParameterSetName="NoCreds")]
         [string]$OAuthRedirectUri, 
 		[parameter(Position=4, Mandatory=$true, ParameterSetName="Secret")]
         [string]$ClientSecret, 
-        [parameter(Position=2, Mandatory=$false, ParameterSetName="connectionstring")]
-		[parameter(Position=5, Mandatory=$false, ParameterSetName="Secret")]
-		[Parameter(Position=7,Mandatory=$false, ParameterSetName="Creds")]
         [int]$ConnectionTimeoutInSeconds,
-        [parameter(Position=3, Mandatory=$false, ParameterSetName="connectionstring")]
-		[parameter(Position=6, Mandatory=$false, ParameterSetName="Secret")]
-		[Parameter(Position=8,Mandatory=$false, ParameterSetName="Creds")]
         [string]$LogWriteDirectory
     )
     AddTls12Support #make sure tls12 is enabled 
@@ -177,14 +176,15 @@ function Connect-CrmOnline{
 		if(!$OAuthClientId -and !$ForceOAuth){
 			Write-Verbose "Using AuthType=Office365"
             if(-not $Credential){
-                Write-Verbose "Connection is not oAuth, Credential was not provided - prompting for credential"
-                $Credential = Get-Credential
+                #user did not provide a credential
+                Write-Warning "Cannot create the CrmServiceClient, no credentials were provided. Credentials are required for an AuthType of Office365."
+                $Credential = Get-Credential 
                 if(-not $Credential){
-                    #user did not provide a credential - throw
-                    throw "Cannot create the CrmServiceClient, no credentials were provided"
+                    throw "Cannot create the CrmServiceClient, no credentials were provided. Credentials are required for an AuthType of Office365."
                 }
             }
-			$cs += ";AuthType=Office365"
+            
+			$cs+= ";AuthType=Office365"
             $cs+= ";Username=$($Credential.UserName)"
 		    $cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
 		}
@@ -196,8 +196,10 @@ function Connect-CrmOnline{
                 Write-Verbose "Using provided credentials for oAuth"
                 $cs+= ";Username=$($Credential.UserName)"
 		        $cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
+            }else{
+                $cs+= ";Username=$($Credential.UserName)"
+                Write-Verbose "No credential provided, attempting single sign on with no credentials in the connectionstring"
             }
-
 			#use the clientid if provided, else use a provided clientid 
 			if($OAuthClientId){
 				Write-Verbose "Using provide "
@@ -1401,6 +1403,7 @@ function Invoke-CrmRecordWorkflow{
     )
     write-warning "$WorkflowId"
 	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
+    
     if($CrmRecord -ne $null)
     {
         $fieldName = $CrmRecord.logicalname + "id"
@@ -1415,7 +1418,6 @@ function Invoke-CrmRecordWorkflow{
         else{
             throw "Cannot determine entities Id attribute"
         }
-        
     }
     elseif($EntityId -ne $null)
     {
@@ -5754,7 +5756,8 @@ function ApplyCrmServiceClientObjectTemplate {
             'CallerAADObjectId',
             'DisableCrossThreadSafeties',
             'SessionTrackingId',
-            'ForceServerMetadataCacheConsistency'
+            'ForceServerMetadataCacheConsistency', 
+            'LastCrmError'
         )
         $defaultPropsSetCrmServiceClient=New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultPropsCrmServiceClient)
         $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultPropsSetCrmServiceClient)
