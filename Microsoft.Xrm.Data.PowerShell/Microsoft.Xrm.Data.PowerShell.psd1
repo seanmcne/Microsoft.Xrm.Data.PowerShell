@@ -116,12 +116,13 @@ PrivateData = @{
         # ReleaseNotes of this module
         ReleaseNotes = '
 Including newer xrm tooling which has the following improvements:
+- 3.3.0.897 Fixed an issue with sovereign cloud discovery reference data that would prevent a login control from picking the correct global discovery server when connecting.
 - 3.3.0.891 Fixed an error where discovery would be used when using AD and IFD to connect to onpremise even if connection strings where used.
 - 3.3.0.890 Fixed an error where timeout property was not properly assigned when using Non-oAuth types
 - 3.3.0.890 Fixed an error with setting CallerId when ClientSecret Auth type is used.  
 Other Changes: 
-- Updated security role functions 
-- Added new formatting for the conn object to avoid showing the current auth token
+- Updated to attempting SSO with oAuth by default 
+- Added option for debugging connections using a provided connectionstring 
 - source for connector: https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/'
         # Prerelease = '-alpha'
 
