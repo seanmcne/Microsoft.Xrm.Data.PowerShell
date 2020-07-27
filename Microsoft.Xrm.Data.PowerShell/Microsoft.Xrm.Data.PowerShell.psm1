@@ -113,11 +113,11 @@ function Connect-CrmOnline{
         [parameter(Position=2, Mandatory=$false, ParameterSetName="connectionstring")]
 		[parameter(Position=5, Mandatory=$false, ParameterSetName="Secret")]
 		[Parameter(Position=7,Mandatory=$false, ParameterSetName="Creds")]
-        [int]$connectionTimeoutInSeconds,
+        [int]$ConnectionTimeoutInSeconds,
         [parameter(Position=3, Mandatory=$false, ParameterSetName="connectionstring")]
 		[parameter(Position=6, Mandatory=$false, ParameterSetName="Secret")]
 		[Parameter(Position=8,Mandatory=$false, ParameterSetName="Creds")]
-        [string]$logWriteDirectory
+        [string]$LogWriteDirectory
     )
     AddTls12Support #make sure tls12 is enabled 
     if ($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent -eq $true) {
@@ -216,7 +216,7 @@ function Connect-CrmOnline{
 			Write-Verbose "ForceDiscovery: SkipDiscovery=False"
 			$cs+=";SkipDiscovery=False" 
             if(-not $Credential){
-                Write-Verbose "ForceDiscovery requiresa Credential which was not provided - prompting for credential value"
+                Write-Verbose "ForceDiscovery requires a Credential which was not provided - prompting for credential value"
                 $Credential = Get-Credential
                 if(-not $Credential){
                     #user did not provide a credential - throw
@@ -5708,7 +5708,15 @@ function AddTls12Support {
 	[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls -bor [System.Net.SecurityProtocolType]::Tls12
 }
 function Enable-CrmConnectorVerboseLogging {
+    [CmdletBinding()]
+    PARAM( 
+        [parameter(Mandatory=$false)]
+        [string]$filePath
+    )
     $logfilename = "Microsoft.Xrm.Tooling.Connector.Verbose.log"
+    if(-not [string]::IsNullOrEmpty($filePath)){
+        $logfilename = "$filePath\$logfilename"
+    }
     Write-Verbose "Enabling Microsoft.Xrm.Tooling.Connector verbose logging to $logfilename"
     [Microsoft.Xrm.Tooling.Connector.TraceControlSettings]::TraceLevel = [System.Diagnostics.SourceLevels]::All
     if(-not [Microsoft.Xrm.Tooling.Connector.TraceControlSettings]::AddTraceListener((New-Object System.Diagnostics.TextWriterTraceListener -ArgumentList $logfilename))){

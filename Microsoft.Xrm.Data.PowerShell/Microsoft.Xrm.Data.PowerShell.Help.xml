@@ -1997,14 +1997,14 @@ You can use Get-Credential to create Credential information.</maml:para>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
-				<maml:name>connectionTimeoutInSeconds</maml:name>
+				<maml:name>ConnectionTimeoutInSeconds</maml:name>
 				<maml:description>
 					<maml:para>Integer value for the connection timeout in seconds</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
-				<maml:name>logWriteDirectory</maml:name>
+				<maml:name>LogWriteDirectory</maml:name>
 				<maml:description>
 					<maml:para>Override the directory location to store the Xrm.Tooling.Connector log files. The directory must already exist, and the user who is running the cmdlet must have Write permission to the directory. You must also use the -Verbose parameter along with the -LogWriteDirectory parameter to be able to store the log files in a custom location.</maml:para>
 				</maml:description>
@@ -2056,14 +2056,14 @@ You can use Get-Credential to create Credential information.</maml:para>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
-				<maml:name>connectionTimeoutInSeconds</maml:name>
+				<maml:name>ConnectionTimeoutInSeconds</maml:name>
 				<maml:description>
 					<maml:para>Integer value for the connection timeout in seconds</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
-				<maml:name>logWriteDirectory</maml:name>
+				<maml:name>LogWriteDirectory</maml:name>
 				<maml:description>
 					<maml:para>Override the directory location to store the Xrm.Tooling.Connector log files. The directory must already exist, and the user who is running the cmdlet must have Write permission to the directory. You must also use the -Verbose parameter along with the -LogWriteDirectory parameter to be able to store the log files in a custom location.</maml:para>
 				</maml:description>
@@ -2101,14 +2101,14 @@ You can use Get-Credential to create Credential information.</maml:para>
 				<command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
-				<maml:name>connectionTimeoutInSeconds</maml:name>
+				<maml:name>ConnectionTimeoutInSeconds</maml:name>
 				<maml:description>
 					<maml:para>Integer value for the connection timeout in seconds</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
 			</command:parameter>
 			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
-				<maml:name>logWriteDirectory</maml:name>
+				<maml:name>LogWriteDirectory</maml:name>
 				<maml:description>
 					<maml:para>Override the directory location to store the Xrm.Tooling.Connector log files. The directory must already exist, and the user who is running the cmdlet must have Write permission to the directory. You must also use the -Verbose parameter along with the -LogWriteDirectory parameter to be able to store the log files in a custom location.</maml:para>
 				</maml:description>
@@ -2214,7 +2214,7 @@ You can use Get-Credential to create Credential information.</maml:para>
 			<dev:defaultValue></dev:defaultValue>
 		</command:parameter>
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2">
-			<maml:name>connectionTimeoutInSeconds</maml:name>
+			<maml:name>ConnectionTimeoutInSeconds</maml:name>
 			<maml:description>
 				<maml:para>Integer value for the connection timeout in seconds</maml:para>
 			</maml:description>
@@ -2226,7 +2226,7 @@ You can use Get-Credential to create Credential information.</maml:para>
 			<dev:defaultValue>120</dev:defaultValue>
 		</command:parameter>
 		<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="3">
-			<maml:name>logWriteDirectory</maml:name>
+			<maml:name>LogWriteDirectory</maml:name>
 			<maml:description>
 				<maml:para>Override the directory location to store the Xrm.Tooling.Connector log files. The directory must already exist, and the user who is running the cmdlet must have Write permission to the directory. You must also use the -Verbose parameter along with the -LogWriteDirectory parameter to be able to store the log files in a custom location.</maml:para>
 			</maml:description>
@@ -2437,7 +2437,7 @@ _sdkVersionProperty                 : 9.1.0000.0000</maml:para>
 			<maml:introduction>
 				<maml:paragraph>PS C:\&gt;</maml:paragraph>
 			</maml:introduction>
-			<dev:code>PS C:\&gt; Connect-CrmOnline -ConnectionString &quot;RequireNewInstance=True;Url=https://naosrtw.crm.dynamics.com;AuthType=ClientSecret;ClientId=812fad6d-4727-44f5-b02e-f35d74efb78e;SkipDiscovery=True;ClientSecret=T_DA0EY+DdfaJFH3/DFLK@QoFbY&quot; -connectionTimeoutInSeconds 500 -logWriteDirectory &quot;C:\temp\&quot;</dev:code>
+			<dev:code>PS C:\&gt; Connect-CrmOnline -ConnectionString &quot;RequireNewInstance=True;Url=https://naosrtw.crm.dynamics.com;AuthType=ClientSecret;ClientId=812fad6d-4727-44f5-b02e-f35d74efb78e;SkipDiscovery=True;ClientSecret=T_DA0EY+DdfaJFH3/DFLK@QoFbY&quot; -ConnectionTimeoutInSeconds 500 -LogWriteDirectory &quot;C:\temp\&quot;</dev:code>
 			<dev:remarks>
 				<maml:para>Connect to a CDS instance as an application user, using a custom connectionstring </maml:para>
 				<maml:para>Use with caution and *only* for debugging as this may change or parameter may be removed in the future. </maml:para>

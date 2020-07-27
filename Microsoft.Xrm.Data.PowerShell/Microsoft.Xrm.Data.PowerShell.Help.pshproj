@@ -893,9 +893,9 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
     <CmdletObject verb="Connect" noun="CrmOnline">
       <Name>Connect-CrmOnline</Name>
       <Syntax>
-        <string>Connect-CrmOnline [-ConnectionString] &lt;String&gt; [[-connectionTimeoutInSeconds] &lt;Int32&gt;] [[-logWriteDirectory] &lt;String&gt;]</string>
-        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [[-Credential] &lt;PSCredential&gt;] [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;String&gt;] [[-connectionTimeoutInSeconds] &lt;Int32&gt;] [[-logWriteDirectory] &lt;String&gt;]</string>
-        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [-OAuthClientId] &lt;String&gt; [[-OAuthRedirectUri] &lt;String&gt;] [-ClientSecret] &lt;String&gt; [[-connectionTimeoutInSeconds] &lt;Int32&gt;] [[-logWriteDirectory] &lt;String&gt;]</string>
+        <string>Connect-CrmOnline [-ConnectionString] &lt;String&gt; [[-ConnectionTimeoutInSeconds] &lt;Int32&gt;] [[-LogWriteDirectory] &lt;String&gt;]</string>
+        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [[-Credential] &lt;PSCredential&gt;] [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;String&gt;] [[-ConnectionTimeoutInSeconds] &lt;Int32&gt;] [[-LogWriteDirectory] &lt;String&gt;]</string>
+        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [-OAuthClientId] &lt;String&gt; [[-OAuthRedirectUri] &lt;String&gt;] [-ClientSecret] &lt;String&gt; [[-ConnectionTimeoutInSeconds] &lt;Int32&gt;] [[-LogWriteDirectory] &lt;String&gt;]</string>
       </Syntax>
       <GeneralHelp>
         <Synopsis>Connects to CRM Online organization without using Discovery Service.</Synopsis>
@@ -910,9 +910,9 @@ You can use Get-Credential to create Credential information.</Description>
         <ReturnTypeDescription />
       </GeneralHelp>
       <ParamSets>
-        <CommandParameterSetInfo2 Name="connectionstring" Params="ConnectionString connectionTimeoutInSeconds logWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
-        <CommandParameterSetInfo2 Name="Creds" Params="ServerUrl Credential ForceDiscovery ForceOAuth OAuthClientId OAuthRedirectUri connectionTimeoutInSeconds logWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
-        <CommandParameterSetInfo2 Name="Secret" Params="ServerUrl OAuthClientId OAuthRedirectUri ClientSecret connectionTimeoutInSeconds logWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="connectionstring" Params="ConnectionString ConnectionTimeoutInSeconds LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="Creds" Params="ServerUrl Credential ForceDiscovery ForceOAuth OAuthClientId OAuthRedirectUri ConnectionTimeoutInSeconds LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="Secret" Params="ServerUrl OAuthClientId OAuthRedirectUri ClientSecret ConnectionTimeoutInSeconds LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
       </ParamSets>
       <Parameters>
         <ParameterDescription type="PSCredential" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
@@ -1002,7 +1002,7 @@ You can use Get-Credential to create Credential information.</Description>
           <DefaultValue />
         </ParameterDescription>
         <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
-          <Name>connectionTimeoutInSeconds</Name>
+          <Name>ConnectionTimeoutInSeconds</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -1014,7 +1014,7 @@ You can use Get-Credential to create Credential information.</Description>
           <DefaultValue>120</DefaultValue>
         </ParameterDescription>
         <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="3" globbing="false">
-          <Name>logWriteDirectory</Name>
+          <Name>LogWriteDirectory</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
@@ -1134,7 +1134,7 @@ _sdkVersionProperty                 : 9.1.0000.0000</Output>
         </Example>
         <Example>
           <Name>Example 5 ConnectionString FOR DEBUGGING</Name>
-          <Cmd>PS C:\&gt; Connect-CrmOnline -ConnectionString "RequireNewInstance=True;Url=https://naosrtw.crm.dynamics.com;AuthType=ClientSecret;ClientId=812fad6d-4727-44f5-b02e-f35d74efb78e;SkipDiscovery=True;ClientSecret=T_DA0EY+DdfaJFH3/DFLK@QoFbY" -connectionTimeoutInSeconds 500 -logWriteDirectory "C:\temp\"</Cmd>
+          <Cmd>PS C:\&gt; Connect-CrmOnline -ConnectionString "RequireNewInstance=True;Url=https://naosrtw.crm.dynamics.com;AuthType=ClientSecret;ClientId=812fad6d-4727-44f5-b02e-f35d74efb78e;SkipDiscovery=True;ClientSecret=T_DA0EY+DdfaJFH3/DFLK@QoFbY" -ConnectionTimeoutInSeconds 500 -LogWriteDirectory "C:\temp\"</Cmd>
           <Description>Connect to a CDS instance as an application user, using a custom connectionstring 
 
 Use with caution and *only* for debugging as this may change or parameter may be removed in the future. </Description>
