@@ -79,7 +79,7 @@ function Connect-CrmOnlineDiscovery{
 }
 
 function Connect-CrmOnline{
-# //// .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM( 
         [parameter(Position=1, Mandatory=$true, ParameterSetName="connectionstring")]
