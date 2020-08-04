@@ -116,7 +116,8 @@ function Connect-CrmOnline{
 		[parameter(Position=4, Mandatory=$true, ParameterSetName="Secret")]
         [string]$ClientSecret, 
         [int]$ConnectionTimeoutInSeconds,
-        [string]$LogWriteDirectory
+        [string]$LogWriteDirectory, 
+        [switch]$BypassTokenCache
     )
     AddTls12Support #make sure tls12 is enabled 
     if ($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent -eq $true) {
@@ -148,6 +149,9 @@ function Connect-CrmOnline{
         if(-not [string]::IsNullOrEmpty($OAuthRedirectUri)){
 		    $cs += ";redirecturi=$OAuthRedirectUri"
         }
+        if($BypassTokenCache){
+            $cs += ";TokenCacheStorePath="
+        }
 		$cs += ";SkipDiscovery=True"
 		$cs += ";ClientSecret=$ClientSecret"
 		Write-Verbose ($cs.Replace($ClientSecret, "*******"))
@@ -171,7 +175,9 @@ function Connect-CrmOnline{
 	else{
 		$cs = "RequireNewInstance=True"
 		$cs+= ";Url=$ServerUrl"
-	
+        if($BypassTokenCache){
+            $cs += ";TokenCacheStorePath="
+        }
 		#Default to Office365 Auth, allow oAuth to be used
 		if(!$OAuthClientId -and !$ForceOAuth){
 			Write-Verbose "Using AuthType=Office365"
@@ -183,7 +189,6 @@ function Connect-CrmOnline{
                     throw "Cannot create the CrmServiceClient, no credentials were provided. Credentials are required for an AuthType of Office365."
                 }
             }
-            
 			$cs+= ";AuthType=Office365"
             $cs+= ";Username=$($Credential.UserName)"
 		    $cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
@@ -197,7 +202,6 @@ function Connect-CrmOnline{
                 $cs+= ";Username=$($Credential.UserName)"
 		        $cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
             }else{
-                $cs+= ";Username=$($Credential.UserName)"
                 Write-Verbose "No credential provided, attempting single sign on with no credentials in the connectionstring"
             }
 			#use the clientid if provided, else use a provided clientid 
@@ -248,7 +252,7 @@ function Connect-CrmOnline{
 		{
 			throw $_
 		}  
-	}  
+	}
 }
 
 function Connect-CrmOnPremDiscovery{
