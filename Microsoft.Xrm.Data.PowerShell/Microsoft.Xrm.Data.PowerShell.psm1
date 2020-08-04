@@ -127,7 +127,6 @@ function Connect-CrmOnline{
 		Write-Verbose "ServerUrl is missing https, fixing URL: https://$ServerUrl"
 		$ServerUrl = "https://" + $ServerUrl
 	}
-	#Write-Verbose "Connecting to: $ServerUrl"
 
     if($ConnectionString){
         if(!$ConnectionString -or $ConnectionString.Length -eq 0){
