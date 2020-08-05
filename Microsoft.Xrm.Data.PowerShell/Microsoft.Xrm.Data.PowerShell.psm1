@@ -115,6 +115,8 @@ function Connect-CrmOnline{
         [string]$OAuthRedirectUri, 
 		[parameter(Position=4, Mandatory=$true, ParameterSetName="Secret")]
         [string]$ClientSecret, 
+        [parameter(Position=5, Mandatory=$false, ParameterSetName="NoCreds")]
+        [string]$Username, 
         [int]$ConnectionTimeoutInSeconds,
         [string]$LogWriteDirectory, 
         [switch]$BypassTokenCache
@@ -174,6 +176,10 @@ function Connect-CrmOnline{
 	else{
 		$cs = "RequireNewInstance=True"
 		$cs+= ";Url=$ServerUrl"
+
+        if(-not [string]::IsNullOrEmpty($Username)){
+            $cs += ";Username=$UserName"
+        }
         if($BypassTokenCache){
             $cs += ";TokenCacheStorePath="
         }
@@ -406,7 +412,7 @@ function New-CrmRecord{
         {  
             $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
             
-            $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
+            $newfield.Type = MapFieldTypeByFieldValue -Value $fie.Value
             
             $newfield.Value = $field.Value
             $newfields.Add($field.Key, $newfield)

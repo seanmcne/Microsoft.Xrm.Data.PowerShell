@@ -893,10 +893,10 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
     <CmdletObject verb="Connect" noun="CrmOnline">
       <Name>Connect-CrmOnline</Name>
       <Syntax>
-        <string>Connect-CrmOnline [-ConnectionString] &lt;String&gt; [-ConnectionTimeoutInSeconds &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
-        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;String&gt;] [-ConnectionTimeoutInSeconds &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
-        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [-Credential] &lt;PSCredential&gt; [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;String&gt;] [-ConnectionTimeoutInSeconds &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
-        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [-OAuthClientId] &lt;String&gt; [[-OAuthRedirectUri] &lt;String&gt;] [-ClientSecret] &lt;String&gt; [-ConnectionTimeoutInSeconds &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
+        <string>Connect-CrmOnline [-ConnectionString] &lt;String&gt; [-ConnectionTimeoutInSeconds &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;] [-BypassTokenCache]</string>
+        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;String&gt;] [[-Username] &lt;String&gt;] [-ConnectionTimeoutInSeconds &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;] [-BypassTokenCache]</string>
+        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [-Credential] &lt;PSCredential&gt; [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;String&gt;] [-ConnectionTimeoutInSeconds &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;] [-BypassTokenCache]</string>
+        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [-OAuthClientId] &lt;String&gt; [[-OAuthRedirectUri] &lt;String&gt;] [-ClientSecret] &lt;String&gt; [-ConnectionTimeoutInSeconds &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;] [-BypassTokenCache]</string>
       </Syntax>
       <GeneralHelp>
         <Synopsis>Connects to CRM Online organization without using Discovery Service.</Synopsis>
@@ -911,10 +911,10 @@ You can use Get-Credential to create Credential information.</Description>
         <ReturnTypeDescription />
       </GeneralHelp>
       <ParamSets>
-        <CommandParameterSetInfo2 Name="connectionstring" Params="ConnectionString ConnectionTimeoutInSeconds LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
-        <CommandParameterSetInfo2 Name="NoCreds" Params="ServerUrl ForceDiscovery ForceOAuth OAuthClientId OAuthRedirectUri ConnectionTimeoutInSeconds LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
-        <CommandParameterSetInfo2 Name="Creds" Params="ServerUrl Credential ForceDiscovery ForceOAuth OAuthClientId OAuthRedirectUri ConnectionTimeoutInSeconds LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
-        <CommandParameterSetInfo2 Name="Secret" Params="ServerUrl OAuthClientId OAuthRedirectUri ClientSecret ConnectionTimeoutInSeconds LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="connectionstring" Params="ConnectionString ConnectionTimeoutInSeconds LogWriteDirectory BypassTokenCache Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="NoCreds" Params="ServerUrl ForceDiscovery ForceOAuth OAuthClientId OAuthRedirectUri Username ConnectionTimeoutInSeconds LogWriteDirectory BypassTokenCache Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="Creds" Params="ServerUrl Credential ForceDiscovery ForceOAuth OAuthClientId OAuthRedirectUri ConnectionTimeoutInSeconds LogWriteDirectory BypassTokenCache Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="Secret" Params="ServerUrl OAuthClientId OAuthRedirectUri ClientSecret ConnectionTimeoutInSeconds LogWriteDirectory BypassTokenCache Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
       </ParamSets>
       <Parameters>
         <ParameterDescription type="PSCredential" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
@@ -1026,6 +1026,26 @@ You can use Get-Credential to create Credential information.</Description>
           </Attributes>
           <Aliases />
           <Description>Override the directory location to store the Xrm.Tooling.Connector log files. The directory must already exist, and the user who is running the cmdlet must have Write permission to the directory. You must also use the -Verbose parameter along with the -LogWriteDirectory parameter to be able to store the log files in a custom location.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>BypassTokenCache</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Will bypass using a local cache path, this is most commonly used in conjunction with build pipelines in azure dev ops or limited access environments</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="5" globbing="false">
+          <Name>Username</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>This should be used when needing to provide a username hint to ADAL, this will ensure the correct identity is used to attempt acquring a token. </Description>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
