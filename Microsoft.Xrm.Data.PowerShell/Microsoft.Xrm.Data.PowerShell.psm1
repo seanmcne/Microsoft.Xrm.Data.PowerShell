@@ -4660,7 +4660,6 @@ function Set-CrmConnectionCallerId{
     $conn.OrganizationServiceProxy.CallerId = $CallerId
 }
 
-
 function Set-CrmConnectionTimeout{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
  [CmdletBinding()]
@@ -4672,6 +4671,7 @@ function Set-CrmConnectionTimeout{
         [parameter(Mandatory=$false, position=1)]
         [switch]$SetDefault
     )
+
 	#powershell 4.0+ is required for New-TimeSpan -Seconds $TimeoutInSeconds 
 	$newTimeout = New-Object System.TimeSpan -ArgumentList 0,0,120
 	if(!$SetDefault){
@@ -4701,7 +4701,7 @@ function Set-CrmConnectionTimeout{
 			Write-Verbose "Failed to set the timeout values"
 	    }
 	}
-    Write-Warning "Please reconnect to the service after setting the connection timeout or the new timeout will *not* be used for operations."
+  Write-Warning "Please reconnect to the service after setting the connection timeout or the new timeout will *not* be used for operations."
 }
 
 function Set-CrmSystemSettings {
