@@ -132,7 +132,7 @@ function Connect-CrmOnline{
 
 	#starting default connection string with require new instance and server url
     $cs = "RequireNewInstance=True"
-	$cs += ";Url=$ServerUrl"
+    $cs += ";Url=$ServerUrl"
     if($BypassTokenCache){
         $cs += ";TokenCacheStorePath="
     }
