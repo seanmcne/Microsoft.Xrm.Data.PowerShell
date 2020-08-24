@@ -130,6 +130,27 @@ function Connect-CrmOnline{
 		$ServerUrl = "https://" + $ServerUrl
 	}
 
+	#starting default connection string with require new instance and server url
+    $cs = "RequireNewInstance=True"
+	$cs += ";Url=$ServerUrl"
+    if($BypassTokenCache){
+        $cs += ";TokenCacheStorePath="
+    }
+    
+	if($ForceDiscovery){ 
+        #SkipDiscovery is true by default and generally not necessary
+		Write-Verbose "ForceDiscovery: SkipDiscovery=False"
+		$cs+=";SkipDiscovery=False" 
+        if(-not $Credential){
+            Write-Verbose "ForceDiscovery requires a Credential which was not provided - prompting for credential value"
+            $Credential = Get-Credential
+            if(-not $Credential){
+                #user did not provide a credential - throw
+                throw "Cannot create the CrmServiceClient with ForceDiscovery as no credentials were provided. Either provide credentials or remove the -ForceDiscovery parameter"
+            }
+        }
+	}
+
     if($ConnectionString){
         if(!$ConnectionString -or $ConnectionString.Length -eq 0){
 			throw "Cannot create the CrmServiceClient, the connection string is null"
@@ -143,17 +164,11 @@ function Connect-CrmOnline{
 		return $global:conn
     }
 	elseif($ClientSecret){
-		$cs = "RequireNewInstance=True"
-		$cs += ";Url=$ServerUrl"
 		$cs += ";AuthType=ClientSecret"
 		$cs += ";ClientId=$OAuthClientId"
         if(-not [string]::IsNullOrEmpty($OAuthRedirectUri)){
 		    $cs += ";redirecturi=$OAuthRedirectUri"
         }
-        if($BypassTokenCache){
-            $cs += ";TokenCacheStorePath="
-        }
-		$cs += ";SkipDiscovery=True"
 		$cs += ";ClientSecret=$ClientSecret"
 		Write-Verbose ($cs.Replace($ClientSecret, "*******"))
 		try
@@ -174,14 +189,10 @@ function Connect-CrmOnline{
 		}   
 	}
 	else{
-		$cs = "RequireNewInstance=True"
-		$cs+= ";Url=$ServerUrl"
-
         if(-not [string]::IsNullOrEmpty($Username)){
             $cs += ";Username=$UserName"
-        }
-        if($BypassTokenCache){
-            $cs += ";TokenCacheStorePath="
+            Write-Warning "UserName parameter is only compatible with oAuth, forcing auth mode to oAuth"
+            $ForceOAuth = $true
         }
 		#Default to Office365 Auth, allow oAuth to be used
 		if(!$OAuthClientId -and !$ForceOAuth){
@@ -198,10 +209,10 @@ function Connect-CrmOnline{
             $cs+= ";Username=$($Credential.UserName)"
 		    $cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
 		}
-        #use oAuth if requested -ForceOAuth
 		elseif($ForceOAuth){
+            #use oAuth if requested -ForceOAuth
 			Write-Verbose "Params Provided -> ForceOAuth: {$ForceOAuth} ClientId: {$OAuthClientId} RedirectUri: {$OAuthRedirectUri}"
-            #use credentials if provided
+            #try to use the credentials if they're provided
             if($Credential){
                 Write-Verbose "Using provided credentials for oAuth"
                 $cs+= ";Username=$($Credential.UserName)"
@@ -209,32 +220,22 @@ function Connect-CrmOnline{
             }else{
                 Write-Verbose "No credential provided, attempting single sign on with no credentials in the connectionstring"
             }
-			#use the clientid if provided, else use a provided clientid 
+
 			if($OAuthClientId){
-				Write-Verbose "Using provide "
+			    #use the clientid if provided, else use a provided clientid 
+				Write-Verbose "Using provided oAuth clientid"
 				$cs += ";AuthType=OAuth;ClientId=$OAuthClientId"
 				if($OAuthRedirectUri){
 					$cs += ";redirecturi=$OAuthRedirectUri"
 				}
 			}
 			else{
+                #else fallback to a known clientid
 				$cs+=";AuthType=OAuth;ClientId=2ad88395-b77d-4561-9441-d0e40824f9bc"
 				$cs+=";redirecturi=app://5d3e90d6-aa8e-48a8-8f2c-58b45cc67315"
 			}
 		}
-		#SkipDiscovery is true by default
-		if($ForceDiscovery){ 
-			Write-Verbose "ForceDiscovery: SkipDiscovery=False"
-			$cs+=";SkipDiscovery=False" 
-            if(-not $Credential){
-                Write-Verbose "ForceDiscovery requires a Credential which was not provided - prompting for credential value"
-                $Credential = Get-Credential
-                if(-not $Credential){
-                    #user did not provide a credential - throw
-                    throw "Cannot create the CrmServiceClient, no credentials were provided"
-                }
-            }
-		}
+
 		try
 		{
 			if(!$cs -or $cs.Length -eq 0){
