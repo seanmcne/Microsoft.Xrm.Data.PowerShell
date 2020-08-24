@@ -251,6 +251,10 @@ function Connect-CrmOnline{
 
             ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
 
+            if($global:conn.LastCrmError -and $global:conn.LastCrmError -match "forbidden with client authentication scheme 'Anonymous'"){
+                Write-Error "Warning: Exception encountered when authenticating, if you're using oAuth you might want to include the -username paramter to disambiguate the identity used for authenticate"
+            }
+
 			return $global:conn
 		}
 		catch
