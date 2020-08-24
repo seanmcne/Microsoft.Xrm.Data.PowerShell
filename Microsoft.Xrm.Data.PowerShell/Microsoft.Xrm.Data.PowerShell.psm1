@@ -82,18 +82,24 @@ function Connect-CrmOnline{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
     [CmdletBinding()]
     PARAM( 
+        [parameter(Position=1, Mandatory=$true, ParameterSetName="connectionstring")]
+        [string]$ConnectionString, 
         [parameter(Position=1, Mandatory=$true, ParameterSetName="Secret")]
         [Parameter(Position=1,Mandatory=$true, ParameterSetName="Creds")]
+        [Parameter(Position=1,Mandatory=$true, ParameterSetName="NoCreds")]
         [ValidatePattern('([\w-]+).crm([0-9]*).(microsoftdynamics|dynamics|crm[\w-]*).(com|de|us)')]
         [string]$ServerUrl, 
 		[parameter(Position=2, Mandatory=$true, ParameterSetName="Creds")]
         [PSCredential]$Credential, 
 		[Parameter(Position=3,Mandatory=$false, ParameterSetName="Creds")]
+		[Parameter(Position=2,Mandatory=$false, ParameterSetName="NoCreds")]
         [switch]$ForceDiscovery,
 		[Parameter(Position=4,Mandatory=$false, ParameterSetName="Creds")]
-        [switch]$ForceOAuth, 
+		[Parameter(Position=3,Mandatory=$false, ParameterSetName="NoCreds")]
+        [switch]$ForceOAuth,
         [parameter(Position=2, Mandatory=$true, ParameterSetName="Secret")]
 		[Parameter(Position=5,Mandatory=$false, ParameterSetName="Creds")]
+		[Parameter(Position=4,Mandatory=$false, ParameterSetName="NoCreds")]
         [ValidateScript({
             try {
                 [System.Guid]::Parse($_) | Out-Null
@@ -103,29 +109,66 @@ function Connect-CrmOnline{
             }
         })]
         [string]$OAuthClientId,
-        [parameter(Position=3, Mandatory=$true, ParameterSetName="Secret")]
+        [parameter(Position=3, Mandatory=$false, ParameterSetName="Secret")]
 		[Parameter(Position=6,Mandatory=$false, ParameterSetName="Creds")]
+		[Parameter(Position=5,Mandatory=$false, ParameterSetName="NoCreds")]
         [string]$OAuthRedirectUri, 
 		[parameter(Position=4, Mandatory=$true, ParameterSetName="Secret")]
-        [string]$ClientSecret
+        [string]$ClientSecret, 
+        [parameter(Position=5, Mandatory=$false, ParameterSetName="NoCreds")]
+        [string]$Username, 
+        [int]$ConnectionTimeoutInSeconds,
+        [string]$LogWriteDirectory, 
+        [switch]$BypassTokenCache
     )
     AddTls12Support #make sure tls12 is enabled 
     if ($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent -eq $true) {
         Enable-CrmConnectorVerboseLogging
     }
-	if($ServerUrl.StartsWith("https://","CurrentCultureIgnoreCase") -ne $true){
+	if(-not [string]::IsNullOrEmpty($ServerUrl) -and $ServerUrl.StartsWith("https://","CurrentCultureIgnoreCase") -ne $true){
 		Write-Verbose "ServerUrl is missing https, fixing URL: https://$ServerUrl"
 		$ServerUrl = "https://" + $ServerUrl
 	}
-	Write-Verbose "Connecting to: $ServerUrl"
 
-	if($ClientSecret){
-		$cs = "RequireNewInstance=True"
-		$cs += ";Url=$ServerUrl"
+	#starting default connection string with require new instance and server url
+    $cs = "RequireNewInstance=True"
+    $cs += ";Url=$ServerUrl"
+    if($BypassTokenCache){
+        $cs += ";TokenCacheStorePath="
+    }
+    
+	if($ForceDiscovery){ 
+        #SkipDiscovery is true by default and generally not necessary
+		Write-Verbose "ForceDiscovery: SkipDiscovery=False"
+		$cs+=";SkipDiscovery=False" 
+        if(-not $Credential){
+            Write-Verbose "ForceDiscovery requires a Credential which was not provided - prompting for credential value"
+            $Credential = Get-Credential
+            if(-not $Credential){
+                #user did not provide a credential - throw
+                throw "Cannot create the CrmServiceClient with ForceDiscovery as no credentials were provided. Either provide credentials or remove the -ForceDiscovery parameter"
+            }
+        }
+	}
+
+    if($ConnectionString){
+        if(!$ConnectionString -or $ConnectionString.Length -eq 0){
+			throw "Cannot create the CrmServiceClient, the connection string is null"
+		}
+		Write-Verbose "ConnectionString provided - skipping all helpers/known parameters"
+        
+        $global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $ConnectionString
+        if($global:conn){
+            ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
+        }
+		return $global:conn
+    }
+	elseif($ClientSecret){
 		$cs += ";AuthType=ClientSecret"
 		$cs += ";ClientId=$OAuthClientId"
-		$cs += ";redirecturi=$OAuthRedirectUri"
-		$cs += ";SkipDiscovery=True"
+        if(-not [string]::IsNullOrEmpty($OAuthRedirectUri)){
+		    $cs += ";redirecturi=$OAuthRedirectUri"
+        }
 		$cs += ";ClientSecret=$ClientSecret"
 		Write-Verbose ($cs.Replace($ClientSecret, "*******"))
 		try
@@ -146,50 +189,72 @@ function Connect-CrmOnline{
 		}   
 	}
 	else{
-		$cs = "RequireNewInstance=True"
-		$cs+= ";Username=$($Credential.UserName)"
-		$cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
-		$cs+= ";Url=$ServerUrl"
-	
+        if(-not [string]::IsNullOrEmpty($Username)){
+            $cs += ";Username=$UserName"
+            Write-Warning "UserName parameter is only compatible with oAuth, forcing auth mode to oAuth"
+            $ForceOAuth = $true
+        }
 		#Default to Office365 Auth, allow oAuth to be used
 		if(!$OAuthClientId -and !$ForceOAuth){
 			Write-Verbose "Using AuthType=Office365"
-			$cs += ";AuthType=Office365"
+            if(-not $Credential){
+                #user did not provide a credential
+                Write-Warning "Cannot create the CrmServiceClient, no credentials were provided. Credentials are required for an AuthType of Office365."
+                $Credential = Get-Credential 
+                if(-not $Credential){
+                    throw "Cannot create the CrmServiceClient, no credentials were provided. Credentials are required for an AuthType of Office365."
+                }
+            }
+			$cs+= ";AuthType=Office365"
+            $cs+= ";Username=$($Credential.UserName)"
+		    $cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
 		}
-		else{
-			Write-Verbose "Params -> ForceOAuth: {$ForceOAuth} ClientId: {$OAuthClientId} RedirectUri: {$OAuthRedirectUri}"
-			#use the clientid if provided, else use a provided clientid 
+		elseif($ForceOAuth){
+            #use oAuth if requested -ForceOAuth
+			Write-Verbose "Params Provided -> ForceOAuth: {$ForceOAuth} ClientId: {$OAuthClientId} RedirectUri: {$OAuthRedirectUri}"
+            #try to use the credentials if they're provided
+            if($Credential){
+                Write-Verbose "Using provided credentials for oAuth"
+                $cs+= ";Username=$($Credential.UserName)"
+		        $cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
+            }else{
+                Write-Verbose "No credential provided, attempting single sign on with no credentials in the connectionstring"
+            }
+
 			if($OAuthClientId){
-				Write-Verbose "Using provide "
+			    #use the clientid if provided, else use a provided clientid 
+				Write-Verbose "Using provided oAuth clientid"
 				$cs += ";AuthType=OAuth;ClientId=$OAuthClientId"
 				if($OAuthRedirectUri){
 					$cs += ";redirecturi=$OAuthRedirectUri"
 				}
 			}
 			else{
+                #else fallback to a known clientid
 				$cs+=";AuthType=OAuth;ClientId=2ad88395-b77d-4561-9441-d0e40824f9bc"
 				$cs+=";redirecturi=app://5d3e90d6-aa8e-48a8-8f2c-58b45cc67315"
 			}
 		}
-		#disable the discovery check by default 
-		if($ForceDiscovery){ 
-			Write-Verbose "ForceDiscovery: SkipDiscovery=False"
-			$cs+=";SkipDiscovery=False" 
-		}
-		else{ 
-			Write-Verbose "Default: SkipDiscovery=True"
-			$cs+=";SkipDiscovery=True" 
-		}
+
 		try
 		{
 			if(!$cs -or $cs.Length -eq 0){
 				throw "Cannot create the CrmServiceClient, the connection string is null"
 			}
-			Write-Verbose ($cs.Replace($Credential.GetNetworkCredential().Password, "")) 
+            #log the connection string to be helpful
+            $loggedConnectionString = $cs
+            if($Credential){
+                $loggedConnectionString = $cs.Replace($Credential.GetNetworkCredential().Password, "*******") 
+            }
+            Write-Verbose "ConnectionString:{$loggedConnectionString}"
 
 			$global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $cs
 
             ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
+
+            if($global:conn.LastCrmError -and $global:conn.LastCrmError -match "forbidden with client authentication scheme 'Anonymous'"){
+                Write-Error "Warning: Exception encountered when authenticating, if you're using oAuth you might want to include the -username paramter to disambiguate the identity used for authenticate"
+            }
 
 			return $global:conn
 		}
@@ -197,7 +262,7 @@ function Connect-CrmOnline{
 		{
 			throw $_
 		}  
-	}  
+	}
 }
 
 function Connect-CrmOnPremDiscovery{
@@ -310,7 +375,8 @@ function New-CrmRecord{
         [switch]$PreserveCrmRecordId
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
+	
 
     $newfields = New-Object 'System.Collections.Generic.Dictionary[[String], [Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper]]'
     
@@ -351,7 +417,7 @@ function New-CrmRecord{
         {  
             $newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
             
-            $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
+            $newfield.Type = MapFieldTypeByFieldValue -Value $fie.Value
             
             $newfield.Value = $field.Value
             $newfields.Add($field.Key, $newfield)
@@ -389,7 +455,7 @@ function Get-CrmRecord{
         [switch]$IncludeNullValue
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     if($Fields -eq "*")
     {
@@ -498,7 +564,7 @@ function Set-CrmRecord{
         [string]$PrimaryKeyField
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     
     if($CrmRecord -ne $null)
     { 
@@ -865,7 +931,7 @@ function Remove-CrmRecord{
 
     begin
     {
-        $conn = VerifyCrmConnectionParam $conn
+        $conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     }
     process
     {
@@ -910,7 +976,7 @@ function Move-CrmRecordToQueue{
         [parameter(Mandatory=$false, Position=5)]
         [bool]$SetWorkingByUser
     )
-	$conn = VerifyCrmConnectionParam $conn  
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))  
     if($CrmRecord -ne $null)
     {
         $EntityLogicalName = $CrmRecord.logicalname
@@ -951,7 +1017,7 @@ function Set-CrmRecordOwner{
     )
     begin
     {
-        $conn = VerifyCrmConnectionParam $conn
+        $conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     }     
 	process
 	{
@@ -1011,7 +1077,7 @@ function Set-CrmActivityRecordToCloseState{
         [parameter(Mandatory=$true, Position=4)]
         [string]$StatusCode
     )
-	$conn = VerifyCrmConnectionParam $conn   
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))   
     if($CrmRecord -ne $null)
     {
         $ActivityEntityType = $CrmRecord.logicalname
@@ -1049,7 +1115,7 @@ function Add-CrmNoteToCrmRecord{
         [parameter(Mandatory=$true, Position=4)]
         [string]$NoteText 
     )
-	$conn = VerifyCrmConnectionParam $conn   
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))   
     if($CrmRecord -ne $null)
     {
         $EntityLogicalName = $CrmRecord.logicalname
@@ -1101,7 +1167,7 @@ function Add-CrmRecordAssociation{
         [parameter(Mandatory=$true, Position=5)]
         [string]$RelationshipName
     )
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     if($CrmRecord1 -ne $null)
     {
         $EntityLogicalName1 = $CrmRecord1.logicalname
@@ -1161,7 +1227,7 @@ function Add-CrmMultiRecordAssociation{
         [bool]$IsReflexiveRelationship
     )
 
-	$conn = VerifyCrmConnectionParam $conn  
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))  
 
     if($CrmRecord1 -ne $null)
     {
@@ -1228,7 +1294,7 @@ function Add-CrmActivityToCrmRecord{
     )
     begin
     {
-        $conn = VerifyCrmConnectionParam $conn
+        $conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     }  
 	process
 	{
@@ -1289,7 +1355,7 @@ function Remove-CrmRecordAssociation{
         [parameter(Mandatory=$true, Position=5)]
         [string]$RelationshipName
     )
-	$conn = VerifyCrmConnectionParam $conn    
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))    
     if($CrmRecord1 -ne $null)
     {
         $EntityLogicalName1 = $CrmRecord1.logicalname
@@ -1349,7 +1415,9 @@ function Invoke-CrmRecordWorkflow{
         [parameter(ParameterSetName="CrmRecordWithWorkflowId")]
         [string]$WorkflowId
     )
-	$conn = VerifyCrmConnectionParam $conn
+    write-warning "$WorkflowId"
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
+    
     if($CrmRecord -ne $null)
     {
         $fieldName = $CrmRecord.logicalname + "id"
@@ -1364,7 +1432,6 @@ function Invoke-CrmRecordWorkflow{
         else{
             throw "Cannot determine entities Id attribute"
         }
-        
     }
     elseif($EntityId -ne $null)
     {
@@ -1434,7 +1501,7 @@ function Get-MyCrmUserId{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     try
     {
@@ -1463,7 +1530,7 @@ function Get-CrmEntityAttributes{
         [string]$EntityLogicalName
     )
 
-	$conn = VerifyCrmConnectionParam $conn 
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn')) 
        
     try
     {
@@ -1493,7 +1560,7 @@ function Get-CrmEntityAllMetadata{
         [parameter(Mandatory=$false, Position=2)]
         [string]$EntityFilters
     )
-	$conn = VerifyCrmConnectionParam $conn 
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn')) 
     switch($EntityFilters.ToLower())
     {
         "all" {
@@ -1549,7 +1616,7 @@ function Get-CrmEntityAttributeMetadata{
         [string]$FieldLogicalName
     )
 
-	$conn = VerifyCrmConnectionParam $conn 
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn')) 
     
     try
     {
@@ -1585,7 +1652,7 @@ function Get-CrmRecordsByFetch{
         [switch]$AllRows
     )
 		$elapsed = [System.Diagnostics.Stopwatch]::StartNew() 
-		$conn = VerifyCrmConnectionParam $conn
+		$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 		#default page number to 1 if not supplied
 		if($PageNumber -eq 0)
 		{
@@ -1683,7 +1750,7 @@ function Get-CrmEntityDisplayName{
         [parameter(Mandatory=$true, Position=1, ParameterSetName="EntityLogicalName")]
         [string]$EntityLogicalName
     )
-	$conn = VerifyCrmConnectionParam $conn 
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn')) 
     try
     {
         $result = $conn.GetEntityDisplayName($EntityLogicalName)
@@ -1709,7 +1776,7 @@ function Get-CrmEntityDisplayPluralName{
         [parameter(Mandatory=$true, Position=1)]
         [string]$EntityLogicalName
     )
-	$conn = VerifyCrmConnectionParam $conn 
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn')) 
     try
     {
         $result = $conn.GetEntityDisplayNamePlural($EntityLogicalName)
@@ -1738,7 +1805,7 @@ function Get-CrmEntityMetadata{
         [string]$EntityFilters
     )
 
-	$conn = VerifyCrmConnectionParam $conn 
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn')) 
 
     switch($EntityFilters.ToLower())
     {
@@ -1795,7 +1862,7 @@ function Get-CrmEntityName{
         [int]$EntityTypeCode
     )
 
-	$conn = VerifyCrmConnectionParam $conn  
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))  
 
     try
     {
@@ -1823,7 +1890,7 @@ function Get-CrmEntityTypeCode{
         [parameter(Mandatory=$true, Position=1)]
         [string]$EntityLogicalName
     )
-	$conn = VerifyCrmConnectionParam $conn  
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))  
     try
     {
         $result = $conn.GetEntityTypeCode($EntityLogicalName)
@@ -1849,7 +1916,7 @@ function Get-CrmGlobalOptionSet{
         [parameter(Mandatory=$true, Position=1)]
         [string]$OptionSetName
     )
-	$conn = VerifyCrmConnectionParam $conn  
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))  
     try
     {
         $result = $conn.GetGlobalOptionSetMetadata($OptionSetName)
@@ -1877,7 +1944,7 @@ function Get-CrmEntityOptionSet{
         [parameter(Mandatory=$true, Position=2)]
         [string]$FieldLogicalName
     )
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     try
     {
         $result = $conn.GetPickListElementFromMetadataEntity($EntityLogicalName, $FieldLogicalName)
@@ -1920,7 +1987,7 @@ function Import-CrmSolutionAsync {
         [parameter(Mandatory=$false, Position=9)]
         [int64]$PollingDelayInSeconds = 5
     )
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 	$importId = [guid]::Empty
 	$asyncResponse = $null
     try
@@ -2067,7 +2134,7 @@ function Import-CrmSolution{
 		[parameter(Mandatory=$false, Position=8)]
         [switch]$AsyncOperationImportMethod 
     )
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 	$importId = [guid]::Empty
     try
     {
@@ -2254,7 +2321,7 @@ function Merge-CrmHoldingSolutionAsync {
         [int64]$PollingDelayInSeconds = 5
 	)
 
-    $conn = VerifyCrmConnectionParam $conn
+    $conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.DeleteAndPromoteRequest
     $request.UniqueName = $CrmSolutionName
@@ -2343,7 +2410,7 @@ function Add-CrmSampleData{
         [parameter(Mandatory=$false, Position=0)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
-	$conn = VerifyCrmConnectionParam $conn 
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn')) 
     try
     {
         $result = $conn.InstallSampleDataToCrm()
@@ -2368,7 +2435,7 @@ function Test-CrmSampleDataInstalled{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn 
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn')) 
 
     try
     {
@@ -2393,7 +2460,7 @@ function Publish-CrmEntity{
         [string]$EntityLogicalName
     )
 
-	$conn = VerifyCrmConnectionParam $conn  
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))  
 
     try
     {
@@ -2424,7 +2491,7 @@ function Publish-CrmTheme{
         [guid]$ThemeId
     )
 
-	$conn = VerifyCrmConnectionParam $conn  
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))  
 
     try
     {
@@ -2468,7 +2535,7 @@ function Remove-CrmEntityMetadataCache{
         [string]$EntityLogicalName
     )
 
-	$conn = VerifyCrmConnectionParam $conn  
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))  
 
     if($EntityLogicalName -eq "")
     {
@@ -2498,7 +2565,7 @@ function Remove-CrmSampleData{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn 
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn')) 
 
     try
     {
@@ -2533,7 +2600,7 @@ function Set-CrmRecordState{
 
     begin
     {
-        $conn = VerifyCrmConnectionParam $conn
+        $conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     }     
 
 	process
@@ -2588,7 +2655,7 @@ function Approve-CrmEmailAddress{
         [string]$QueueId
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     if($UserId -ne "")
     {
@@ -2611,7 +2678,7 @@ function Disable-CrmLanguagePack{
         [Int]$LCID
     )
 
-	$conn = VerifyCrmConnectionParam $conn  
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))  
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.DeprovisionLanguageRequest
     $request.Language = $LCID
@@ -2641,7 +2708,7 @@ function Enable-CrmLanguagePack{
         [Int]$LCID
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.ProvisionLanguageRequest
     $request.Language = $LCID
@@ -2671,7 +2738,7 @@ function Export-CrmApplicationRibbonXml {
         [string]$RibbonFilePath
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 	
 	$exportPath = if($RibbonFilePath -ne ""){Get-Item $RibbonFilePath} else {Get-Location}
 	$exportFileName = "applicationRibbon.xml"
@@ -2720,7 +2787,7 @@ function Export-CrmEntityRibbonXml {
         [string]$RibbonFilePath
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 	
 	$exportPath = if($RibbonFilePath -ne ""){Get-Item $RibbonFilePath} else {Get-Location}
 	$exportFileName = $EntityLogicalName + "Ribbon.xml"
@@ -2797,7 +2864,7 @@ function Export-CrmSolution{
         [switch]$ExportSales
     )    
 
-    $conn = VerifyCrmConnectionParam $conn
+    $conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     try
     {
@@ -2896,7 +2963,7 @@ function Export-CrmSolutionTranslation{
         [string]$TranslationZipFileName
     )    
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     try
     {
@@ -2965,7 +3032,7 @@ function Get-CrmAllLanguagePacks{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn  
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))  
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.RetrieveAvailableLanguagesRequest
 
@@ -2992,7 +3059,7 @@ function Get-CrmEntityRecordCount{
         [string]$EntityLogicalName
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     
     $count = 0
     $query = New-Object -TypeName 'Microsoft.Xrm.Sdk.Query.QueryExpression'
@@ -3052,7 +3119,7 @@ function Get-CrmFailedWorkflows{
         [switch]$AllRows
     )
     
-    $conn = VerifyCrmConnectionParam $conn
+    $conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     
     $fetch = @"
 <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -3114,7 +3181,7 @@ function Get-CrmLicenseSummary{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -3145,7 +3212,7 @@ function Get-CrmOrgDbOrgSettings{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -3192,7 +3259,7 @@ function Get-CrmRecords{
         [parameter(Mandatory=$false, Position=7)]
         [int]$TopCount
     )
-    $conn = VerifyCrmConnectionParam $conn
+    $conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     if($FilterOperator -and $FilterOperator.StartsWith("-"))
     {
@@ -3313,7 +3380,7 @@ function Get-CrmRecordsByViewName{
         [int]$TopCount
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     
     # Escape XML charactor
     $ViewName = [System.Security.SecurityElement]::Escape($ViewName)
@@ -3375,7 +3442,7 @@ function Get-CrmRecordsCount{
         [parameter(Mandatory=$true, Position=1)][alias("EntityName")]
         [string]$EntityLogicalName
     )
-	$conn = VerifyCrmConnectionParam $conn        
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))        
     $fetch = 
 @"
 <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -3413,7 +3480,7 @@ function Get-CrmSdkMessageProcessingStepsForPluginAssembly{
         [switch]$OnlyCustomizable
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
         
     if($OnlyCustomizable){ $isCustom = "<value>1</value>" } else { $isCustom = "<value>0</value><value>1</value>" }
 
@@ -3461,7 +3528,7 @@ function Get-CrmSiteMap{
         [string]$SubAreasOfArea
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
   
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -3504,7 +3571,7 @@ function Get-CrmSystemSettings{
         [switch]$ShowDisplayName
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
   
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -3591,7 +3658,7 @@ function Get-CrmTimeZones{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -3617,7 +3684,7 @@ function Get-CrmTraceAlerts{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -3657,7 +3724,7 @@ function Get-CrmUserMailbox{
         [string]$UserId
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -3705,7 +3772,7 @@ function Get-CrmUserPrivileges{
         [string]$UserId
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     
     # Get User Rolls including Team
     $roles = Get-CrmUserSecurityRoles -conn $conn -UserId $UserId -IncludeTeamRoles
@@ -3801,7 +3868,7 @@ function Get-CrmUserSecurityRoles{
         [switch]$IncludeTeamRoles
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     
     $roles = New-Object System.Collections.Generic.List[PSObject]
     
@@ -3873,7 +3940,7 @@ function Get-CrmUserSettings{
         [string[]]$Fields
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
   
     return Get-CrmRecord -conn $conn -EntityLogicalName usersettings -Id $UserId -Fields $Fields
 }
@@ -3898,7 +3965,7 @@ function Grant-CrmRecordAccess {
     )
     begin
     {
-        $conn = VerifyCrmConnectionParam $conn
+        $conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
         if ($EntityLogicalName) {
             $CrmRecord += [PSCustomObject] @{
@@ -3940,7 +4007,7 @@ function Import-CrmSolutionTranslation{
         [switch]$PublishChanges
     )    
 
-    $conn = VerifyCrmConnectionParam $conn
+    $conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 	   
     try
     {
@@ -3992,7 +4059,7 @@ function Invoke-CrmWhoAmI{
         [parameter(Mandatory=$false)]
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.WhoAmIRequest
     
@@ -4038,7 +4105,7 @@ function Invoke-CrmAction {
     )
     begin
     {
-        $conn = VerifyCrmConnectionParam $conn
+        $conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     }
     process
     {
@@ -4104,7 +4171,7 @@ function Publish-CrmCustomization{
         [guid[]]$WebResourceIds
     )
 
-	$conn = VerifyCrmConnectionParam $conn  
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))  
 
     $parameterXml = "<importexportxml>"
 
@@ -4180,7 +4247,7 @@ function Publish-CrmAllCustomization{
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
     )
 
-	$conn = VerifyCrmConnectionParam $conn  
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))  
 
     $request = New-Object Microsoft.Crm.Sdk.Messages.PublishAllXmlRequest
     
@@ -4215,7 +4282,7 @@ function Add-CrmSecurityRoleToTeam{
         [string]$SecurityRoleName
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     if($SecurityRoleRecord -eq $null -and $SecurityRoleId -eq "" -and $SecurityRoleName -eq "")
     {
@@ -4288,7 +4355,7 @@ function Add-CrmSecurityRoleToUser{
         [string]$SecurityRoleName
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     if($SecurityRoleRecord -eq $null -and $SecurityRoleId -eq "" -and $SecurityRoleName -eq "")
     {
@@ -4359,7 +4426,7 @@ function Remove-CrmSecurityRoleFromTeam{
         [string]$SecurityRoleId
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     if($TeamRecord -ne $null)
     {
@@ -4388,7 +4455,7 @@ function Remove-CrmSecurityRoleFromUser{
         [string]$SecurityRoleId
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
 	if($SecurityRoleName -ne "")
     {
@@ -4447,7 +4514,7 @@ function Remove-CrmUserManager{
         [guid]$UserId
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     $request = New-Object 'Microsoft.Crm.Sdk.Messages.RemoveParentRequest'
     $target = New-CrmEntityReference systemuser $UserId
@@ -4480,7 +4547,7 @@ function Revoke-CrmEmailAddress{
         [string]$QueueId
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     if($UserId -ne "")
     {
@@ -4510,7 +4577,7 @@ function Revoke-CrmRecordAccess {
     )
     begin
     {
-        $conn = VerifyCrmConnectionParam $conn
+        $conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
         if ($EntityLogicalName) {
             $CrmRecord += [PSCustomObject] @{
@@ -4548,7 +4615,7 @@ function Set-CrmSolutionVersionNumber {
 		[string]$VersionNumber
 	)
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
 	$solutionRecords = (Get-CrmRecords -conn $conn -EntityLogicalName solution -FilterAttribute uniquename -FilterOperator "like" -FilterValue $SolutionName -Fields uniquename,version )
     #if we can't find just one solution matching then ERROR
@@ -4592,12 +4659,11 @@ function Set-CrmConnectionCallerId{
         [guid]$CallerId
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     # We may need to check if the CallerId exists and enabled.
     $conn.OrganizationServiceProxy.CallerId = $CallerId
 }
-
 
 function Set-CrmConnectionTimeout{
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
@@ -4611,7 +4677,6 @@ function Set-CrmConnectionTimeout{
         [switch]$SetDefault
     )
 
-	#$conn = VerifyCrmConnectionParam $conn
 	#powershell 4.0+ is required for New-TimeSpan -Seconds $TimeoutInSeconds 
 	$newTimeout = New-Object System.TimeSpan -ArgumentList 0,0,120
 	if(!$SetDefault){
@@ -4641,7 +4706,7 @@ function Set-CrmConnectionTimeout{
 			Write-Verbose "Failed to set the timeout values"
 	    }
 	}
-    Write-Warning "Please reconnect to CDS or CRM after setting the connection timeout or the new value might not be used in operations."
+  Write-Warning "Please reconnect to the service after setting the connection timeout or the new timeout will *not* be used for operations."
 }
 
 function Set-CrmSystemSettings {
@@ -4868,7 +4933,7 @@ function Set-CrmSystemSettings {
 		[bool]$AllowLegacyClientExperience
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     
     $updateFields = @{}
 
@@ -4950,7 +5015,7 @@ function Set-CrmUserBusinessUnit{
         [guid]$ReassignUserId
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
 	# If ReassignUserId is not passed, then assign them to myself  
 	if($ReassignUserId -eq $null)  
@@ -5010,7 +5075,7 @@ function Set-CrmUserMailbox {
         [parameter(Mandatory=$false, ParameterSetName="Status")]
         [switch]$ApproveEmail
     )
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     $fetch = @"
 <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
@@ -5108,7 +5173,7 @@ function Set-CrmQueueMailbox {
         [parameter(Mandatory=$false, ParameterSetName="Status")]
         [switch]$ApproveEmail
     )
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     $fetch = @"
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false" no-lock="true">
       <entity name="mailbox">
@@ -5190,7 +5255,7 @@ function Set-CrmUserManager{
         [bool]$KeepChildUsers
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
     $request = New-Object 'Microsoft.Crm.Sdk.Messages.SetParentSystemUserRequest'
     $request.ParentId = $ManagerId
@@ -5223,7 +5288,7 @@ function Set-CrmUserSettings{
         [PSObject]$CrmRecord
     )
 
-	$conn = VerifyCrmConnectionParam $conn
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     
     try
     {
@@ -5255,7 +5320,7 @@ function Set-CrmRecordAccess {
     )
     begin
     {
-        $conn = VerifyCrmConnectionParam $conn
+        $conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
         if ($EntityLogicalName) {
             $CrmRecord += [PSCustomObject] @{
@@ -5349,7 +5414,7 @@ function Test-CrmViewPerformance{
         [switch]$IsUserView       
     )
     
-	$conn = VerifyCrmConnectionParam $conn        
+	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))        
  
     if($IsUserView)
     { 
@@ -5545,10 +5610,12 @@ function VerifyCrmConnectionParam {
 	[CmdletBinding()]
     PARAM( 
         [parameter(Mandatory=$false)]
-        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [parameter(Mandatory=$false)]
+        [bool]$pipelineValue
     )
-
-    if($conn -eq $null)
+    #we have a $conn value and we were not given a $conn value so we should try to find one
+    if($conn -eq $null -and $pipelineValue -eq $false)
     {
         $connobj = Get-Variable conn -Scope global -ErrorAction SilentlyContinue
         if($connobj.Value -eq $null)
@@ -5559,6 +5626,8 @@ function VerifyCrmConnectionParam {
         {
             $conn = $connobj.Value
         }
+    }elseif($conn -eq $null -and $pipelineValue -eq $true){
+        throw "Connection object provided is null"
     }
 	return $conn
 }
@@ -5655,7 +5724,15 @@ function AddTls12Support {
 	[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls -bor [System.Net.SecurityProtocolType]::Tls12
 }
 function Enable-CrmConnectorVerboseLogging {
+    [CmdletBinding()]
+    PARAM( 
+        [parameter(Mandatory=$false)]
+        [string]$filePath
+    )
     $logfilename = "Microsoft.Xrm.Tooling.Connector.Verbose.log"
+    if(-not [string]::IsNullOrEmpty($filePath)){
+        $logfilename = "$filePath\$logfilename"
+    }
     Write-Verbose "Enabling Microsoft.Xrm.Tooling.Connector verbose logging to $logfilename"
     [Microsoft.Xrm.Tooling.Connector.TraceControlSettings]::TraceLevel = [System.Diagnostics.SourceLevels]::All
     if(-not [Microsoft.Xrm.Tooling.Connector.TraceControlSettings]::AddTraceListener((New-Object System.Diagnostics.TextWriterTraceListener -ArgumentList $logfilename))){
@@ -5693,7 +5770,8 @@ function ApplyCrmServiceClientObjectTemplate {
             'CallerAADObjectId',
             'DisableCrossThreadSafeties',
             'SessionTrackingId',
-            'ForceServerMetadataCacheConsistency'
+            'ForceServerMetadataCacheConsistency', 
+            'LastCrmError'
         )
         $defaultPropsSetCrmServiceClient=New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultPropsCrmServiceClient)
         $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultPropsSetCrmServiceClient)

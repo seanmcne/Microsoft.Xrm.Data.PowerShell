@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <ModuleObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" fVersion="1.1" type="Script" mclass="Module" useSupports="false">
   <Name>Microsoft.Xrm.Data.PowerShell</Name>
-  <Version>2.8.8</Version>
+  <Version>2.8.9</Version>
   <Description />
   <HasManifest>true</HasManifest>
   <OverridePostCount>false</OverridePostCount>
@@ -893,8 +893,10 @@ When omitting parameter names, you do not provide $conn, cmdlets automatically f
     <CmdletObject verb="Connect" noun="CrmOnline">
       <Name>Connect-CrmOnline</Name>
       <Syntax>
-        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [-Credential] &lt;PSCredential&gt; [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;String&gt;]</string>
-        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [-OAuthClientId] &lt;String&gt; [-OAuthRedirectUri] &lt;String&gt; [-ClientSecret] &lt;String&gt;</string>
+        <string>Connect-CrmOnline [-ConnectionString] &lt;String&gt; [-ConnectionTimeoutInSeconds &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;] [-BypassTokenCache]</string>
+        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;String&gt;] [[-Username] &lt;String&gt;] [-ConnectionTimeoutInSeconds &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;] [-BypassTokenCache]</string>
+        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [-Credential] &lt;PSCredential&gt; [[-ForceDiscovery] &lt;SwitchParameter&gt;] [[-ForceOAuth] &lt;SwitchParameter&gt;] [[-OAuthClientId] &lt;String&gt;] [[-OAuthRedirectUri] &lt;String&gt;] [-ConnectionTimeoutInSeconds &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;] [-BypassTokenCache]</string>
+        <string>Connect-CrmOnline [-ServerUrl] &lt;String&gt; [-OAuthClientId] &lt;String&gt; [[-OAuthRedirectUri] &lt;String&gt;] [-ClientSecret] &lt;String&gt; [-ConnectionTimeoutInSeconds &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;] [-BypassTokenCache]</string>
       </Syntax>
       <GeneralHelp>
         <Synopsis>Connects to CRM Online organization without using Discovery Service.</Synopsis>
@@ -909,8 +911,10 @@ You can use Get-Credential to create Credential information.</Description>
         <ReturnTypeDescription />
       </GeneralHelp>
       <ParamSets>
-        <CommandParameterSetInfo2 Name="Creds" Params="ServerUrl Credential ForceDiscovery ForceOAuth OAuthClientId OAuthRedirectUri Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
-        <CommandParameterSetInfo2 Name="Secret" Params="ServerUrl OAuthClientId OAuthRedirectUri ClientSecret Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="connectionstring" Params="ConnectionString ConnectionTimeoutInSeconds LogWriteDirectory BypassTokenCache Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="NoCreds" Params="ServerUrl ForceDiscovery ForceOAuth OAuthClientId OAuthRedirectUri Username ConnectionTimeoutInSeconds LogWriteDirectory BypassTokenCache Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="Creds" Params="ServerUrl Credential ForceDiscovery ForceOAuth OAuthClientId OAuthRedirectUri ConnectionTimeoutInSeconds LogWriteDirectory BypassTokenCache Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="Secret" Params="ServerUrl OAuthClientId OAuthRedirectUri ClientSecret ConnectionTimeoutInSeconds LogWriteDirectory BypassTokenCache Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
       </ParamSets>
       <Parameters>
         <ParameterDescription type="PSCredential" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
@@ -930,15 +934,17 @@ You can use Get-Credential to create Credential information.</Description>
             <string>System.Management.Automation.ValidatePatternAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
           <Description>A Url of your Dynamics CRM Online organization.</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="3" globbing="false">
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
           <Name>ForceDiscovery</Name>
           <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
@@ -946,20 +952,22 @@ You can use Get-Credential to create Credential information.</Description>
           <Description>Forces the connector to verify an org connection with discovery (NOT COMPATIBLE with Partner CSP). </Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="4" globbing="false">
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="3" globbing="false">
           <Name>ForceOAuth</Name>
           <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description>Forces oAuth authentication via Azure Active Directory. The default auth type is Office365. </Description>
+          <Description>Forces oAuth authentication via Azure Active Directory. If a credential is not provided, then Single Sign on will be attempted, if you wish to use a credential that is not your currently signed in user you may provide a credential.</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="5" globbing="false">
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="4" globbing="false">
           <Name>OAuthClientId</Name>
           <Attributes>
             <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
@@ -968,9 +976,10 @@ You can use Get-Credential to create Credential information.</Description>
           <Description>Azure Active Directory Native Application Id</Description>
           <DefaultValue />
         </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="6" globbing="false">
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="5" globbing="false">
           <Name>OAuthRedirectUri</Name>
           <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
@@ -989,10 +998,60 @@ You can use Get-Credential to create Credential information.</Description>
           <Description>Client Secret value when using AzureAD ClientSecret auth and an application user</Description>
           <DefaultValue />
         </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
+          <Name>ConnectionString</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Override the connectionstring used to connect to the instance, this can be used to debug scenarios or accomidate new options that may not be supported in the mainstream module. Please proceed with caution using this parameter as it could be removed in the future or may cause unintended consequences when used in combination with connection string parameters that are unexpected. </Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>ConnectionTimeoutInSeconds</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Integer value for the connection timeout in seconds</Description>
+          <DefaultValue>120</DefaultValue>
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>LogWriteDirectory</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Override the directory location to store the Xrm.Tooling.Connector log files. The directory must already exist, and the user who is running the cmdlet must have Write permission to the directory. You must also use the -Verbose parameter along with the -LogWriteDirectory parameter to be able to store the log files in a custom location.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>BypassTokenCache</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Will bypass using a local cache path, this is most commonly used in conjunction with build pipelines in azure dev ops or limited access environments</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="5" globbing="false">
+          <Name>Username</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>This should be used when needing to provide a username hint to ADAL, this will ensure the correct identity is used to attempt acquring a token. </Description>
+          <DefaultValue />
+        </ParameterDescription>
       </Parameters>
       <Examples>
         <Example>
-          <Name>Example 1</Name>
+          <Name>Example 1 Office365 legacy authentication</Name>
           <Cmd>PS C:\&gt; Connect-CrmOnline -Credential (Get-Credential) -ServerUrl "https://contoso.crm.dynamics.com"</Cmd>
           <Description>Connect to online using your organization URL </Description>
           <Output>IsReady                        : True
@@ -1012,17 +1071,17 @@ LastCrmException               :
                                   [OrganizationDataService, 
                                   https://contoso.api.crm.dynamics.com/XRMServices/2011/OrganizationData.svc]}
 ConnectionLockObject           : System.Object
-ConnectedOrgVersion            : 8.2.1.359
+ConnectedOrgVersion            : 9.1.0000.0000
 DisableCrossThreadSafeties     : False
 CallerId                       : 00000000-0000-0000-0000-000000000000</Output>
         </Example>
         <Example>
-          <Name>Example 2</Name>
+          <Name>Example 2 oAuth Single Sign on</Name>
           <Cmd>PS C:\&gt; Connect-CrmOnline -ServerUrl "https://contoso.crm.dynamics.com" -ForceOAuth</Cmd>
-          <Description>Connect to online using your organization URL using oAuth and get prompted for a credential (versus providing one) </Description>
+          <Description>Connect to online using your organization URL using oAuth attempting single sign on - sign on using ADAL and the browser is attempted when a credential is not provided. </Description>
           <Output>IsReady                        : True
 IsBatchOperationsAvailable     : True
-Authority                      : https://login.windows.net/99f9884f-8651-415f-91ab-217c7036db97/oauth2/authorize/
+Authority                      : https://login.windows.net/{guid}/oauth2/authorize/
 OAuthUserId                    : user@contoso.com 
 ActiveAuthenticationType       : OAuth
 OrganizationServiceProxy       :
@@ -1034,29 +1093,49 @@ ConnectedOrgFriendlyName       : Contoso
 ConnectedOrgUniqueName         : contosocrmol
 ConnectedOrgPublishedEndpoints : {[WebApplication, https://contoso.crm.dynamics.com/], [OrganizationService, https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc], [OrganizationDataService, https://contoso.api.crm.dynamics.com/XRMServices/2011/OrganizationData.svc]}
 ConnectionLockObject           : System.Object
-ConnectedOrgVersion            : 8.2.1.359
+ConnectedOrgVersion            : 9.1.0000.0000
 DisableCrossThreadSafeties     : False
 CallerId                       : 00000000-0000-0000-0000-000000000000</Output>
         </Example>
         <Example>
-          <Name>Example 3</Name>
+          <Name>Example 3 oAuth with credenital</Name>
+          <Cmd>PS C:\&gt; Connect-CrmOnline -ServerUrl "https://contoso.crm.dynamics.com"  -Credential (Get-Credential) -ForceOAuth</Cmd>
+          <Description>Connect to online using your organization URL using oAuth using provided credential.</Description>
+          <Output>IsReady                        : True
+IsBatchOperationsAvailable     : True
+Authority                      : https://login.windows.net/{guid}/oauth2/authorize/
+OAuthUserId                    : user@contoso.com 
+ActiveAuthenticationType       : OAuth
+OrganizationServiceProxy       :
+OrganizationWebProxyClient     : Microsoft.Xrm.Sdk.WebServiceClient.OrganizationWebProxyClient
+LastCrmError                   :
+LastCrmException               :
+CrmConnectOrgUriActual         : https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc/web?SDKClientVersion=9.0.9002.0
+ConnectedOrgFriendlyName       : Contoso
+ConnectedOrgUniqueName         : contosocrmol
+ConnectedOrgPublishedEndpoints : {[WebApplication, https://contoso.crm.dynamics.com/], [OrganizationService, https://contoso.api.crm.dynamics.com/XRMServices/2011/Organization.svc], [OrganizationDataService, https://contoso.api.crm.dynamics.com/XRMServices/2011/OrganizationData.svc]}
+ConnectionLockObject           : System.Object
+ConnectedOrgVersion            : 9.1.0000.0000
+DisableCrossThreadSafeties     : False
+CallerId                       : 00000000-0000-0000-0000-000000000000</Output>
+        </Example>
+        <Example>
+          <Name>Example 4 oAuth with ClientSecret</Name>
           <Cmd>PS C:\&gt; Connect-CrmOnline -ServerUrl "https://contoso.crm.dynamics.com" -ClientSecret "T_DA0EY+DdfaJFH3/DFLK@QoFbY" -OAuthClientId "812fad6d-4727-44f5-b02e-f35d74efb78e" -OAuthRedirectUri "https://tempuri.org"</Cmd>
           <Description>Connect to a CDS instance as an application user, using ClientSecret authentication </Description>
           <Output>MaxRetryCount                       : 10
 RetryPauseTime                      : 00:00:05
 IsReady                             : True
 IsBatchOperationsAvailable          : True
-Authority                           : https://login.microsoftonline.com/03cd4258-2030-45a3-aea9-508adbed80b6/oauth2/authorize/
+Authority                           : https://login.microsoftonline.com/{guid}/oauth2/authorize/
 OAuthUserId                         :
 ActiveAuthenticationType            : ClientSecret
 OrganizationServiceProxy            :
 OrganizationWebProxyClient          : Microsoft.Xrm.Sdk.WebServiceClient.OrganizationWebProxyClient
-CurrentAccessToken                  : eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IkhsQzBSMTJza3hOWjFXUXdtak9GXzZ0X3RER
-                                      pIrvb2bp0TV6PL1SUw79pXYW-Krtg
 LastCrmError                        :
 LastCrmException                    :
 CrmConnectOrgUriActual              : https://contoso.crm.dynamics.com/XRMServices/2011/Organization.svc/web?SDKClientV
-                                      ersion=9.0.44.892
+                                      ersion=9.1.0000.0000
 ConnectedOrgFriendlyName            : [9.1] contoso seanmcn
 ConnectedOrgUniqueName              : contoso
 ConnectedOrgPublishedEndpoints      : {[WebApplication, https://contoso.crm.dynamics.com/], [OrganizationService,
@@ -1064,17 +1143,25 @@ ConnectedOrgPublishedEndpoints      : {[WebApplication, https://contoso.crm.dyna
                                       [OrganizationDataService,
                                       https://contoso.api.crm.dynamics.com/XRMServices/2011/OrganizationData.svc]}
 ConnectionLockObject                : System.Object
-ConnectedOrgVersion                 : 9.1.0.13535
+ConnectedOrgVersion                 : 9.1.0000.0000
 ConnectedOrgId                      : b283ca00-d54d-4dd0-ba1a-ee8e51d5256a
 DisableCrossThreadSafeties          : False
 CallerId                            : 00000000-0000-0000-0000-000000000000
 CallerAADObjectId                   :
 SessionTrackingId                   :
 ForceServerMetadataCacheConsistency : False
-SdkVersionProperty                  : 9.0.44.892
+SdkVersionProperty                  : 9.1.0000.0000
 TenantId                            : 03cd4258-2030-45a3-aea9-508adbed80b6
 EnvironmentId                       : 11537934-8ab9-4721-aba1-0feff3133e38
-_sdkVersionProperty                 : 9.0.44.892</Output>
+_sdkVersionProperty                 : 9.1.0000.0000</Output>
+        </Example>
+        <Example>
+          <Name>Example 5 ConnectionString FOR DEBUGGING</Name>
+          <Cmd>PS C:\&gt; Connect-CrmOnline -ConnectionString "RequireNewInstance=True;Url=https://naosrtw.crm.dynamics.com;AuthType=ClientSecret;ClientId=812fad6d-4727-44f5-b02e-f35d74efb78e;SkipDiscovery=True;ClientSecret=T_DA0EY+DdfaJFH3/DFLK@QoFbY" -ConnectionTimeoutInSeconds 500 -LogWriteDirectory "C:\temp\"</Cmd>
+          <Description>Connect to a CDS instance as an application user, using a custom connectionstring 
+
+Use with caution and *only* for debugging as this may change or parameter may be removed in the future. </Description>
+          <Output />
         </Example>
       </Examples>
       <RelatedLinks />
@@ -10675,6 +10762,67 @@ When omitting conn parameter, cmdlets automatically finds it.</Description>
           <Output />
         </Example>
       </Examples>
+      <RelatedLinks />
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Disable" noun="CrmConnectorVerboseLogging">
+      <Name>Disable-CrmConnectorVerboseLogging</Name>
+      <Syntax>
+        <string>Disable-CrmConnectorVerboseLogging</string>
+      </Syntax>
+      <GeneralHelp>
+        <Synopsis />
+        <Description />
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType />
+        <ReturnUrl />
+        <ReturnTypeDescription />
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="" />
+      </ParamSets>
+      <Parameters />
+      <Examples />
+      <RelatedLinks />
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Enable" noun="CrmConnectorVerboseLogging">
+      <Name>Enable-CrmConnectorVerboseLogging</Name>
+      <Syntax>
+        <string>Enable-CrmConnectorVerboseLogging [[-filePath] &lt;String&gt;]</string>
+      </Syntax>
+      <GeneralHelp>
+        <Synopsis />
+        <Description />
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType />
+        <ReturnUrl />
+        <ReturnTypeDescription />
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="filePath Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+      </ParamSets>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="0" globbing="false">
+          <Name>filePath</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description />
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples />
       <RelatedLinks />
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
