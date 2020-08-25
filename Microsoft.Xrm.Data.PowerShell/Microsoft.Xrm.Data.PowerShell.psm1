@@ -87,7 +87,7 @@ function Connect-CrmOnline{
         [parameter(Position=1, Mandatory=$true, ParameterSetName="Secret")]
         [Parameter(Position=1,Mandatory=$true, ParameterSetName="Creds")]
         [Parameter(Position=1,Mandatory=$true, ParameterSetName="NoCreds")]
-        [ValidatePattern('([\w-]+).crm([0-9]*).(microsoftdynamics|dynamics|crm[\w-]*).(com|de|us)')]
+        [ValidatePattern('([\w-]+).crm([0-9]*).(microsoftdynamics|dynamics|crm[\w-]*).(com|de|us|cn)')]
         [string]$ServerUrl, 
 		[parameter(Position=2, Mandatory=$true, ParameterSetName="Creds")]
         [PSCredential]$Credential, 
