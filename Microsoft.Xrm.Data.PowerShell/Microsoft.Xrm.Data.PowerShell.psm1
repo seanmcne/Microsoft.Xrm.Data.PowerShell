@@ -125,6 +125,7 @@ function Connect-CrmOnline{
     if ($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent -eq $true) {
         Enable-CrmConnectorVerboseLogging
     }
+
 	if(-not [string]::IsNullOrEmpty($ServerUrl) -and $ServerUrl.StartsWith("https://","CurrentCultureIgnoreCase") -ne $true){
 		Write-Verbose "ServerUrl is missing https, fixing URL: https://$ServerUrl"
 		$ServerUrl = "https://" + $ServerUrl
@@ -136,7 +137,7 @@ function Connect-CrmOnline{
     if($BypassTokenCache){
         $cs += ";TokenCacheStorePath="
     }
-    
+
 	if($ForceDiscovery){ 
         #SkipDiscovery is true by default and generally not necessary
 		Write-Verbose "ForceDiscovery: SkipDiscovery=False"
@@ -150,6 +151,13 @@ function Connect-CrmOnline{
             }
         }
 	}
+
+    if($ConnectionTimeoutInSeconds -and $ConnectionTimeoutInSeconds -gt 0){
+	    $newTimeout = New-Object System.TimeSpan -ArgumentList 0,0,$TimeoutInSeconds
+
+	    #set the timeout on the MaxConnectionTimeout static 
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]::MaxConnectionTimeout = $newTimeout
+    }
 
     if($ConnectionString){
         if(!$ConnectionString -or $ConnectionString.Length -eq 0){
