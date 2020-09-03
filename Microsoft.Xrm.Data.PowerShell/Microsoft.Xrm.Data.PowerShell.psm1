@@ -153,8 +153,8 @@ function Connect-CrmOnline{
 	}
 
     if($ConnectionTimeoutInSeconds -and $ConnectionTimeoutInSeconds -gt 0){
-	    $newTimeout = New-Object System.TimeSpan -ArgumentList 0,0,$TimeoutInSeconds
-
+	    $newTimeout = New-Object System.TimeSpan -ArgumentList 0,0,$ConnectionTimeoutInSeconds
+        Write-Verbose "Setting new connection timeout of $newTimeout"
 	    #set the timeout on the MaxConnectionTimeout static 
         [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]::MaxConnectionTimeout = $newTimeout
     }
@@ -197,7 +197,7 @@ function Connect-CrmOnline{
 		}   
 	}
 	else{
-        if(-not [string]::IsNullOrEmpty($Username)){
+        if(-not [string]::IsNullOrEmpty($Username) -and $ForceOAuth -eq $false){
             $cs += ";Username=$UserName"
             Write-Warning "UserName parameter is only compatible with oAuth, forcing auth mode to oAuth"
             $ForceOAuth = $true
