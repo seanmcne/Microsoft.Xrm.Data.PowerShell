@@ -163,12 +163,14 @@ function Connect-CrmOnline{
         if(!$ConnectionString -or $ConnectionString.Length -eq 0){
 			throw "Cannot create the CrmServiceClient, the connection string is null"
 		}
-		Write-Verbose "ConnectionString provided - skipping all helpers/known parameters"
+		Write-Warning "ConnectionString provided, this should be for debugging, skipping all helpers/known parameters"
         
         $global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $ConnectionString
+
         if($global:conn){
             ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
         }
+
 		return $global:conn
     }
 	elseif($ClientSecret){
@@ -197,14 +199,16 @@ function Connect-CrmOnline{
 		}   
 	}
 	else{
-        if(-not [string]::IsNullOrEmpty($Username) -and $ForceOAuth -eq $false){
+        if(-not [string]::IsNullOrEmpty($Username)){
             $cs += ";Username=$UserName"
-            Write-Warning "UserName parameter is only compatible with oAuth, forcing auth mode to oAuth"
-            $ForceOAuth = $true
+            if($ForceOAuth -eq $false){
+                Write-Warning "UserName parameter is only compatible with oAuth, forcing auth mode to oAuth"
+                $ForceOAuth = $true
+            }
         }
-		#Default to Office365 Auth, allow oAuth to be used
-		if(!$OAuthClientId -and !$ForceOAuth){
-			Write-Verbose "Using AuthType=Office365"
+	    #Default to Office365 Auth, allow oAuth to be used
+	    if(!$OAuthClientId -and !$ForceOAuth){
+		    Write-Verbose "Using AuthType=Office365"
             if(-not $Credential){
                 #user did not provide a credential
                 Write-Warning "Cannot create the CrmServiceClient, no credentials were provided. Credentials are required for an AuthType of Office365."
@@ -213,13 +217,13 @@ function Connect-CrmOnline{
                     throw "Cannot create the CrmServiceClient, no credentials were provided. Credentials are required for an AuthType of Office365."
                 }
             }
-			$cs+= ";AuthType=Office365"
+		    $cs+= ";AuthType=Office365"
             $cs+= ";Username=$($Credential.UserName)"
 		    $cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
-		}
-		elseif($ForceOAuth){
+	    }
+	    elseif($ForceOAuth){
             #use oAuth if requested -ForceOAuth
-			Write-Verbose "Params Provided -> ForceOAuth: {$ForceOAuth} ClientId: {$OAuthClientId} RedirectUri: {$OAuthRedirectUri}"
+		    Write-Verbose "Params Provided -> ForceOAuth: {$ForceOAuth} ClientId: {$OAuthClientId} RedirectUri: {$OAuthRedirectUri}"
             #try to use the credentials if they're provided
             if($Credential){
                 Write-Verbose "Using provided credentials for oAuth"
@@ -229,34 +233,37 @@ function Connect-CrmOnline{
                 Write-Verbose "No credential provided, attempting single sign on with no credentials in the connectionstring"
             }
 
-			if($OAuthClientId){
+		    if($OAuthClientId){
 			    #use the clientid if provided, else use a provided clientid 
-				Write-Verbose "Using provided oAuth clientid"
-				$cs += ";AuthType=OAuth;ClientId=$OAuthClientId"
-				if($OAuthRedirectUri){
-					$cs += ";redirecturi=$OAuthRedirectUri"
-				}
-			}
-			else{
+			    Write-Verbose "Using provided oAuth clientid"
+			    $cs += ";AuthType=OAuth;ClientId=$OAuthClientId"
+			    if($OAuthRedirectUri){
+				    $cs += ";redirecturi=$OAuthRedirectUri"
+			    }
+		    }
+		    else{
                 #else fallback to a known clientid
-				$cs+=";AuthType=OAuth;ClientId=2ad88395-b77d-4561-9441-d0e40824f9bc"
-				$cs+=";redirecturi=app://5d3e90d6-aa8e-48a8-8f2c-58b45cc67315"
-			}
-		}
+			    $cs+=";AuthType=OAuth;ClientId=2ad88395-b77d-4561-9441-d0e40824f9bc"
+			    $cs+=";redirecturi=app://5d3e90d6-aa8e-48a8-8f2c-58b45cc67315"
+		    }
+	    }
 
-		try
-		{
-			if(!$cs -or $cs.Length -eq 0){
-				throw "Cannot create the CrmServiceClient, the connection string is null"
-			}
+	    try
+	    {
+		    if(!$cs -or $cs.Length -eq 0){
+			    throw "Cannot create the CrmServiceClient, the connection string is null"
+		    }
+            
             #log the connection string to be helpful
             $loggedConnectionString = $cs
+
             if($Credential){
                 $loggedConnectionString = $cs.Replace($Credential.GetNetworkCredential().Password, "*******") 
             }
+
             Write-Verbose "ConnectionString:{$loggedConnectionString}"
 
-			$global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $cs
+		    $global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $cs
 
             ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
 
@@ -264,13 +271,13 @@ function Connect-CrmOnline{
                 Write-Error "Warning: Exception encountered when authenticating, if you're using oAuth you might want to include the -username paramter to disambiguate the identity used for authenticate"
             }
 
-			return $global:conn
-		}
-		catch
-		{
-			throw $_
-		}  
-	}
+		    return $global:conn
+	    }
+	    catch
+	    {
+		    throw $_
+	    }
+    }
 }
 
 function Connect-CrmOnPremDiscovery{
