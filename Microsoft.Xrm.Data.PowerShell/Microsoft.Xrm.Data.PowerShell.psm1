@@ -215,7 +215,7 @@ function Connect-CrmOnline{
             }
 			$cs+= ";AuthType=Office365"
             $cs+= ";Username=$($Credential.UserName)"
-		    $cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
+		    $cs+= ";Password='$($Credential.GetNetworkCredential().Password)'"
 		}
 		elseif($ForceOAuth){
             #use oAuth if requested -ForceOAuth
@@ -224,7 +224,7 @@ function Connect-CrmOnline{
             if($Credential){
                 Write-Verbose "Using provided credentials for oAuth"
                 $cs+= ";Username=$($Credential.UserName)"
-		        $cs+= ";Password=$($Credential.GetNetworkCredential().Password)"
+		        $cs+= ";Password='$($Credential.GetNetworkCredential().Password)'"
             }else{
                 Write-Verbose "No credential provided, attempting single sign on with no credentials in the connectionstring"
             }
