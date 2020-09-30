@@ -4420,7 +4420,7 @@ function Remove-CrmSecurityRoleFromTeam{
         Remove-CrmRecordAssociation -conn $conn -EntityLogicalName1 team -Id1 $TeamId -EntityLogicalName2 role -Id2 $SecurityRoleId -RelationshipName teamroles_association
     }
     else{
-        Write-Warning "Parameters not valid, no operations were performed"
+        throw "Parameters not valid, no operations were performed"
     }
 }
 
