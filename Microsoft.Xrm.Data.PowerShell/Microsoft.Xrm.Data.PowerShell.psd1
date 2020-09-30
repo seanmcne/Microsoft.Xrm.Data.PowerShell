@@ -93,7 +93,9 @@ AliasesToExport = @('*')
 # DscResourcesToExport = @()
 
 # List of all modules packaged with this module
-#ModuleList = @("Microsoft.Xrm.Data.Powershell")
+ModuleList = @(
+    @{ModuleName="Microsoft.Xrm.Data.Powershell"; GUID="7df9c140-65c3-4862-b3bc-73fad633aae4"}
+)
 
 # List of all files packaged with this module
 FileList = @("Microsoft.Xrm.Data.Powershell.psm1","Microsoft.Xrm.Data.Powershell.psd1","Microsoft.Crm.Sdk.Proxy.dll", "Microsoft.IdentityModel.Clients.ActiveDirectory.dll","Microsoft.Xrm.Data.PowerShell.Help.xml", "Microsoft.Xrm.Sdk.Deployment.dll","Microsoft.Xrm.Sdk.dll","Microsoft.Xrm.Tooling.Connector.dll","Microsoft.Xrm.Tooling.CrmConnectControl.dll","Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll","Microsoft.Xrm.Tooling.Ui.Styles.dll","Microsoft.Rest.ClientRuntime.dll","Newtonsoft.Json.dll","Microsoft.QualityTools.Testing.Fakes.dll","Microsoft.Xrm.Sdk.Deployment.dll")
