@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <ModuleObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" fVersion="1.1" type="Script" mclass="Module" useSupports="false">
   <Name>Microsoft.Xrm.Data.PowerShell</Name>
-  <Version>2.8.11</Version>
+  <Version>2.8.12</Version>
   <Description />
   <HasManifest>true</HasManifest>
   <OverridePostCount>false</OverridePostCount>
@@ -672,8 +672,8 @@ PS C:\&gt;Add-CrmSecurityRoleToTeam $team $role</Cmd>
     <CmdletObject verb="Add" noun="CrmSecurityRoleToUser">
       <Name>Add-CrmSecurityRoleToUser</Name>
       <Syntax>
-        <string>Add-CrmSecurityRoleToUser [-conn &lt;CrmServiceClient&gt;] [-UserRecord] &lt;PSObject&gt; [[-SecurityRoleRecord] &lt;PSObject&gt;] [[-SecurityRoleName] &lt;String&gt;]</string>
-        <string>Add-CrmSecurityRoleToUser [-conn &lt;CrmServiceClient&gt;] [-UserId] &lt;String&gt; [[-SecurityRoleId] &lt;String&gt;] [[-SecurityRoleName] &lt;String&gt;]</string>
+        <string>Add-CrmSecurityRoleToUser [-conn &lt;CrmServiceClient&gt;] [-UserRecord] &lt;PSObject&gt; [[-SecurityRoleRecord] &lt;PSObject&gt;]</string>
+        <string>Add-CrmSecurityRoleToUser [-conn &lt;CrmServiceClient&gt;] [-UserId] &lt;String&gt; [[-SecurityRoleId] &lt;String&gt;]</string>
       </Syntax>
       <GeneralHelp>
         <Synopsis>Assigns a security role to a user.
@@ -692,8 +692,8 @@ There are two ways to specify records.
         <ReturnTypeDescription />
       </GeneralHelp>
       <ParamSets>
-        <CommandParameterSetInfo2 Name="CrmRecord" Params="conn UserRecord SecurityRoleRecord SecurityRoleName Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
-        <CommandParameterSetInfo2 Name="Id" Params="conn UserId SecurityRoleId SecurityRoleName Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="CrmRecord" Params="conn UserRecord SecurityRoleRecord Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="Id" Params="conn UserId SecurityRoleId Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
       </ParamSets>
       <Parameters>
         <ParameterDescription type="CrmServiceClient" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
@@ -726,17 +726,6 @@ There are two ways to specify records.
           </Attributes>
           <Aliases />
           <Description>A security role record object which is obtained via Get-CrmRecord/Get-CrmRecords. When you pass CrmRecord, then you don't use SecurityRoleId.
-</Description>
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
-          <Name>SecurityRoleName</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description>A name of security role record
 </Description>
           <DefaultValue />
         </ParameterDescription>
@@ -5995,7 +5984,9 @@ PS C:\&gt;Remove-CrmSecurityRoleFromTeam $team $role</Cmd>
     <CmdletObject verb="Remove" noun="CrmSecurityRoleFromUser">
       <Name>Remove-CrmSecurityRoleFromUser</Name>
       <Syntax>
+        <string>Remove-CrmSecurityRoleFromUser [-conn &lt;CrmServiceClient&gt;] [-UserRecord] &lt;PSObject&gt; [-SecurityRoleName] &lt;String&gt;</string>
         <string>Remove-CrmSecurityRoleFromUser [-conn &lt;CrmServiceClient&gt;] [-UserRecord] &lt;PSObject&gt; [-SecurityRoleRecord] &lt;PSObject&gt;</string>
+        <string>Remove-CrmSecurityRoleFromUser [-conn &lt;CrmServiceClient&gt;] [-UserId] &lt;String&gt; [-SecurityRoleName] &lt;String&gt;</string>
         <string>Remove-CrmSecurityRoleFromUser [-conn &lt;CrmServiceClient&gt;] [-UserId] &lt;String&gt; [-SecurityRoleId] &lt;String&gt;</string>
       </Syntax>
       <GeneralHelp>
@@ -6016,7 +6007,9 @@ There are two ways to specify records.
         <ReturnTypeDescription />
       </GeneralHelp>
       <ParamSets>
+        <CommandParameterSetInfo2 Name="CrmRecordRoleName" Params="conn UserRecord SecurityRoleName Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
         <CommandParameterSetInfo2 Name="CrmRecord" Params="conn UserRecord SecurityRoleRecord Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
+        <CommandParameterSetInfo2 Name="IdRoleName" Params="conn UserId SecurityRoleName Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
         <CommandParameterSetInfo2 Name="Id" Params="conn UserId SecurityRoleId Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
       </ParamSets>
       <Parameters>
@@ -6034,6 +6027,7 @@ There are two ways to specify records.
         <ParameterDescription type="PSObject" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
           <Name>UserRecord</Name>
           <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
@@ -6057,6 +6051,7 @@ There are two ways to specify records.
           <Name>UserId</Name>
           <Attributes>
             <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
@@ -6073,6 +6068,17 @@ There are two ways to specify records.
           <Aliases />
           <Description>An Id (guid) of security role record
 </Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="2" globbing="false">
+          <Name>SecurityRoleName</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Security Role Name, case insensitive but must include spaces. Parameter value should be wrapped in quotes to include spaces.</Description>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>
@@ -8594,257 +8600,6 @@ Performance  : The operation took 00:00:00.3948901</Output>
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
     </CmdletObject>
-    <CmdletObject verb="Get" noun="CrmConnection">
-      <Name>Get-CrmConnection</Name>
-      <Syntax>
-        <string>Get-CrmConnection [[-InteractiveMode] &lt;SwitchParameter&gt;] [[-ProfileName] &lt;String&gt;] [[-MaxCrmConnectionTimeOutMinutes] &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
-        <string>Get-CrmConnection [-OrganizationName] &lt;String&gt; [[-ProfileName] &lt;String&gt;] [[-HomeRealmUrl] &lt;Uri&gt;] [-ServerUrl] &lt;Uri&gt; [[-Credential] &lt;PSCredential&gt;] [[-MaxCrmConnectionTimeOutMinutes] &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
-        <string>Get-CrmConnection -OrganizationName &lt;String&gt; [[-ProfileName] &lt;String&gt;] [[-DeploymentRegion] &lt;String&gt;] [-OnLineType] &lt;CommonAuth+OnlineType&gt; [[-Credential] &lt;PSCredential&gt;] [[-MaxCrmConnectionTimeOutMinutes] &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
-        <string>Get-CrmConnection [-ConnectionString] &lt;String&gt; [[-MaxCrmConnectionTimeOutMinutes] &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;]</string>
-      </Syntax>
-      <GeneralHelp>
-        <Synopsis />
-        <Description />
-        <Notes />
-        <InputType />
-        <InputUrl />
-        <InputTypeDescription />
-        <ReturnType />
-        <ReturnUrl />
-        <ReturnTypeDescription />
-      </GeneralHelp>
-      <ParamSets>
-        <CommandParameterSetInfo2 Name="UIOnly" Params="InteractiveMode ProfileName MaxCrmConnectionTimeOutMinutes LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
-        <CommandParameterSetInfo2 Name="OnPrem" Params="OrganizationName ProfileName HomeRealmUrl ServerUrl Credential MaxCrmConnectionTimeOutMinutes LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
-        <CommandParameterSetInfo2 Name="OnLine" Params="OrganizationName ProfileName DeploymentRegion OnLineType Credential MaxCrmConnectionTimeOutMinutes LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
-        <CommandParameterSetInfo2 Name="ConnectionStringOnly" Params="ConnectionString MaxCrmConnectionTimeOutMinutes LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable" />
-      </ParamSets>
-      <Parameters>
-        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="0" globbing="false">
-          <Name>InteractiveMode</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="2" globbing="false">
-          <Name>OrganizationName</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="0" globbing="false">
-          <Name>ProfileName</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-            <string>System.Management.Automation.ParameterAttribute</string>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="4" globbing="false">
-          <Name>DeploymentRegion</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="CommonAuth+OnlineType" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="1" globbing="false">
-          <Name>OnLineType</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="PSCredential" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="1" globbing="false">
-          <Name>Credential</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="Uri" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="3" globbing="false">
-          <Name>HomeRealmUrl</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="Uri" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="0" globbing="false">
-          <Name>ServerUrl</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="1" globbing="false">
-          <Name>ConnectionString</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="20" globbing="false">
-          <Name>MaxCrmConnectionTimeOutMinutes</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="false" pos="named" globbing="false">
-          <Name>LogWriteDirectory</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-      </Parameters>
-      <Examples />
-      <RelatedLinks />
-      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
-      <Publish>false</Publish>
-    </CmdletObject>
-    <CmdletObject verb="Get" noun="CrmOrganizations">
-      <Name>Get-CrmOrganizations</Name>
-      <Syntax>
-        <string>Get-CrmOrganizations [[-DeploymentRegion] &lt;String&gt;] [-OnLineType] &lt;CommonAuth+OnlineType&gt; [[-Credential] &lt;PSCredential&gt;] [[-MaxCrmConnectionTimeOutMinutes] &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;] [-WhatIf] [-Confirm]</string>
-        <string>Get-CrmOrganizations [[-HomeRealmUrl] &lt;Uri&gt;] [-ServerUrl] &lt;Uri&gt; [[-Credential] &lt;PSCredential&gt;] [[-MaxCrmConnectionTimeOutMinutes] &lt;Int32&gt;] [-LogWriteDirectory &lt;String&gt;] [-WhatIf] [-Confirm]</string>
-      </Syntax>
-      <GeneralHelp>
-        <Synopsis />
-        <Description />
-        <Notes />
-        <InputType />
-        <InputUrl />
-        <InputTypeDescription />
-        <ReturnType />
-        <ReturnUrl />
-        <ReturnTypeDescription />
-      </GeneralHelp>
-      <ParamSets>
-        <CommandParameterSetInfo2 Name="OnLine" Params="DeploymentRegion OnLineType Credential MaxCrmConnectionTimeOutMinutes LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable WhatIf Confirm" />
-        <CommandParameterSetInfo2 Name="OnPrem" Params="HomeRealmUrl ServerUrl Credential MaxCrmConnectionTimeOutMinutes LogWriteDirectory Verbose Debug ErrorAction WarningAction InformationAction ErrorVariable WarningVariable InformationVariable OutVariable OutBuffer PipelineVariable WhatIf Confirm" />
-      </ParamSets>
-      <Parameters>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="4" globbing="false">
-          <Name>DeploymentRegion</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="CommonAuth+OnlineType" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="1" globbing="false">
-          <Name>OnLineType</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="PSCredential" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="1" globbing="false">
-          <Name>Credential</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
-          <Name>WhatIf</Name>
-          <Attributes>
-            <string>System.Management.Automation.AliasAttribute</string>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases>
-            <string>wi</string>
-          </Aliases>
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
-          <Name>Confirm</Name>
-          <Attributes>
-            <string>System.Management.Automation.AliasAttribute</string>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases>
-            <string>cf</string>
-          </Aliases>
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="Uri" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="3" globbing="false">
-          <Name>HomeRealmUrl</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="Uri" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="0" globbing="false">
-          <Name>ServerUrl</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="Int32" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="true" isPos="true" pos="20" globbing="false">
-          <Name>MaxCrmConnectionTimeOutMinutes</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="false" pos="named" globbing="false">
-          <Name>LogWriteDirectory</Name>
-          <Attributes>
-            <string>System.Management.Automation.ParameterAttribute</string>
-          </Attributes>
-          <Aliases />
-          <Description />
-          <DefaultValue />
-        </ParameterDescription>
-      </Parameters>
-      <Examples />
-      <RelatedLinks />
-      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
-      <Publish>false</Publish>
-    </CmdletObject>
     <CmdletObject verb="Add" noun="CrmNoteToCrmRecord">
       <Name>Add-CrmNoteToCrmRecord</Name>
       <Syntax>
@@ -10441,8 +10196,8 @@ Output                         True</Output>
         <string>Set-CrmQueueMailbox [-conn &lt;CrmServiceClient&gt;] [-QueueId] &lt;String&gt; [-EmailAddress &lt;String&gt;] [-StateCode &lt;String&gt;] [-StatusCode &lt;String&gt;] [-ScheduleTest] [-MarkedAsPrimaryForExchangeSync] [-ApproveEmail]</string>
       </Syntax>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Sets the CRM mailbox for a given queue</Synopsis>
+        <Description>Sets the CRM mailbox for a given queue.</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -10627,56 +10382,6 @@ When omitting conn parameter, cmdlets automatically finds it.</Description>
       <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
       <Publish>false</Publish>
     </CmdletObject>
-    <CmdletObject verb="Test" noun="CrmTimerStart">
-      <Name>Test-CrmTimerStart</Name>
-      <Syntax>
-        <string>Test-CrmTimerStart</string>
-      </Syntax>
-      <GeneralHelp>
-        <Synopsis />
-        <Description />
-        <Notes />
-        <InputType />
-        <InputUrl />
-        <InputTypeDescription />
-        <ReturnType />
-        <ReturnUrl />
-        <ReturnTypeDescription />
-      </GeneralHelp>
-      <ParamSets>
-        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="" />
-      </ParamSets>
-      <Parameters />
-      <Examples />
-      <RelatedLinks />
-      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
-      <Publish>false</Publish>
-    </CmdletObject>
-    <CmdletObject verb="Test" noun="CrmTimerStop">
-      <Name>Test-CrmTimerStop</Name>
-      <Syntax>
-        <string>Test-CrmTimerStop</string>
-      </Syntax>
-      <GeneralHelp>
-        <Synopsis />
-        <Description />
-        <Notes />
-        <InputType />
-        <InputUrl />
-        <InputTypeDescription />
-        <ReturnType />
-        <ReturnUrl />
-        <ReturnTypeDescription />
-      </GeneralHelp>
-      <ParamSets>
-        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="" />
-      </ParamSets>
-      <Parameters />
-      <Examples />
-      <RelatedLinks />
-      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w10="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
-      <Publish>false</Publish>
-    </CmdletObject>
     <CmdletObject verb="Merge" noun="CrmHoldingSolutionAsync">
       <Name>Merge-CrmHoldingSolutionAsync</Name>
       <Syntax>
@@ -10772,8 +10477,8 @@ When omitting conn parameter, cmdlets automatically finds it.</Description>
         <string>Disable-CrmConnectorVerboseLogging</string>
       </Syntax>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Disable verbsoe logging for the CDS connector.</Synopsis>
+        <Description>Disable verbsoe logging for the CDS connector.</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -10797,8 +10502,8 @@ When omitting conn parameter, cmdlets automatically finds it.</Description>
         <string>Enable-CrmConnectorVerboseLogging [[-filePath] &lt;String&gt;]</string>
       </Syntax>
       <GeneralHelp>
-        <Synopsis />
-        <Description />
+        <Synopsis>Enable verbsoe logging for the CDS connector.</Synopsis>
+        <Description>Enable verbsoe logging for the CDS connector.</Description>
         <Notes />
         <InputType />
         <InputUrl />
@@ -10818,7 +10523,7 @@ When omitting conn parameter, cmdlets automatically finds it.</Description>
             <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
           </Attributes>
           <Aliases />
-          <Description />
+          <Description>Valid path to the file you wish to have log entries pushed into</Description>
           <DefaultValue />
         </ParameterDescription>
       </Parameters>

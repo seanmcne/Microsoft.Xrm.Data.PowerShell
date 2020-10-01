@@ -118,6 +118,7 @@ PrivateData = @{
 Lots of changes and enhancements to auth in this release: 
 - Performance enhancements and improvement of various powershell logic 
 - removing various PowerShell antipatterns 
+- removed test-crmtimerstart and test-crmtimerstop, functions are only used internally and renamed to crmtimerstart and crmtimerstop
 
 Including newer xrm tooling which has the following improvements:
 - 3.3.0.899 Added initial support for in memory log capture support.

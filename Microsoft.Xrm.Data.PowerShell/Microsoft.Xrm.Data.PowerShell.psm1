@@ -5467,9 +5467,9 @@ function Test-CrmViewPerformance{
             }
            
             # Get all records by using Fetch
-            Test-CrmTimerStart
+            CrmTimerStart
             $records = Get-CrmRecordsByFetch -conn $conn -Fetch $View.fetchxml -AllRows -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
-            $perf = Test-CrmTimerStop
+            $perf = CrmTimerStop
             $owner = $View.ownerid
             $totalCount = $records.Count           
         }
@@ -5481,9 +5481,9 @@ function Test-CrmViewPerformance{
             }
             
 			# Get all records by using Fetch
-            Test-CrmTimerStart
+            CrmTimerStart
             $records = Get-CrmRecordsByFetch -conn $conn -Fetch $View.fetchxml -AllRows -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
-            $perf = Test-CrmTimerStop
+            $perf = CrmTimerStop
             $owner = "System"
             $totalCount = $records.Count
         }
@@ -5514,26 +5514,24 @@ function Test-CrmViewPerformance{
     }
 }
 
-function Test-CrmTimerStart{
-# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+### Internal Helpers 
+function CrmTimerStart{
     $script:crmtimer = New-Object -TypeName 'System.Diagnostics.Stopwatch'
     $script:crmtimer.Start()
 }
 
-function Test-CrmTimerStop{
-# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+function CrmTimerStop{
     $crmtimerobj = Get-Variable crmtimer -Scope Script
     if($crmtimerobj.Value -ne $null)
     {
-        $crmtimer = $crmtimerobj.Value
-        $crmtimer.Stop()
-        $perf = "The operation took " + $crmtimer.Elapsed.ToString()
+        $script:crmtimer = $crmtimerobj.Value
+        $script:crmtimer.Stop()
+        $perf = "The operation took " + $script:crmtimer.Elapsed.ToString()
         Remove-Variable crmtimer  -Scope Script
         return $perf
     }
 }
 
-### Internal Helpers 
 function parseRecordsPage {
     PARAM( 
         [parameter(Mandatory=$true)]
