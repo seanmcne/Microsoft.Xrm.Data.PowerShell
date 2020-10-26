@@ -29,24 +29,22 @@ function Connect-CrmOnlineDiscovery{
         $global:conn = Get-CrmConnection -InteractiveMode -Verbose
         
         Write-Verbose "You are now connected and may run any of the CRM Commands."
-        
-        ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
+        if($global:conn){
+            ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
+        }
         
         return $global:conn 
     }
     else
     {
-        $onlineType = "Office365"
-        if($Credential -eq $null -And !$Interactive)
-        {
-            $Credential = Get-Credential
-        }
+        $onlineType = "OAuth"
+
         $crmOrganizations = Get-CrmOrganizations -Credential $Credential -OnLineType $onlineType -Verbose 
+
         $i = 0
           
         if($crmOrganizations.Count -gt 0)
         {    
-
 	        if($crmOrganizations.Count -eq 1)
             {
                 $orgNumber = 0
@@ -56,18 +54,16 @@ function Connect-CrmOnlineDiscovery{
 				$crmOrganizations = $crmOrganizations | sort-object FriendlyName
                 foreach($crmOrganization in $crmOrganizations)
                 {   $friendlyName = $crmOrganization.FriendlyName
-
                     $message = "[$i] $friendlyName (" + $crmOrganization.WebApplicationUrl + ")"
                     Write-Host $message 
                     $i++
                 }
                 $orgNumber = Read-Host "`nSelect CRM Organization by index number"
-    
                 Write-Verbose ($crmOrganizations[$orgNumber]).UniqueName
-			}
+            }
             $global:conn = Get-CrmConnection -Credential $Credential -DeploymentRegion $crmOrganizations[$orgNumber].DiscoveryServerShortname -OnLineType $onlineType -OrganizationName ($crmOrganizations[$orgNumber]).UniqueName -Verbose
 
-			#yes, we know this isn't recommended BUT this cmdlet is only valid for user interaction in the console and shouldn't be used for non-interactive scenarios
+            #yes, we know this isn't recommended BUT this cmdlet is only valid for user interaction in the console and shouldn't be used for non-interactive scenarios
             Write-Host "`nYou are now connected to: $(($crmOrganizations[$orgNumber]).UniqueName)" -foregroundcolor yellow
 			Write-Host "For a list of commands run: Get-Command -Module Microsoft.Xrm.Data.Powershell" -foregroundcolor yellow
             
@@ -4664,8 +4660,7 @@ function Set-CrmConnectionCallerId{
 
 	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
-    # We may need to check if the CallerId exists and enabled.
-    $conn.OrganizationServiceProxy.CallerId = $CallerId
+    $conn.CallerId = $CallerId
 }
 
 function Set-CrmConnectionTimeout{
