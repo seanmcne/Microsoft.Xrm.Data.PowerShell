@@ -36,10 +36,10 @@ Author = 'Sean McNellis, Kenichiro Nakamura'
 CompanyName = 'Microsoft Corporation'
 
 # Copyright statement for this module
-Copyright = '(c) 2020 Microsoft Corporation All rights reserved.'
+Copyright = '(c) 2021 Microsoft Corporation All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'This module uses the CRM connection from Microsoft.Xrm.Tooling.CrmConnector.Powershell and provides common functions to create, delete, query, and update data as well as functions for common tasks such as publishing, and manipulating System and CRM User Settings, etc. The module should function for both Dynamics CRM Online and On-Premise environment.'
+Description = 'This module applies many helpful functions which use the Microsoft.Xrm.Tooling.CrmConnector.Powershell CrmServiceClient. Functions are included to create, delete, query, and update data as well as functions for common tasks such as publishing, and manipulating System and DataVerse User Settings, etc. The module should function for both Dynamics Customer Engagement Online, DataVerse environments, and On-Premise environments.'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '4.0'
@@ -116,16 +116,11 @@ PrivateData = @{
         # ReleaseNotes of this module
         ReleaseNotes = '
 Lots of changes and enhancements to auth in this release: 
-- Performance enhancements and improvement of various powershell logic 
-- removing various PowerShell antipatterns 
-- removed test-crmtimerstart and test-crmtimerstop, functions are only used internally and renamed to crmtimerstart and crmtimerstop
+- Updated to latest assemblies https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/
+- For samples visit the community sample site here: https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell.samples
 
 Including newer xrm tooling which has the following improvements:
-- 3.3.0.899 Added initial support for in memory log capture support.
-- 3.3.0.897 Fixed an issue with sovereign cloud discovery reference data that would prevent a login control from picking the correct global discovery server when connecting.
-- 3.3.0.891 Fixed an error where discovery would be used when using AD and IFD to connect to onpremise even if connection strings where used.
-- 3.3.0.890 Fixed an error where timeout property was not properly assigned when using Non-oAuth types
-- 3.3.0.890 Fixed an error with setting CallerId when ClientSecret Auth type is used.  '
+- 3.3.0.911 review the following website for release notes: https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/'
         # Prerelease = '-alpha'
 
     } # End of PSData hashtable
