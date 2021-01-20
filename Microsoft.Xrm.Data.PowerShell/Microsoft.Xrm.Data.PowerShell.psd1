@@ -36,7 +36,7 @@ Author = 'Sean McNellis, Kenichiro Nakamura'
 CompanyName = 'Microsoft Corporation'
 
 # Copyright statement for this module
-Copyright = '(c) 2020 Microsoft Corporation All rights reserved.'
+Copyright = '(c) 2021 Microsoft Corporation All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'This module applies many helpful functions which use the Microsoft.Xrm.Tooling.CrmConnector.Powershell CrmServiceClient. Functions are included to create, delete, query, and update data as well as functions for common tasks such as publishing, and manipulating System and DataVerse User Settings, etc. The module should function for both Dynamics Customer Engagement Online, DataVerse environments, and On-Premise environments.'
