@@ -4340,7 +4340,7 @@ function Add-CrmSecurityRoleToUser{
 
     if(!$SecurityRoleRecord -and !$SecurityRoleId -and !$SecurityRoleName)
     {
-        Write-Warning "You need to specify Security Role information"
+        Write-Error "You need to provide a SecurityRole"
         return
     }
     
@@ -4367,7 +4367,7 @@ function Add-CrmSecurityRoleToUser{
         $roles = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch)
         if($roles.CrmRecords.Count -eq 0)
         {
-            Write-Warning "Not Security Role found"
+            Write-Error "No Security Role found"
             return
         }
         else
