@@ -4331,18 +4331,20 @@ function Add-CrmSecurityRoleToUser{
         [parameter(Mandatory=$true, Position=1, ParameterSetName="Id")]
         [string]$UserId,
         [parameter(Mandatory=$false, Position=2, ParameterSetName="Id")]
-        [string]$SecurityRoleId
+        [string]$SecurityRoleId,
+        [parameter(Mandatory=$false, Position=3)]
+        [string]$SecurityRoleName
     )
 
 	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
-    if($SecurityRoleRecord -eq $null -and $SecurityRoleId -eq "" -and $SecurityRoleName -eq "")
+    if(!$SecurityRoleRecord -and !$SecurityRoleId -and !$SecurityRoleName)
     {
         Write-Warning "You need to specify Security Role information"
         return
     }
     
-    if($SecurityRoleName -ne "")
+    if($SecurityRoleName)
     {
         if($UserRecord -eq $null -or $UserRecord.businessunitid -eq $null)
         {
@@ -4374,7 +4376,7 @@ function Add-CrmSecurityRoleToUser{
         }
     }
 
-    if($SecurityRoleName -ne "")
+    if($SecurityRoleName)
     {
         Add-CrmRecordAssociation -conn $conn -CrmRecord1 $UserRecord -CrmRecord2 $role -RelationshipName systemuserroles_association
     }
