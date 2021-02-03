@@ -173,7 +173,7 @@ function Connect-CrmOnline{
         if(-not [string]::IsNullOrEmpty($OAuthRedirectUri)){
 		    $cs += ";redirecturi=$OAuthRedirectUri"
         }
-		$cs += ";ClientSecret=$ClientSecret"
+		$cs += ";ClientSecret='$ClientSecret'"
 		Write-Verbose ($cs.Replace($ClientSecret, "*******"))
 		try
 		{
