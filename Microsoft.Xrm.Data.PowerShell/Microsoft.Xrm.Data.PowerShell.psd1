@@ -116,6 +116,7 @@ PrivateData = @{
         # ReleaseNotes of this module
         ReleaseNotes = '
 Lots of changes and enhancements to auth in this release: 
+- Updated to escape clientsecret in the connection strings built by connect-crmonline
 - Updated to latest assemblies https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/
 - For samples visit the community sample site here: https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell.samples
 
