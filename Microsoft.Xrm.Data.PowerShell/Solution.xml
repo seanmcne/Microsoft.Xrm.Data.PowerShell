@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml version="8.0.0.0" SolutionPackageVersion="8.0" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SolutionManifest>
+    <UniqueName>OrganizationSettingsEditor</UniqueName>
+    <LocalizedNames>
+      <LocalizedName description="Organization Settings Editor (Dynamics 365)" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="Project is located publicly at: http://github.com/seanmcne/orgDbOrgSettings&#xA;- This solution can only be imported into CRM 2016 and CRM v9 instances&#xA;- includes some organization attributes (in addition to all orgdborgsettings)&#xA;&#xA;The Organization Settings Editor is a webresource based utility which allows CRM admins to edit their orgDbOrgSettings (documented here: http://support.microsoft.com/kb/2691237), this approach is easier to configure, use, and understand over the currently provided utility in the aforementioned KB. This project began as a proof of concept and is in a state where I believe the code could be better organized but is functional. As I gauge usage of the utility and feedback I plan on updating it and clean up the code.  &#xA;&#xA;This utility uses the following supporting libraries and technologies: &#xA;- AzureMobile services &#xA;- json2 (min)&#xA;- jQuery 1.11.0 (min)&#xA;The included settings.xml file is currently a static web resource and requires periodic updating via new versions of the solution - I will provide updates as new settings come out. Finally, this managed solution makes use of the AzureMobile service, if there is internet access from where this utility is run, it will query an endpoint within the AzureMobile service to check for newer version numbers of this managed solution and alert you of where to download the latest - this is strictly used to alert the admin of updates and does not collect any additional information from the system.&#xA;&#xA;Thanks for downloading and I welcome your feedback! &#xA;Sean McNellis&#xA;Premier Field Engineer&#xA;Blog: http://blogs.msdn.com/b/crminthefield" languagecode="1033" />
+    </Descriptions>
+    <Version>1.0.2102.1701</Version>
+    <Managed>1</Managed>
+    <ConfigurationPage>mspfedyn_/orgdborgsettings/orgdborgsettings.html</ConfigurationPage>
+    <Publisher>
+      <UniqueName>SeanMcNellis</UniqueName>
+      <LocalizedNames>
+        <LocalizedName description="Sean McNellis (PFE)" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions>
+        <Description description="Sean McNellis &#xA;Microsoft Premier Field Engineer: Dynamics CRM&#xA;http://www.pfedynamics.com/&#xA;Blog: http://blogs.msdn.com/crminthefield/" languagecode="1033" />
+      </Descriptions>
+      <EMailAddress xsi:nil="true">
+      </EMailAddress>
+      <SupportingWebsiteUrl>http://blogs.msdn.com/b/crminthefield</SupportingWebsiteUrl>
+      <CustomizationPrefix>mspfedyn</CustomizationPrefix>
+      <CustomizationOptionValuePrefix>86454</CustomizationOptionValuePrefix>
+      <Addresses>
+        <Address>
+          <AddressNumber>1</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true">
+          </City>
+          <County xsi:nil="true">
+          </County>
+          <Country xsi:nil="true">
+          </Country>
+          <Fax xsi:nil="true">
+          </Fax>
+          <FreightTermsCode xsi:nil="true">
+          </FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true">
+          </ImportSequenceNumber>
+          <Latitude xsi:nil="true">
+          </Latitude>
+          <Line1 xsi:nil="true">
+          </Line1>
+          <Line2 xsi:nil="true">
+          </Line2>
+          <Line3 xsi:nil="true">
+          </Line3>
+          <Longitude xsi:nil="true">
+          </Longitude>
+          <Name xsi:nil="true">
+          </Name>
+          <PostalCode xsi:nil="true">
+          </PostalCode>
+          <PostOfficeBox xsi:nil="true">
+          </PostOfficeBox>
+          <PrimaryContactName xsi:nil="true">
+          </PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true">
+          </StateOrProvince>
+          <Telephone1 xsi:nil="true">
+          </Telephone1>
+          <Telephone2 xsi:nil="true">
+          </Telephone2>
+          <Telephone3 xsi:nil="true">
+          </Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true">
+          </TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true">
+          </UPSZone>
+          <UTCOffset xsi:nil="true">
+          </UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true">
+          </UTCConversionTimeZoneCode>
+        </Address>
+        <Address>
+          <AddressNumber>2</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true">
+          </City>
+          <County xsi:nil="true">
+          </County>
+          <Country xsi:nil="true">
+          </Country>
+          <Fax xsi:nil="true">
+          </Fax>
+          <FreightTermsCode xsi:nil="true">
+          </FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true">
+          </ImportSequenceNumber>
+          <Latitude xsi:nil="true">
+          </Latitude>
+          <Line1 xsi:nil="true">
+          </Line1>
+          <Line2 xsi:nil="true">
+          </Line2>
+          <Line3 xsi:nil="true">
+          </Line3>
+          <Longitude xsi:nil="true">
+          </Longitude>
+          <Name xsi:nil="true">
+          </Name>
+          <PostalCode xsi:nil="true">
+          </PostalCode>
+          <PostOfficeBox xsi:nil="true">
+          </PostOfficeBox>
+          <PrimaryContactName xsi:nil="true">
+          </PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true">
+          </StateOrProvince>
+          <Telephone1 xsi:nil="true">
+          </Telephone1>
+          <Telephone2 xsi:nil="true">
+          </Telephone2>
+          <Telephone3 xsi:nil="true">
+          </Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true">
+          </TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true">
+          </UPSZone>
+          <UTCOffset xsi:nil="true">
+          </UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true">
+          </UTCConversionTimeZoneCode>
+        </Address>
+      </Addresses>
+    </Publisher>
+    <RootComponents>
+      <RootComponent type="61" schemaName="mspfedyn_/orgdborgsettings/jquery1_11_0.js" />
+      <RootComponent type="61" schemaName="mspfedyn_/orgdborgsettings/json2.js" />
+      <RootComponent type="61" schemaName="mspfedyn_/orgdborgsettings/orgdborgsettings.html" />
+      <RootComponent type="61" schemaName="mspfedyn_/orgdborgsettings/progress.gif" />
+      <RootComponent type="61" schemaName="mspfedyn_/orgdborgsettings/settings.xml" />
+    </RootComponents>
+    <MissingDependencies />
+  </SolutionManifest>
+</ImportExportXml>
