@@ -4332,7 +4332,8 @@ function Add-CrmSecurityRoleToUser{
         [string]$UserId,
         [parameter(Mandatory=$false, Position=2, ParameterSetName="Id")]
         [string]$SecurityRoleId,
-        [parameter(Mandatory=$false, Position=3)]
+        [parameter(Mandatory=$false, Position=3, ParameterSetName="Id")]
+        [parameter(Mandatory=$false, Position=3, ParameterSetName="CrmRecord")]
         [string]$SecurityRoleName
     )
 
