@@ -131,8 +131,8 @@ Get-Command *crm*
 Get-Help New-CrmRecord -Detailed
 ```
 ### About Authors
-This module is implemented by Sean McNellis and Kenichiro Nakamura.
- 
+This module is implemented by Sean McNellis and Kenichiro Nakamura, these helper functions make use of the Microsoft provided powershell module hosted (standalone) here: https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/. 
+
 <a href="https://twitter.com/seanmcne" target="_blank">Sean McNellis</a>, Principal Customer Engineer based out of North America and works supporting Dynamics & PowerPlatform Customers.
 Kenichiro Nakamura, Sr. Software Engineer based out of Japan.
 
