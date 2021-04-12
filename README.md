@@ -62,7 +62,7 @@ for more information.*
 #Import Micrsoft.Xrm.Data.Powershell module 
 Import-Module Microsoft.Xrm.Data.Powershell
 ```
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* *The module requires PowerShell v4.0.*
+* *The module is not compatible yet with PowerShell Core and must use v4 or v5 - this is due to the dependency on XrmTooling. If there is an update for XrmTooling we will explore porting this to work with that new module depending on the amount of effort required.*
 
 ### How Microsoft.Xrm.Data.Powershell works
 Microsoft.Xrm.Data.Powershell module exposes many functions, but you can use Connect-CrmOnlineDiscovery, Connect-CrmOnPremDiscovery to connect to any CRM organization by using Discovery Service. Use Connect-CrmOnline function for Azure Automation. By executing these function, it creates $conn global variable. Any other functions which needs to connect to the CRM Organization takes connection parameter. You can explicitly specify the connection by using -conn parameter, but if you omit the connection, functions retrieve connection from global variable.
@@ -73,14 +73,17 @@ Alternatively, you can create multiple connection objects and pass them into eac
 This example shows how to create connection and do CRUD operation as well as manipulate System Settings.
 1. Run following command to connect to Dynamics CRM Organization via  the Xrm Tooling GUI.
 ```PowerShell
-# Online
-Connect-CrmOnlineDiscovery -InteractiveMode
-# OnPrem
-Connect-CrmOnPremDiscovery -InteractiveMode
-# Azure Automation
-Connect-CrmOnline -Credential $cred -ServerUrl "https://<org>.crm.dynamics.com"
-```
+# Online - use oAuth and XrmTooling Ui by providing your UPN and the enviroment url
+connect-crmonline -Username "user@domain.com" -ServerUrl <orgurl>.crm.dynamics.com
 
+# OnPrem sample using discovery
+Connect-CrmOnPremDiscovery -InteractiveMode
+
+# Azure Automation example
+$oAuthClientId = "00000000-0000-0000-0000-000000000000"
+$encryptedClientSecret = Get-AutomationVariable -Name ClientSecret
+Connect-CrmOnline -ClientSecret $encryptedClientSecret -OAuthClientId $oAuthClientId -ServerUrl "https://<org>.crm.dynamics.com"
+```
 For Azure Automation, write all scripts inside inlinescript block as Runbook or use PowerShell type.
 
 2. Run following command to test CRUD.
