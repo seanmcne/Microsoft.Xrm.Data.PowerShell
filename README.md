@@ -80,11 +80,12 @@ connect-crmonline -Username "user@domain.com" -ServerUrl <orgurl>.crm.dynamics.c
 Connect-CrmOnPremDiscovery -InteractiveMode
 
 # Azure Automation example
+# this uses an application user - see here for more details: https://docs.microsoft.com/en-us/power-platform/admin/create-users-assign-online-security-roles#create-an-application-user
 $oAuthClientId = "00000000-0000-0000-0000-000000000000"
 $encryptedClientSecret = Get-AutomationVariable -Name ClientSecret
 Connect-CrmOnline -ClientSecret $encryptedClientSecret -OAuthClientId $oAuthClientId -ServerUrl "https://<org>.crm.dynamics.com"
 ```
-For Azure Automation, write all scripts inside inlinescript block as Runbook or use PowerShell type.
+For Azure Automation, write all scripts inside inlinescript block as Runbook or use PowerShell type.  When using Azure automation or any non-end-user connection (*headless*) an ApplicationUser should be used - for details on how to create an application user see here: https://docs.microsoft.com/en-us/power-platform/admin/create-users-assign-online-security-roles#create-an-application-user
 
 2. Run following command to test CRUD.
 ```PowerShell
