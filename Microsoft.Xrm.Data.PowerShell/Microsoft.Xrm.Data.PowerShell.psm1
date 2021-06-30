@@ -122,6 +122,11 @@ function Connect-CrmOnline{
         Enable-CrmConnectorVerboseLogging
     }
 
+    if(!$ForceOAuth){
+        Write-Warning "Parameter 'ForceOAuth' is obsolete. Modern oAuth authentication is now used due to Dataverse auth changes: https://docs.microsoft.com/en-us/powerapps/developer/data-platform/authenticate-office365-deprecation."
+        $ForceOAuth = $true
+    }
+
 	if(-not [string]::IsNullOrEmpty($ServerUrl) -and $ServerUrl.StartsWith("https://","CurrentCultureIgnoreCase") -ne $true){
 		Write-Verbose "ServerUrl is missing https, fixing URL: https://$ServerUrl"
 		$ServerUrl = "https://" + $ServerUrl
@@ -198,7 +203,7 @@ function Connect-CrmOnline{
             Write-Warning "UserName parameter is only compatible with oAuth, forcing auth mode to oAuth"
             $ForceOAuth = $true
         }
-		#Default to Office365 Auth, allow oAuth to be used
+		#Default to Office365 Auth, allow oAuth to be used - TODO remove after all auth changes are final
 		if(!$OAuthClientId -and !$ForceOAuth){
 			Write-Verbose "Using AuthType=Office365"
             if(-not $Credential){
