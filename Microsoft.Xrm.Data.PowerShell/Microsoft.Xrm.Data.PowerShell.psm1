@@ -1459,7 +1459,7 @@ function Invoke-CrmRecordWorkflow{
   </entity>
 </fetch>
 "@
-			$workflowResult = (Get-CrmRecordsByFetch -Fetch $fetch -TopCount 1)
+			$workflowResult = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch -TopCount 1)
 			if($workflowResult.NextPage){
 				throw "Duplicate workflow detected, try executing the workflow by its ID"
 			}
