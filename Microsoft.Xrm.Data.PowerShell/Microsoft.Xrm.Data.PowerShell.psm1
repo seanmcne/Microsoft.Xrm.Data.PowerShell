@@ -1459,7 +1459,7 @@ function Invoke-CrmRecordWorkflow{
   </entity>
 </fetch>
 "@
-			$workflowResult = (Get-CrmRecordsByFetch -Fetch $fetch -TopCount 1)
+			$workflowResult = (Get-CrmRecordsByFetch -conn $conn -Fetch $fetch -TopCount 1)
 			if($workflowResult.NextPage){
 				throw "Duplicate workflow detected, try executing the workflow by its ID"
 			}
@@ -3578,31 +3578,31 @@ function Get-CrmSystemSettings{
         {
             if($ShowDisplayName)
             {
-                $name = ($attributes | where {$_.LogicalName -eq $att.Key}).Displayname.UserLocalizedLabel.Label + ":" +((Get-CrmEntityOptionSet mailbox incomingemaildeliverymethod).DisplayValue) 
+                $name = ($attributes | where {$_.LogicalName -eq $att.Key}).Displayname.UserLocalizedLabel.Label + ":" +((Get-CrmEntityOptionSet -conn $conn mailbox incomingemaildeliverymethod).DisplayValue) 
             }
             else
             {
                 $name = "defaultemailsettings:incomingemaildeliverymethod"
             }
-            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $name -Value ((Get-CrmEntityOptionSet mailbox incomingemaildeliverymethod).Items.DisplayLabel)[([xml]$att.Value).FirstChild.IncomingEmailDeliveryMethod]
+            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $name -Value ((Get-CrmEntityOptionSet -conn $conn mailbox incomingemaildeliverymethod).Items.DisplayLabel)[([xml]$att.Value).FirstChild.IncomingEmailDeliveryMethod]
             if($ShowDisplayName)
             {
-                $name = ($attributes | where {$_.LogicalName -eq $att.Key}).Displayname.UserLocalizedLabel.Label + ":" +((Get-CrmEntityOptionSet mailbox outgoingemaildeliverymethod).DisplayValue) 
+                $name = ($attributes | where {$_.LogicalName -eq $att.Key}).Displayname.UserLocalizedLabel.Label + ":" +((Get-CrmEntityOptionSet -conn $conn mailbox outgoingemaildeliverymethod).DisplayValue) 
             }
             else
             {
                 $name = "defaultemailsettings:outgoingemaildeliverymethod"
             }
-            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $name -Value ((Get-CrmEntityOptionSet mailbox outgoingemaildeliverymethod).Items.DisplayLabel)[([xml]$att.Value).FirstChild.OutgoingEmailDeliveryMethod]
+            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $name -Value ((Get-CrmEntityOptionSet -conn $conn mailbox outgoingemaildeliverymethod).Items.DisplayLabel)[([xml]$att.Value).FirstChild.OutgoingEmailDeliveryMethod]
             if($ShowDisplayName)
             {
-                $name = ($attributes | where {$_.LogicalName -eq $att.Key}).Displayname.UserLocalizedLabel.Label + ":" +((Get-CrmEntityOptionSet mailbox actdeliverymethod).DisplayValue) 
+                $name = ($attributes | where {$_.LogicalName -eq $att.Key}).Displayname.UserLocalizedLabel.Label + ":" +((Get-CrmEntityOptionSet -conn $conn mailbox actdeliverymethod).DisplayValue) 
             }
             else
             {
                 $name = "defaultemailsettings:actdeliverymethod"
             }
-            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $name -Value ((Get-CrmEntityOptionSet mailbox actdeliverymethod).Items.DisplayLabel)[([xml]$att.Value).FirstChild.ACTDeliveryMethod]
+            Add-Member -InputObject $psobj -MemberType NoteProperty -Name $name -Value ((Get-CrmEntityOptionSet -conn $conn mailbox actdeliverymethod).Items.DisplayLabel)[([xml]$att.Value).FirstChild.ACTDeliveryMethod]
             continue
         }
         
