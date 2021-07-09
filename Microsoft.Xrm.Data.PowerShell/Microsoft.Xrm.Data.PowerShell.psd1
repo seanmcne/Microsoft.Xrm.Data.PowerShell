@@ -24,7 +24,7 @@
 RootModule = 'Microsoft.Xrm.Data.Powershell.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.8.14'
+ModuleVersion = '2.8.15'
 
 # ID used to uniquely identify this module
 GUID = '7df9c140-65c3-4862-b3bc-73fad633aae4'
@@ -115,13 +115,14 @@ PrivateData = @{
 
         # ReleaseNotes of this module
         ReleaseNotes = '
-Lots of changes and enhancements to auth in this release: 
-- Fixed a bug in the parameter set for Add-CrmSecurityRoleToUser 
+Changes and enhancements in this release: 
+- Fix Invoke-CrmRecordWorkflow not using passed connection when calling Get-CrmRecordsByFetch
+- Fix Get-CrmSystemSettings not using passed connection when calling Get-CrmEntityOptionSet
 - Updated to latest assemblies https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/
 - For samples visit the community sample site here: https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell.samples
 
 Including latest xrm tooling:
-- 3.3.0.911 review the following website for release notes: https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/'
+- 3.3.0.928 review the following website for release notes: https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/'
         # Prerelease = '-alpha'
 
     } # End of PSData hashtable
