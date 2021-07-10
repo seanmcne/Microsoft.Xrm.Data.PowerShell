@@ -2163,8 +2163,7 @@ function Import-CrmSolution{
         Write-Host "Import of file completed, waiting on completion of importId: $importId"
 		try{
 			while($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds){
-				#delay
-				Start-Sleep -Seconds $pollingDelaySeconds
+				
 				#check the import job for success/fail/inProgress
 				try{
 					$import = Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields solutionname,data,completedon,startedon,progress
@@ -2244,6 +2243,8 @@ function Import-CrmSolution{
 					$isProcessing = $false
 					break
 				}
+                
+                Start-Sleep -Seconds $pollingDelaySeconds
 			}
 		} Catch {
 			Write-Error "ImportJob with ID: $importId has encountered an exception: $_ "
