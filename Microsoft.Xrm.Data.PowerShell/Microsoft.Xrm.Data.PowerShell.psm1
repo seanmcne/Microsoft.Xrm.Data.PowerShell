@@ -2146,13 +2146,13 @@ function Import-CrmSolution{
 		}
 
         Write-Verbose "Calling .ImportSolutionToCrm() this process can take minutes..."
+        Write-Progress -Id 1 -Activity "Importing Solution" -CurrentOperation "Initiating import" -PercentComplete -1
         $result = $conn.ImportSolutionToCrm($SolutionFilePath, [ref]$importId, $ActivatePlugIns,
                 $OverwriteUnManagedCustomizations, $SkipDependancyOnProductUpdateCheckOnInstall,$ImportAsHoldingSolution)
         Write-Verbose "ImportId: $result" 
 		if ($result -eq [guid]::Empty) {
              throw LastCrmConnectorException($conn)
         }
-        $pollingStart = Get-Date
         $isProcessing = $true
 		$secondsSpentPolling = 0
         $pollingDelaySeconds = 5
@@ -2162,6 +2162,7 @@ function Import-CrmSolution{
 		$transientFailureCount = 0; 
         Write-Host "Import of file completed, waiting on completion of importId: $importId"
 		try{
+            Write-Progress -Id 1 -Activity "Importing Solution" -CurrentOperation "Solution file uploaded, import initiated" -PercentComplete -1
 			while($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds){
 				
 				#check the import job for success/fail/inProgress
@@ -2180,6 +2181,8 @@ function Import-CrmSolution{
 				$importManifest = ([xml]($import).data).importexportxml.solutionManifests.solutionManifest
 				$ProcPercent = [double](Coalesce $import.progress "0")
 
+                Write-Progress -Id 1 -Activity "Importing $($import.solutionname)" -CurrentOperation "Import processing" -PercentComplete $ProcPercent
+
 				#check if processing percentage reduced at any given time
 				if($TopPrevProcPercent -gt $ProcPercent)
 				{
@@ -2192,8 +2195,6 @@ function Import-CrmSolution{
 				#Check for import completion 
 				if($import.completedon -eq $null -and $importManifest.result.result -ne "success"){
 					$isProcessing = $true
-					$secondsSpentPolling = ([Int]((Get-Date) - $pollingStart).TotalSeconds)
-					Write-Host "$($secondsSPentPolling.ToString("000")) seconds of max: $MaxWaitTimeInSeconds ... ImportJob%: $ProcPercent"
 				}
 				else {
 					Write-Verbose "Processing Completed at: $($import.completedon) with ImportJob%: $ProcPercent" 
@@ -2244,12 +2245,14 @@ function Import-CrmSolution{
 					break
 				}
                 
+                Write-Progress -Id 2 -ParentId 1 -Activity "Maximum Wait Time ($(New-TimeSpan -Seconds $MaxWaitTimeInSeconds))" -CurrentOperation "Remaining Time: $(New-TimeSpan -Seconds ($MaxWaitTimeInSeconds - $secondsSpentPolling))" -PercentComplete ([double]($MaxWaitTimeInSeconds - $secondsSpentPolling) * 100 / $MaxWaitTimeInSeconds)
                 Start-Sleep -Seconds $pollingDelaySeconds
 			}
 		} Catch {
 			Write-Error "ImportJob with ID: $importId has encountered an exception: $_ "
 		} Finally{
             $ProcPercent = ([double](Coalesce $ProcPercent 0))
+            Write-Progress -Id 2 -Completed -Activity "_"
         }
         #User provided timeout and exit function with an error
 	    if($secondsSpentPolling -gt $MaxWaitTimeInSeconds){
@@ -2284,7 +2287,12 @@ function Import-CrmSolution{
     catch
     {
         Write-Error $_.Exception
-    }    
+    }
+    finally
+    {
+        Write-Progress -Id 1 -Completed -Activity "_"
+        Write-Progress -Id 2 -Completed -Activity "_"
+    }
 }
 
 #MergeHoldingSolution
