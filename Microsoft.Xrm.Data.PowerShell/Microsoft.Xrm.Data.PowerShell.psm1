@@ -2276,6 +2276,7 @@ function Import-CrmSolution{
                 if($PublishChanges){
                     Write-Verbose "PublishChanges set, executing: Publish-CrmAllCustomization using the same connection."
                     Publish-CrmAllCustomization -conn $conn
+                    Write-Progress -Id 1 -Activity "Importing $($import.solutionname)" -CurrentOperation "Publishing Customizations" -PercentComplete 100
                 }
                 else{
                     Write-Output "Import Complete, don't forget to publish customizations."
