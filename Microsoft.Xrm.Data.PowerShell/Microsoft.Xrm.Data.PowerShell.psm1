@@ -1660,9 +1660,10 @@ function Get-CrmRecordsByFetch{
     {
         $PageCookie = $null
     }
-    #$recordslist = New-Object 'System.Collections.Generic.List[System.Management.Automation.PSObject]'
-    $recordslist = New-Object "System.Collections.Generic.List[PSCustomObject]"
-    $resultSet = New-Object 'System.Collections.Generic.Dictionary[[System.String],[System.Management.Automation.PSObject]]'
+
+    $recordslist = New-Object "System.Collections.Generic.List[System.Management.Automation.PSObject]"
+    $fetchQueryTime = New-TimeSpan -Seconds 0
+    $crmFetchTimer = [System.Diagnostics.Stopwatch]::StartNew()
     try 
     {
         $xml = [xml]$Fetch
@@ -1670,54 +1671,39 @@ function Get-CrmRecordsByFetch{
         {
             $TopCount = $xml.fetch.count
         }
-        $crmFetchTimer = [System.Diagnostics.Stopwatch]::StartNew() 
-        $records = $conn.GetEntityDataByFetchSearch($Fetch, $TopCount, $PageNumber, $PageCookie, [ref]$PagingCookie, [ref]$NextPage, [Guid]::Empty)
-        $crmFetchTimer.Stop()
-        if($conn.LastCrmException)
-        {
-            throw LastCrmConnectorException($conn)
-        }
-        $logicalname = $xml.SelectSingleNode("/fetch/entity").Name
-        #if there are zero results returned 
-        if($records.Count -eq 0)
-        {
-            Write-Warning "No Result"
-            $resultSet.Add("CrmRecords", $recordslist)
-            $resultSet.Add("Count", $recordslist.Count)
-            $resultSet.Add("PagingCookie", $null)
-            $resultSet.Add("NextPage", $false)
-            $resultSet.Add("FetchXml", $Fetch)
-            $resultSet.Add("FetchQueryTime", $crmFetchTimer.Elapsed) 
-            $resultSet
-            return
-        }
-        [System.Collections.Generic.List[PSCustomObject]]$recordslist = parseRecordsPage -records $records -logicalname $logicalname -xml $xml -Verbose
-        if($NextPage -and $AllRows)
-        {
-            $PageNumber = $PageNumber + 1
-            Write-Debug "Fetching next page #$PageNumber"
-            #TODO: restructure to avoid recursion for multiple pages 
-            $NextRecordSet = Get-CrmRecordsByFetch -conn $conn -Fetch $Fetch -TopCount $TopCount -PageNumber $PageNumber -PageCookie $PagingCookie -AllRows
-            if($NextRecordSet.CrmRecords.Count -gt 0)
+
+        $logicalName = $xml.SelectSingleNode("/fetch/entity").Name
+
+        do {
+            Write-Debug "Fetching Page $PageNumber" 
+            $crmFetchTimer.Restart()
+            $records = $conn.GetEntityDataByFetchSearch($Fetch, $TopCount, $PageNumber, $PageCookie, [ref]$PagingCookie, [ref]$NextPage, [Guid]::Empty)
+            $fetchQueryTime += $crmFetchTimer.Elapsed
+
+            if($conn.LastCrmException)
             {
-                Write-Verbose "Adding data to original results from page#: $PageNumber"
-                $recordslist.AddRange($NextRecordSet.CrmRecords)
+                throw LastCrmConnectorException($conn)
             }
-        }
+
+            $recordsList.AddRange([System.Collections.Generic.List[System.Management.Automation.PSObject]](parseRecordsPage -records $records -logicalname $logicalName -xml $xml -Verbose))
+
+            $PageNumber = $PageNumber + 1
+        } while ($NextPage -and $AllRows)
     }
     catch
     {
         Write-Error $_.Exception
         throw LastCrmConnectorException($conn)
     }
+    
     $resultSet = New-Object 'System.Collections.Generic.Dictionary[[System.String],[System.Management.Automation.PSObject]]'
     $resultSet.Add("CrmRecords", $recordslist)
     $resultSet.Add("Count", $recordslist.Count)
     $resultSet.Add("PagingCookie",$PagingCookie)
     $resultSet.Add("NextPage",$NextPage)
     $resultSet.Add("FetchXml", $Fetch)
-    $resultSet.Add("FetchQueryTime", $crmFetchTimer.Elapsed) 
-    Write-Verbose "FetchQueryTime:$($crmFetchTimer.Elapsed)" 
+    $resultSet.Add("FetchQueryTime", $fetchQueryTime) 
+    Write-Verbose "FetchQueryTime:$fetchQueryTime" 
     $resultSet
 }
 
