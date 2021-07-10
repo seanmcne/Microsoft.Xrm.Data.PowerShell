@@ -2166,7 +2166,8 @@ function Import-CrmSolution{
 				
 				#check the import job for success/fail/inProgress
 				try{
-					$import = Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields solutionname,data,completedon,startedon,progress
+                    $records = (Get-CrmRecords -conn $conn -EntityLogicalName importjob -FilterAttribute importjobid -FilterOperator eq -FilterValue $importId -Fields data,completedon,startedon,progress).CrmRecords
+                    $import = if ($records.Count -gt 0) { $records[0] } else { $null }
 				} catch {
 					if($transientFailureCount > 5){
 						Write-Error "Import Job status check FAILED 5 times this could be due to a bug where the service returns a 401. Throwing lastException:"; 
@@ -2175,8 +2176,7 @@ function Import-CrmSolution{
 					Write-Verbose "Import Job status check FAILED this could be due to a bug where the service returns a 401. We'll allow up to 5 failures before aborting."; 
 					$transientFailureCount++; 
 				}
-				#Option to use Get-CrmRecords so we can force a no-lock to prevent hangs in the retrieve
-				#$import = (Get-CrmRecords -conn $conn -EntityLogicalName importjob -FilterAttribute importjobid -FilterOperator eq -FilterValue $importId -Fields data,completedon,startedon,progress).CrmRecords[0]
+				
 				$importManifest = ([xml]($import).data).importexportxml.solutionManifests.solutionManifest
 				$ProcPercent = [double](Coalesce $import.progress "0")
 
