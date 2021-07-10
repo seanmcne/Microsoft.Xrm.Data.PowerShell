@@ -2154,7 +2154,8 @@ function Import-CrmSolution{
              throw LastCrmConnectorException($conn)
         }
         $isProcessing = $true
-		$secondsSpentPolling = 0
+		$timeSpentPolling = [System.Diagnostics.Stopwatch]::StartNew()
+        $timeout = New-TimeSpan -Seconds $MaxWaitTimeInSeconds
         $pollingDelaySeconds = 5
 		$TopPrevProcPercent = [double]0
 		$isProcPercentReduced = $false
@@ -2163,7 +2164,8 @@ function Import-CrmSolution{
         Write-Host "Import of file completed, waiting on completion of importId: $importId"
 		try{
             Write-Progress -Id 1 -Activity "Importing Solution" -CurrentOperation "Solution file uploaded, import initiated" -PercentComplete -1
-			while($isProcessing -and $secondsSpentPolling -lt $MaxWaitTimeInSeconds){
+
+			while($isProcessing -and $timeSpentPolling.Elapsed -lt $timeout){
 				
 				#check the import job for success/fail/inProgress
 				try{
@@ -2245,7 +2247,7 @@ function Import-CrmSolution{
 					break
 				}
                 
-                Write-Progress -Id 2 -ParentId 1 -Activity "Maximum Wait Time ($(New-TimeSpan -Seconds $MaxWaitTimeInSeconds))" -CurrentOperation "Remaining Time: $(New-TimeSpan -Seconds ($MaxWaitTimeInSeconds - $secondsSpentPolling))" -PercentComplete ([double]($MaxWaitTimeInSeconds - $secondsSpentPolling) * 100 / $MaxWaitTimeInSeconds)
+                Write-Progress -Id 2 -ParentId 1 -Activity "Maximum Wait Time ($timeout)" -CurrentOperation "Remaining Time: $($timeout - $timeSpentPolling.Elapsed)" -PercentComplete ([double]($timeout - $timeSpentPolling.Elapsed).TotalSeconds * 100 / $timeout.TotalSeconds)
                 Start-Sleep -Seconds $pollingDelaySeconds
 			}
 		} Catch {
@@ -2253,10 +2255,11 @@ function Import-CrmSolution{
 		} Finally{
             $ProcPercent = ([double](Coalesce $ProcPercent 0))
             Write-Progress -Id 2 -Completed -Activity "_"
+            $timeSpentPolling.Stop()
         }
         #User provided timeout and exit function with an error
-	    if($secondsSpentPolling -gt $MaxWaitTimeInSeconds){
-			throw "Import-CrmSolution halted due to exceeding the maximum timeout of $MaxWaitTimeInSeconds."
+	    if($timeSpentPolling.Elapsed -gt $timeout){
+			throw "Import-CrmSolution halted due to exceeding the maximum timeout of $timeout."
 		}
 		#detect a failure by a failure result OR the percent being less than 100%
         if(($importManifest.result.result -eq "failure") -or ($ProcPercent -lt 100) -or $anyFailuresInImport) #Must look at %age instead of this result as the result is usually wrong!
