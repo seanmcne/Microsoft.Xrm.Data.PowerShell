@@ -26,6 +26,7 @@ function Connect-CrmOnlineDiscovery{
     }
     if($InteractiveMode)
     {
+        Write-Verbose "Running interactive command: Get-CrmConnection -InteractiveMode -Verbose"
         $global:conn = Get-CrmConnection -InteractiveMode -Verbose
         
         Write-Verbose "You are now connected and may run any of the CRM Commands."
@@ -38,6 +39,7 @@ function Connect-CrmOnlineDiscovery{
     else
     {
         $onlineType = "OAuth"
+        Write-Verbose "Running command: Get-CrmOrganizations -Credential <credentialProvided> -OnLineType $onlineType -Verbose"
 
         $crmOrganizations = Get-CrmOrganizations -Credential $Credential -OnLineType $onlineType -Verbose 
 
@@ -70,6 +72,9 @@ function Connect-CrmOnlineDiscovery{
             ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
             
             return $global:conn    
+        }
+        else{
+            Write-Error "Could not find any Organizations. Please verify your credentials and try again."
         }
     }
 }
@@ -127,7 +132,7 @@ function Connect-CrmOnline{
 		$ServerUrl = "https://" + $ServerUrl
 	}
 
-	#starting default connection string with require new instance and server url
+	#starting default connection string with require new instance server url then handle bypassTokenCache, forceDiscovery, and connectionTimeout
     $cs = "RequireNewInstance=True"
     $cs += ";Url=$ServerUrl"
     if($BypassTokenCache){
@@ -137,6 +142,7 @@ function Connect-CrmOnline{
 	if($ForceDiscovery){ 
         #SkipDiscovery is true by default and generally not necessary
 		Write-Verbose "ForceDiscovery: SkipDiscovery=False"
+        Write-Warning "ForceDiscovery should not be needed, if you require this parameter please log an issue to document the use-case."
 		$cs+=";SkipDiscovery=False" 
         if(-not $Credential){
             Write-Verbose "ForceDiscovery requires a Credential which was not provided - prompting for credential value"
@@ -193,72 +199,86 @@ function Connect-CrmOnline{
 		}   
 	}
 	else{
+        #default logic try oAuth first, then if there's a failure fall back to try basic
+        
+        $fallbackCs = $cs.ToString(); #use for falling back to basic auth
+                
         if(-not [string]::IsNullOrEmpty($Username) -and $ForceOAuth -eq $false){
             $cs += ";Username=$UserName"
-            Write-Warning "UserName parameter is only compatible with oAuth, forcing auth mode to oAuth"
-            $ForceOAuth = $true
         }
-		#Default to Office365 Auth, allow oAuth to be used
-		if(!$OAuthClientId -and !$ForceOAuth){
-			Write-Verbose "Using AuthType=Office365"
-            if(-not $Credential){
-                #user did not provide a credential
-                Write-Warning "Cannot create the CrmServiceClient, no credentials were provided. Credentials are required for an AuthType of Office365."
-                $Credential = Get-Credential 
-                if(-not $Credential){
-                    throw "Cannot create the CrmServiceClient, no credentials were provided. Credentials are required for an AuthType of Office365."
-                }
-            }
-			$cs+= ";AuthType=Office365"
+
+		Write-Verbose "Params Provided -> ForceOAuth: {$ForceOAuth} ClientId: {$OAuthClientId} RedirectUri: {$OAuthRedirectUri}"
+        
+        #try to use the credentials if they're provided
+        if($Credential){
+            Write-Verbose "Using provided credentials for oAuth"
             $cs+= ";Username=$($Credential.UserName)"
 		    $cs+= ";Password='$($Credential.GetNetworkCredential().Password)'"
-		}
-		elseif($ForceOAuth){
-            #use oAuth if requested -ForceOAuth
-			Write-Verbose "Params Provided -> ForceOAuth: {$ForceOAuth} ClientId: {$OAuthClientId} RedirectUri: {$OAuthRedirectUri}"
-            #try to use the credentials if they're provided
-            if($Credential){
-                Write-Verbose "Using provided credentials for oAuth"
-                $cs+= ";Username=$($Credential.UserName)"
-		        $cs+= ";Password='$($Credential.GetNetworkCredential().Password)'"
-            }else{
-                Write-Verbose "No credential provided, attempting single sign on with no credentials in the connectionstring"
-            }
-
-			if($OAuthClientId){
-			    #use the clientid if provided, else use a provided clientid 
-				Write-Verbose "Using provided oAuth clientid"
-				$cs += ";AuthType=OAuth;ClientId=$OAuthClientId"
-				if($OAuthRedirectUri){
-					$cs += ";redirecturi=$OAuthRedirectUri"
-				}
-			}
-			else{
-                #else fallback to a known clientid
-				$cs+=";AuthType=OAuth;ClientId=2ad88395-b77d-4561-9441-d0e40824f9bc"
-				$cs+=";redirecturi=app://5d3e90d6-aa8e-48a8-8f2c-58b45cc67315"
+        }else{
+            Write-Verbose "No credential provided, attempting single sign on with no credentials in the connectionstring"
+        }
+		
+        #use the clientid if provided, else use a provided clientid 
+        if($OAuthClientId){
+			Write-Verbose "Using provided oAuth clientid"
+			$cs += ";AuthType=OAuth;ClientId=$OAuthClientId"
+			if($OAuthRedirectUri){
+				$cs += ";redirecturi=$OAuthRedirectUri"
 			}
 		}
-
+		else{
+            #use a default app if one isn't provided
+			$cs+=";AuthType=OAuth;ClientId=2ad88395-b77d-4561-9441-d0e40824f9bc"
+			$cs+=";redirecturi=app://5d3e90d6-aa8e-48a8-8f2c-58b45cc67315"
+		}
 		try
 		{
 			if(!$cs -or $cs.Length -eq 0){
 				throw "Cannot create the CrmServiceClient, the connection string is null"
 			}
             #log the connection string to be helpful
-            $loggedConnectionString = $cs
             if($Credential){
                 $loggedConnectionString = $cs.Replace($Credential.GetNetworkCredential().Password, "*******") 
+            }else{
+                $loggedConnectionString = $cs
             }
+
             Write-Verbose "ConnectionString:{$loggedConnectionString}"
 
+            #try to connect
 			$global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $cs
-
-            ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
 
             if($global:conn.LastCrmError -and $global:conn.LastCrmError -match "forbidden with client authentication scheme 'Anonymous'"){
                 Write-Error "Warning: Exception encountered when authenticating, if you're using oAuth you might want to include the -username paramter to disambiguate the identity used for authenticate"
             }
+            elseif(-not [string]::IsNullOrEmpty($global:conn.LastCrmError)){
+                Write-Error "Error encountered: $($global:conn.LastCrmError)"
+                #On any connection failure, fall back to Office365 Auth just in case
+		        if(!$OAuthClientId -and !$ForceOAuth -and [string]::IsNullOrEmpty($Username)){
+			        Write-Warning "Connection failed, falling back to Basic Auth: AuthType=Office365"
+                    if(-not $Credential){
+                        #user did not provide a credential
+                        Write-Warning "No credentials were provided for Basic Auth. Credentials are required for an AuthType of Office365."
+                        $Credential = Get-Credential 
+                        if(-not $Credential){
+                            throw "Cannot create the CrmServiceClient, no credentials were provided. Credentials are required for an AuthType of Office365."
+                        }
+                    }
+			        $fallbackCs+= ";AuthType=Office365"
+                    $fallbackCs+= ";Username=$($Credential.UserName)"
+		            $fallbackCs+= ";Password='$($Credential.GetNetworkCredential().Password)'"
+                    if($Credential){
+                        $loggedConnectionString = $fallbackCs.Replace($Credential.GetNetworkCredential().Password, "*******") 
+                    }else{
+                        $loggedConnectionString = $fallbackCs
+                    }
+		        }
+                Write-Verbose "Fallback ConnectionString:{$loggedConnectionString}"
+			    $global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $fallbackCs
+                $global:conn.SessionTrackingId = "1ff216e3-afdc-4f3b-af65-f80f39060fff"
+            }
+            
+            ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
 
 			return $global:conn
 		}
@@ -2169,7 +2189,7 @@ function Import-CrmSolution{
 				try{
 					$import = Get-CrmRecord -conn $conn -EntityLogicalName importjob -Id $importId -Fields solutionname,data,completedon,startedon,progress
 				} catch {
-					if($transientFailureCount > 5){
+					if($transientFailureCount -gt 5){
 						Write-Error "Import Job status check FAILED 5 times this could be due to a bug where the service returns a 401. Throwing lastException:"; 
 						throw  $conn.LastCrmException
 					}
