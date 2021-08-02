@@ -247,9 +247,16 @@ function Connect-CrmOnline{
 
             #try to connect
 			$global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $cs
-
+            ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
+			
             if($global:conn.LastCrmError -and $global:conn.LastCrmError -match "forbidden with client authentication scheme 'Anonymous'"){
-                Write-Error "Warning: Exception encountered when authenticating, if you're using oAuth you might want to include the -username paramter to disambiguate the identity used for authenticate"
+                Write-Error -Message "Warning: Exception encountered when authenticating, if you're using oAuth you might want to include the -username paramter to disambiguate the identity used for authenticate"
+            }
+            elseif($global:conn.LastCrmError -and $global:conn.LastCrmError -match "User canceled authentication"){
+                Write-Error -Message "User canceled authentication, please retry your connection."
+            }
+            elseif($global:conn.LastCrmError -and $global:conn.LastCrmError -match "The remote name could not be resolved"){
+                Write-Error -Message "The remote name could not be resolved for the instance provided - please double check the url and retry." 
             }
             elseif(-not [string]::IsNullOrEmpty($global:conn.LastCrmError)){
                 Write-Error "Error encountered: $($global:conn.LastCrmError)"
@@ -272,15 +279,17 @@ function Connect-CrmOnline{
                     }else{
                         $loggedConnectionString = $fallbackCs
                     }
-		        }
-                Write-Verbose "Fallback ConnectionString:{$loggedConnectionString}"
-			    $global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $fallbackCs
-                $global:conn.SessionTrackingId = "1ff216e3-afdc-4f3b-af65-f80f39060fff"
-            }
-            
-            ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
+                    Write-Verbose "Fallback ConnectionString:{$loggedConnectionString}"
+			        $global:conn = New-Object Microsoft.Xrm.Tooling.Connector.CrmServiceClient -ArgumentList $fallbackCs
+                    $global:conn.SessionTrackingId = "1ff216e3-afdc-4f3b-af65-f80f39060fff"
 
-			return $global:conn
+                    ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
+			        return $global:conn
+		        }
+            }
+
+            #return conn
+            $global:conn
 		}
 		catch
 		{
