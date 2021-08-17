@@ -1,6 +1,8 @@
 # Microsoft.Xrm.Data.PowerShell
-![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/Microsoft.Xrm.Data.PowerShell) ![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/Microsoft.Xrm.Data.PowerShell) 
-![GitHub forks](https://img.shields.io/github/forks/seanmcne/Microsoft.Xrm.Data.PowerShell?style=social) ![GitHub Repo stars](https://img.shields.io/github/stars/seanmcne/Microsoft.Xrm.Data.PowerShell?style=social)
+[![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/Microsoft.Xrm.Data.PowerShell)](https://www.powershellgallery.com/packages/Microsoft.Xrm.Data.Powershell)
+[![PowerShell Gallery Downloads](https://img.shields.io/powershellgallery/dt/Microsoft.Xrm.Data.PowerShell)](https://www.powershellgallery.com/packages/Microsoft.Xrm.Data.Powershell)
+
+[![GitHub forks](https://img.shields.io/github/forks/seanmcne/Microsoft.Xrm.Data.PowerShell?style=social)](https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/network/members) [![GitHub Repo stars](https://img.shields.io/github/stars/seanmcne/Microsoft.Xrm.Data.PowerShell?style=social)](https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/stargazers)
 
 ### Overview 
 **Microsoft.Xrm.Data.Powershell** contains two modules, the first is Microsoft.Xrm.Tooling.CrmConnector.Powershell which is owned and maintained by Microsoft, the second is Microsoft.Xrm.Data.Powershell which is a wrapper over this connector providing helpful functions. 
