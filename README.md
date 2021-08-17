@@ -31,16 +31,20 @@ Note this method requires: Powershell Management Framework 5 or higher - details
 ```Powershell
 Install-Module Microsoft.Xrm.Data.PowerShell -Scope CurrentUser
 ```
-To Update to a newer release:
+To Update to a newer release of the module
 ```Powershell
 Update-Module Microsoft.Xrm.Data.PowerShell -Force
 ```
 
 Troubleshooting: 
 1. Try adding the -verbose flag to your install and update module commands - this should give you more information
-2. As this module is not signed, you may need to change Execution Policy to load the module. You can do so by executing following command.
+2. As this module is not signed, you may need to change Execution Policy to load the module. You can do so by executing the following command then try again
 ```PowerShell
  Set-ExecutionPolicy –ExecutionPolicy RemoteSigned –Scope CurrentUser
+```
+3. If powershell is out of date and doesn't support TLS 1.2 by default - enable it to use TLS 1.2 by executing the following command, then try again 
+```PowerShell
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls -bor [System.Net.SecurityProtocolType]::Tls12
 ```
 
 ### Alternative: How to file copy or manually deploy this module - Only if absolutely required
