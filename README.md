@@ -44,7 +44,7 @@ Troubleshooting:
 ```
 3. If powershell is out of date and doesn't support TLS 1.2 by default - enable it to use TLS 1.2 by executing the following command, then try again 
 ```PowerShell
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls -bor [System.Net.SecurityProtocolType]::Tls12
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
 ```
 
 ### Alternative: How to file copy or manually deploy this module - Only if absolutely required
