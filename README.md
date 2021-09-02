@@ -4,6 +4,14 @@
 
 [![GitHub forks](https://img.shields.io/github/forks/seanmcne/Microsoft.Xrm.Data.PowerShell?style=social)](https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/network/members) [![GitHub Repo stars](https://img.shields.io/github/stars/seanmcne/Microsoft.Xrm.Data.PowerShell?style=social)](https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell/stargazers)
 
+
+### Table of Contents
+- [Overview](README.md#overview)
+- [Installing the Module](README.md#preferred-install-the-module-via-powershell-gallery)
+- [How Microsoft.Xrm.Data.Powershell works](README.md#how-microsoftxrmdatapowershell-works)
+- [How to find cmdlet documentation and commands?](README.md#how-to-get-command-details)
+- [About the authors](README.md#about-authors)
+
 ### Overview 
 **Microsoft.Xrm.Data.Powershell** contains two modules, the first is Microsoft.Xrm.Tooling.CrmConnector.Powershell which is owned and maintained by Microsoft, the second is Microsoft.Xrm.Data.Powershell which is a wrapper over this connector providing helpful functions. 
 
