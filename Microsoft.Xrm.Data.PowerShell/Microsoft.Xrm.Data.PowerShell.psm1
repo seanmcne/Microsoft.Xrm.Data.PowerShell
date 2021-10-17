@@ -2269,7 +2269,7 @@ function Import-CrmSolution{
                     $records = (Get-CrmRecords -conn $conn -EntityLogicalName importjob -FilterAttribute importjobid -FilterOperator eq -FilterValue $importId -Fields data,completedon,startedon,progress).CrmRecords
                     $import = if ($records.Count -gt 0) { $records[0] } else { $null }
 				} catch {
-					if($transientFailureCount > 5){
+					if($transientFailureCount -gt 5){
 						Write-Error "Import Job status check FAILED 5 times this could be due to a bug where the service returns a 401. Throwing lastException:"; 
 						throw  $conn.LastCrmException
 					}
@@ -2292,7 +2292,7 @@ function Import-CrmSolution{
 				}
 
 				#Check for import completion 
-				if($import.completedon -eq $null -and $importManifest.result.result -ne "success"){
+				if($null -eq $import.completedon -and $importManifest.result.result -ne "success"){
 					$isProcessing = $true
 				}
 				else {
