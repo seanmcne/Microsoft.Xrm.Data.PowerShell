@@ -1,5 +1,5 @@
 ﻿### https://msdn.microsoft.com/en-us/library/microsoft.xrm.tooling.connector.crmserviceclient_methods(v=crm.6).aspx ###
-# Copyright Â© Microsoft Corporation.  All Rights Reserved.
+# Copyright © Microsoft Corporation.  All Rights Reserved.
 # This code released under the terms of the 
 # Microsoft Public License (MS-PL, http://opensource.org/licenses/ms-pl.html.)
 # Sample Code is provided for the purpose of illustration only and is not intended to be used in a production environment. 
@@ -2677,7 +2677,7 @@ function Enable-CrmLanguagePack{
 
 	$conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
 
-    $request = New-Object Microsoft.Crm.Sdk.Messages.ProvisionLanguageRequest
+    $request = New-Object Microsoft.Crm.Sdk.Messages.ProvisionLanguageAsyncRequest
     $request.Language = $LCID
     
     try
