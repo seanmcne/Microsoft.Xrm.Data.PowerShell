@@ -24,7 +24,7 @@
 RootModule = 'Microsoft.Xrm.Data.Powershell.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.8.15'
+ModuleVersion = '2.8.16'
 
 # ID used to uniquely identify this module
 GUID = '7df9c140-65c3-4862-b3bc-73fad633aae4'
@@ -116,13 +116,9 @@ PrivateData = @{
         # ReleaseNotes of this module
         ReleaseNotes = '
 Changes and enhancements in this release: 
-- Fix Invoke-CrmRecordWorkflow not using passed connection when calling Get-CrmRecordsByFetch
-- Fix Get-CrmSystemSettings not using passed connection when calling Get-CrmEntityOptionSet
-- Updated to latest assemblies https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/
+- Changed Enable-CrmLanguagePack to use Async it will prevent powershell timeouts and make it consistent with the same action taken in the UI 
 - For samples visit the community sample site here: https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell.samples
-
-Including latest xrm tooling:
-- 3.3.0.928 review the following website for release notes: https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/'
+- Including latest xrm tooling 3.3.0.964  review the following website for release notes: https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/'
         # Prerelease = '-alpha'
 
     } # End of PSData hashtable
