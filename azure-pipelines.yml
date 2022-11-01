@@ -7,6 +7,9 @@ trigger:
 - master
 - '*'
 
+pool:
+  vmImage: 'ubuntu-latest'
+
 steps:
 - script: ls
   displayName: 'List all files/directories in root'
