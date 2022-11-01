@@ -24,7 +24,7 @@
 RootModule = 'Microsoft.Xrm.Data.Powershell.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.8.16'
+ModuleVersion = '2.8.17'
 
 # ID used to uniquely identify this module
 GUID = '7df9c140-65c3-4862-b3bc-73fad633aae4'
@@ -96,7 +96,7 @@ AliasesToExport = @('*')
 ModuleList = @()
 
 # List of all files packaged with this module
-FileList = @("Microsoft.Xrm.Data.Powershell.psm1","Microsoft.Xrm.Data.Powershell.psd1","Microsoft.Crm.Sdk.Proxy.dll", "Microsoft.IdentityModel.Clients.ActiveDirectory.dll","Microsoft.Xrm.Data.PowerShell.Help.xml", "Microsoft.Xrm.Sdk.Deployment.dll","Microsoft.Xrm.Sdk.dll","Microsoft.Xrm.Tooling.Connector.dll","Microsoft.Xrm.Tooling.CrmConnectControl.dll","Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll","Microsoft.Xrm.Tooling.Ui.Styles.dll","Microsoft.Rest.ClientRuntime.dll","Newtonsoft.Json.dll","Microsoft.QualityTools.Testing.Fakes.dll","Microsoft.Xrm.Sdk.Deployment.dll")
+FileList = @('Microsoft.Bcl.AsyncInterfaces.dll','Microsoft.Crm.Sdk.Proxy.dll','Microsoft.IdentityModel.Clients.ActiveDirectory.dll','Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll','Microsoft.QualityTools.Testing.Fakes.dll','Microsoft.Rest.ClientRuntime.dll','Microsoft.Xrm.Sdk.Deployment.dll','Microsoft.Xrm.Sdk.dll','Microsoft.Xrm.Sdk.Workflow.dll','Microsoft.Xrm.Tooling.Connector.dll','Microsoft.Xrm.Tooling.CrmConnectControl.dll','Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll','Microsoft.Xrm.Tooling.Ui.Styles.dll','Newtonsoft.Json.dll','System.Buffers.dll','System.Memory.dll','System.Numerics.Vectors.dll','System.Runtime.CompilerServices.Unsafe.dll','System.Text.Encodings.Web.dll','System.Text.Json.dll','System.Threading.Tasks.Extensions.dll','System.ValueTuple.dll','Microsoft.Xrm.Data.PowerShell.psm1','Microsoft.Xrm.Tooling.CrmConnector.PowerShell.psm1','Microsoft.Xrm.Data.PowerShell.psd1','Microsoft.Xrm.Tooling.CrmConnector.PowerShell.psd1','Microsoft.Xrm.Data.PowerShell.Help.xml','Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll-Help.xml')
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
 PrivateData = @{
