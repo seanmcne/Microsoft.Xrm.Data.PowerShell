@@ -1685,7 +1685,7 @@ function Get-CrmRecordsByFetch{
                 throw LastCrmConnectorException($conn)
             }
             if($records -ne $null){
-                $recordsList.AddRange([System.Collections.Generic.List[System.Management.Automation.PSObject]](parseRecordsPageOrig -records $records -logicalname $logicalName -xml $xml -Verbose))
+                $recordsList.AddRange([System.Collections.Generic.List[System.Management.Automation.PSObject]](parseRecordsPage -records $records -logicalname $logicalName -xml $xml -Verbose))
                 $PageNumber = $PageNumber + 1
             }
             else{
