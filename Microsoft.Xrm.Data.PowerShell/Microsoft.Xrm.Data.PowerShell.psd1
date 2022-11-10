@@ -120,7 +120,7 @@ Changes and enhancements in this release:
 - Changed Enable-CrmLanguagePack to use Async it will prevent powershell timeouts and make it consistent with the same action taken in the UI 
 - For samples visit the community sample site here: https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell.samples
 - Including latest xrm tooling 3.3.0.964  review the following website for release notes: https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/'
-        Prerelease = 'alpha'
+        # Prerelease = 'alpha'
 
     } # End of PSData hashtable
 } # End of PrivateData hashtable
