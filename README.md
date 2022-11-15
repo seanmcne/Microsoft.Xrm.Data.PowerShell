@@ -8,7 +8,7 @@
 **Microsoft.Xrm.Data.Powershell** contains two modules, the first is Microsoft.Xrm.Tooling.CrmConnector.Powershell which is owned and maintained by Microsoft, the second is Microsoft.Xrm.Data.Powershell which is a wrapper over this connector providing helpful functions. 
 
 **Installation Options:**
-- **PREFERRED** [Install via PowerShell](/README.md#preferred-install-the-module-via-powershell-gallery) 
+- **PREFERRED** [Install via PowerShell](/README.md#preferred-install-the-module-via-powershell-gallery) - Gallery Link: https://www.powershellgallery.com/packages/Microsoft.Xrm.Data.Powershell/
 - **Use only if absolutely required** [Install via a downloaded zip](/README.md#alternative-how-to-file-copy-or-manually-deploy-this-module) (Primarily used for  troubleshooting or cannot install from the gallery)
 
 [How the module works](/README.md#how-microsoftxrmdatapowershell-works)  
