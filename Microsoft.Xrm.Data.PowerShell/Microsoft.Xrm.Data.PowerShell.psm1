@@ -211,7 +211,7 @@ function Connect-CrmOnline{
             }
 			$cs+= ";AuthType=Office365"
             $cs+= ";Username=$($Credential.UserName)"
-		    $cs+= ";Password='$($Credential.GetNetworkCredential().Password)'"
+		    $cs+= ";Password='$($Credential.GetNetworkCredential().Password.Replace("'", "''"))'"
 		}
 		elseif($ForceOAuth){
             #use oAuth if requested -ForceOAuth
@@ -220,7 +220,7 @@ function Connect-CrmOnline{
             if($Credential){
                 Write-Verbose "Using provided credentials for oAuth"
                 $cs+= ";Username=$($Credential.UserName)"
-		        $cs+= ";Password='$($Credential.GetNetworkCredential().Password)'"
+		        $cs+= ";Password='$($Credential.GetNetworkCredential().Password.Replace("'","''"))'"
             }else{
                 Write-Verbose "No credential provided, attempting single sign on with no credentials in the connectionstring"
             }
@@ -248,7 +248,7 @@ function Connect-CrmOnline{
             #log the connection string to be helpful
             $loggedConnectionString = $cs
             if($Credential){
-                $loggedConnectionString = $cs.Replace($Credential.GetNetworkCredential().Password, "*******") 
+                $loggedConnectionString = $cs.Replace($Credential.GetNetworkCredential().Password.Replace("'", "''"), "*******") 
             }
             Write-Verbose "ConnectionString:{$loggedConnectionString}"
 
@@ -257,7 +257,7 @@ function Connect-CrmOnline{
             ApplyCrmServiceClientObjectTemplate($global:conn)  #applyObjectTemplateFormat
 
             if($global:conn.LastCrmError -and $global:conn.LastCrmError -match "forbidden with client authentication scheme 'Anonymous'"){
-                Write-Error "Warning: Exception encountered when authenticating, if you're using oAuth you might want to include the -username paramter to disambiguate the identity used for authenticate"
+                Write-Error "Warning: Exception encountered when authenticating, if you're using oAuth you might want to include the -username paramter to disambiguate the identity used for authentication"
             }
 
 			return $global:conn
