@@ -42,7 +42,7 @@ Copyright = '(c) 2023 Microsoft Corporation All rights reserved.'
 Description = 'This module applies many helpful functions which use the Microsoft.Xrm.Tooling.CrmConnector.Powershell CrmServiceClient. Functions are included to create, delete, query, and update data as well as functions for common tasks such as publishing, and manipulating System and DataVerse User Settings, etc. The module should function for both Dynamics Customer Engagement Online, DataVerse environments, and On-Premise environments.'
 
 # Minimum version of the Windows PowerShell engine required by this module
-PowerShellVersion = '4.0'
+PowerShellVersion = '5.1'
 
 # Name of the Windows PowerShell host required by this module
 # PowerShellHostName = ''
@@ -115,7 +115,8 @@ PrivateData = @{
 
         # ReleaseNotes of this module
         ReleaseNotes = '
-Changes and enhancements in this release: 
+Changes and enhancements in this release:
+- ***Now requring 5.1 and higher to maintain support with https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/***
 - Including latest xrm tooling 3.3.0.989 review the following website for release notes: https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/
 - Changed Enable-CrmLanguagePack to use Async it will prevent powershell timeouts and make it consistent with the same action taken in the UI 
 - For samples visit the community sample site here: https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell.samples
