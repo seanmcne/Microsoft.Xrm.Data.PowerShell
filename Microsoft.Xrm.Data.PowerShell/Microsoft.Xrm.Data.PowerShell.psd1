@@ -36,7 +36,7 @@ Author = 'Sean McNellis, Kenichiro Nakamura'
 CompanyName = 'Microsoft Corporation'
 
 # Copyright statement for this module
-Copyright = '(c) 2022 Microsoft Corporation All rights reserved.'
+Copyright = '(c) 2023 Microsoft Corporation All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'This module applies many helpful functions which use the Microsoft.Xrm.Tooling.CrmConnector.Powershell CrmServiceClient. Functions are included to create, delete, query, and update data as well as functions for common tasks such as publishing, and manipulating System and DataVerse User Settings, etc. The module should function for both Dynamics Customer Engagement Online, DataVerse environments, and On-Premise environments.'
@@ -116,9 +116,10 @@ PrivateData = @{
         # ReleaseNotes of this module
         ReleaseNotes = '
 Changes and enhancements in this release: 
+- Including latest xrm tooling 3.3.0.989 review the following website for release notes: https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/
 - Changed Enable-CrmLanguagePack to use Async it will prevent powershell timeouts and make it consistent with the same action taken in the UI 
 - For samples visit the community sample site here: https://github.com/seanmcne/Microsoft.Xrm.Data.PowerShell.samples
-- Including latest xrm tooling 3.3.0.964  review the following website for release notes: https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell/'
+'
         # Prerelease = '-alpha'
 
     } # End of PSData hashtable

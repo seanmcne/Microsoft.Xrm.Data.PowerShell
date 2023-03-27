@@ -27,6 +27,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Microsoft.Bcl.AsyncInterfaces.dll" />
     <Content Include="Microsoft.IdentityModel.Clients.ActiveDirectory.dll" />
     <Content Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll" />
     <Content Include="Microsoft.QualityTools.Testing.Fakes.dll" />
@@ -35,6 +36,14 @@
     <Content Include="Microsoft.Xrm.Sdk.Workflow.dll" />
     <Content Include="Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll-Help.xml" />
     <Content Include="Newtonsoft.Json.dll" />
+    <Content Include="System.Buffers.dll" />
+    <Content Include="System.Memory.dll" />
+    <Content Include="System.Numerics.Vectors.dll" />
+    <Content Include="System.Runtime.CompilerServices.Unsafe.dll" />
+    <Content Include="System.Text.Encodings.Web.dll" />
+    <Content Include="System.Text.Json.dll" />
+    <Content Include="System.Threading.Tasks.Extensions.dll" />
+    <Content Include="System.ValueTuple.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Microsoft.Crm.Sdk.Proxy.dll" />
@@ -46,6 +55,8 @@
     <Compile Include="Microsoft.Xrm.Tooling.Connector.dll" />
     <Compile Include="Microsoft.Xrm.Tooling.CrmConnectControl.dll" />
     <Compile Include="Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll" />
+    <Compile Include="Microsoft.Xrm.Tooling.CrmConnector.PowerShell.psd1" />
+    <Compile Include="Microsoft.Xrm.Tooling.CrmConnector.PowerShell.psm1" />
     <Compile Include="Microsoft.Xrm.Tooling.Ui.Styles.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
