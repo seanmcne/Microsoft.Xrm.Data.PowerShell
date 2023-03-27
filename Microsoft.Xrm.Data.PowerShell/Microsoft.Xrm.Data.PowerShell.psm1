@@ -173,6 +173,7 @@ function Connect-CrmOnline{
         if(-not [string]::IsNullOrEmpty($OAuthRedirectUri)){
 		    $cs += ";redirecturi=$OAuthRedirectUri"
         }
+        $ClientSecret = Set-EscapeCharacters $ClientSecret
 		$cs += ";ClientSecret='$ClientSecret'"
 		Write-Verbose ($cs.Replace($ClientSecret, "*******"))
 		try
@@ -211,7 +212,7 @@ function Connect-CrmOnline{
             }
 			$cs+= ";AuthType=Office365"
             $cs+= ";Username=$($Credential.UserName)"
-		    $cs+= ";Password='$($Credential.GetNetworkCredential().Password.Replace("'", "''"))'"
+		    $cs+= ";Password='$((Set-EscapeCharacters $Credential.GetNetworkCredential().Password).Replace("'", "''"))'"
 		}
 		elseif($ForceOAuth){
             #use oAuth if requested -ForceOAuth
@@ -220,7 +221,7 @@ function Connect-CrmOnline{
             if($Credential){
                 Write-Verbose "Using provided credentials for oAuth"
                 $cs+= ";Username=$($Credential.UserName)"
-		        $cs+= ";Password='$($Credential.GetNetworkCredential().Password.Replace("'","''"))'"
+		        $cs+= ";Password='$((Set-EscapeCharacters $Credential.GetNetworkCredential().Password))'"
             }else{
                 Write-Verbose "No credential provided, attempting single sign on with no credentials in the connectionstring"
             }
@@ -248,7 +249,7 @@ function Connect-CrmOnline{
             #log the connection string to be helpful
             $loggedConnectionString = $cs
             if($Credential){
-                $loggedConnectionString = $cs.Replace($Credential.GetNetworkCredential().Password.Replace("'", "''"), "*******") 
+                $loggedConnectionString = $cs.Replace((Set-EscapeCharacters $Credential.GetNetworkCredential().Password), "*******") 
             }
             Write-Verbose "ConnectionString:{$loggedConnectionString}"
 
@@ -5716,6 +5717,26 @@ function Enable-CrmConnectorVerboseLogging {
 function Disable-CrmConnectorVerboseLogging {
     Write-Verbose "Calling: [Microsoft.Xrm.Tooling.Connector.TraceControlSettings]::CloseListeners()"
     [Microsoft.Xrm.Tooling.Connector.TraceControlSettings]::CloseListeners()
+}
+
+function Set-EscapeCharacters {
+    Param(
+        [parameter(Mandatory = $true, Position = 0)]
+        [String]
+        $string
+    )
+    $string = $string -replace '\*', '`*'
+    $string = $string -replace '\\', '`\'
+    $string = $string -replace '\~', '`~'
+    $string = $string -replace '\;', '`;'
+    $string = $string -replace '\(', '`('
+    $string = $string -replace '\%', '`%'
+    $string = $string -replace '\?', '`?'
+    $string = $string -replace '\.', '`.'
+    $string = $string -replace '\:', '`:'
+    $string = $string -replace '\@', '`@'
+    $string = $string -replace '\/', '`/'
+    $string
 }
 
 function ApplyCrmServiceClientObjectTemplate {
