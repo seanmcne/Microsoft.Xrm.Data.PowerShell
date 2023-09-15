@@ -1306,10 +1306,10 @@ function Add-CrmActivityToCrmRecord{
 			foreach($field in $Fields.GetEnumerator())
 			{  
 				$newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
-                $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
-                $newfield.Value = $field.Value
-                $newfields.Add($field.Key, $newfield)
-            }
+		                $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
+		                $newfield.Value = $field.Value
+		                $newfields.Add($field.Key, $newfield)
+		    	}
 		}
 
 		try
@@ -5603,7 +5603,7 @@ function VerifyCrmConnectionParam {
 
 function MapFieldTypeByFieldValue {
     PARAM(
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$true)][AllowNull()]
         [object]$Value
     )
 
