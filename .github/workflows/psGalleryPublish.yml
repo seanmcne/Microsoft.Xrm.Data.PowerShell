@@ -1,0 +1,27 @@
+# This is a basic workflow to help you get started with Actions
+
+name: PSGalleryDeploy
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  release:
+    types: [published]
+jobs:
+  psgallery_publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: 'Delete pshproj files'
+        run: |
+          remove-item * -include '*.pshproj' -Recurse -whatif
+        
+      - name: 'Delete pssproj files'
+        run: |
+          remove-item * -include '*.pssproj' -Recurse -whatif
+          
+      - name: Publishing
+        run: |
+          Publish-Module -Path '.\Microsoft.Xrm.Data.PowerShell' -NuGetApiKey ${{ secrets.PSGALLERYSECRET }} -whatif -verbose
+        shell: pwsh
