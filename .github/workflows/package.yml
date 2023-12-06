@@ -1,52 +1,46 @@
-name: Build Module
+can you convert this from azure pipeline yaml to github action yaml which will achieve the same outcome? 
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
 
-on:
-  push:
-    branches:
-      - pipelinebuildpackage
-  pull_request:
-    branches:
-      - pipelinebuildpackage
+trigger:
+- master
+- '*'
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - name: List all files/directories in root
-      run: ls
+pool:
+  vmImage: 'ubuntu-latest'
 
-    - name: Delete pshproj files
-      run: find . -name '*.pshproj' -delete
+steps:
+- script: ls
+  displayName: 'List all files/directories in root'
 
-    - name: Delete pssproj files
-      run: find . -name '*.pssproj' -delete
+- script: find . -name '*.pshproj' -delete
+  displayName: 'Delete pshproj files'
 
-    - name: Copy files
-      uses: actions/upload-artifact@v2
-      with:
-        name: Microsoft.Xrm.Data.PowerShell
-        path: $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell
+- script: find . -name '*.pssproj' -delete
+  displayName: 'Delete pssproj files'
 
-    - name: PowerShell
-      run: |
-        # Write your PowerShell commands here.
-        echo $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell
-        ls $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell
-        #Publish-Module -NuGetApiKey $(GalleryKey) -Path $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell -verbose -whatif
-      working-directory: $(Build.SourcesDirectory)
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Microsoft.Xrm.Data.PowerShell'
+    CleanTargetFolder: true
+    OverWrite: true
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - name: Download artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: Microsoft.Xrm.Data.PowerShell
-        path: $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Write your PowerShell commands here.
+      echo $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell
+      ls $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell
+      #Publish-Module -NuGetApiKey $(GalleryKey) -Path $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell -verbose -whatif
+    workingDirectory: '$(Build.SourcesDirectory)'
 
-    - name: Publish artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: Microsoft.Xrm.Data.PowerShell
-        path: $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
