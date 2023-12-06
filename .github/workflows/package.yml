@@ -16,13 +16,13 @@ jobs:
       uses: actions/checkout@v2
       
     - name: List all files/directories in root
-      run: ls ${{ github.workspace }}
+      run: ls ${{ github.workspace }}/Microsoft.Xrm.Data.PowerShell
 
     - name: Delete pshproj files
-      run: find ${{ github.workspace }} -name '*.pshproj' -delete
+      run: find ${{ github.workspace }}/Microsoft.Xrm.Data.PowerShell -name '*.pshproj' -delete
 
     - name: Delete pssproj files
-      run: find ${{ github.workspace }} -name '*.pssproj' -delete
+      run: find ${{ github.workspace }}/Microsoft.Xrm.Data.PowerShell -name '*.pssproj' -delete
 
     - name: Copy files
       uses: actions/upload-artifact@v2
