@@ -1,0 +1,52 @@
+name: Build Module
+
+on:
+  push:
+    branches:
+      - pipelinebuildpackage
+  pull_request:
+    branches:
+      - pipelinebuildpackage
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: List all files/directories in root
+      run: ls
+
+    - name: Delete pshproj files
+      run: find . -name '*.pshproj' -delete
+
+    - name: Delete pssproj files
+      run: find . -name '*.pssproj' -delete
+
+    - name: Copy files
+      uses: actions/upload-artifact@v2
+      with:
+        name: Microsoft.Xrm.Data.PowerShell
+        path: $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell
+
+    - name: PowerShell
+      run: |
+        # Write your PowerShell commands here.
+        echo $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell
+        ls $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell
+        #Publish-Module -NuGetApiKey $(GalleryKey) -Path $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell -verbose -whatif
+      working-directory: $(Build.SourcesDirectory)
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: Microsoft.Xrm.Data.PowerShell
+        path: $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell
+
+    - name: Publish artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Microsoft.Xrm.Data.PowerShell
+        path: $(Build.SourcesDirectory)/Microsoft.Xrm.Data.PowerShell
