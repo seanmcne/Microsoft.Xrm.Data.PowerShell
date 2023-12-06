@@ -13,13 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: List all files/directories in root
-      run: ls
+      run: ls ${{ github.workspace }}
 
     - name: Delete pshproj files
-      run: find . -name '*.pshproj' -delete
+      run: find ${{ github.workspace }} -name '*.pshproj' -delete
 
     - name: Delete pssproj files
-      run: find . -name '*.pssproj' -delete
+      run: find ${{ github.workspace }} -name '*.pssproj' -delete
 
     - name: Copy files
       uses: actions/upload-artifact@v2
