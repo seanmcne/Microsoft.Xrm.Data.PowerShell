@@ -29,7 +29,6 @@ jobs:
 
     - name: PowerShell
       run: |
-        # Write your PowerShell commands here.
         echo ${{ github.workspace }}/Microsoft.Xrm.Data.PowerShell
         ls ${{ github.workspace }}/Microsoft.Xrm.Data.PowerShell
         #Publish-Module -NuGetApiKey $(GalleryKey) -Path ${{ github.workspace }}/Microsoft.Xrm.Data.PowerShell -verbose -whatif
