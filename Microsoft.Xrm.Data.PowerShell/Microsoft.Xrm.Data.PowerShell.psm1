@@ -1928,6 +1928,57 @@ function Get-CrmEntityOptionSet{
     return $result
 }
 
+#NewCrmSolutionPatch
+function New-CrmSolutionPatch {
+# .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
+  [CmdletBinding()]
+    PARAM (
+        [parameter(Mandatory=$false)]
+        [Microsoft.Xrm.Tooling.Connector.CrmServiceClient]$conn,
+        [Parameter(Mandatory, Position=1)]
+        [ValidateNotNullOrEmpty()]
+        [string]$PatchName
+    )
+
+    BEGIN {
+        $conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
+    }
+
+    PROCESS {
+    
+      $parentSolution = $PatchName -split '\.' | Select-Object -First 1
+      Write-Verbose "Detected parent solution as: $parentSolution"
+
+      $solutions = Get-CrmRecords -conn $conn -EntityLogicalName solution -FilterAttribute friendlyname -FilterOperator "like" -FilterValue "$parentSolution%" -Fields solutionid,uniquename,friendlyname,version
+      Write-Verbose "Found $($solutions.CrmRecords.Count) solutions/patches for $parentSolution"
+      if ($solutions.CrmRecords.Count -ge 1) {
+        $minMax = $solutions.CrmRecords | % { [Version]$_.version } | Measure-Object -max -min
+        $v = [Version]$minMax.Maximum
+        $newVersion = [Version]::new($v.Major, $v.Minor, $v.Build+1, 0)
+        Write-Verbose "Current max version: $($minMax.Maximum)"
+        Write-Verbose "Using $newVersion for $PatchName"
+
+        $patchDetails = @{
+            ParentSolutionUniqueName = $parentSolution
+            DisplayName = $PatchName
+            VersionNumber = $newVersion.ToString()
+        }
+        Write-Verbose 'Creating patch ...'
+        $result = Invoke-CrmAction -conn $conn -Name CloneAsPatch -Parameters $patchDetails
+
+        return $result
+
+      } else {
+        
+        throw "No matching parent solutions found for $PatchName"
+
+      }
+
+    }
+
+    END { }
+}
+
 #ImportSolutionToCrmAsync
 function Import-CrmSolutionAsync {
 # .ExternalHelp Microsoft.Xrm.Data.PowerShell.Help.xml
