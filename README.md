@@ -23,7 +23,7 @@ This module builds from Microsoft.Xrm.Tooling.CrmConnector.Powershell, on top of
 
 **Microsoft.Xrm.Tooling.CrmConnector.Powershell**
 
-This module comes from Dynamics CRM SDK and it exposes two functions, Get-CrmOrganizations and Get-CrmConnection. See the link for more detail. [Use PowerShell cmdlets for XRM tooling to connect to CRM](https://docs.microsoft.com/en-us/powershell/module/microsoft.xrm.tooling.crmconnector.powershell/?view=pa-ps-latest) - (For reference, click for the [Previous Documentation Url](https://technet.microsoft.com/en-us/library/dn689040.aspx))
+This module comes from Dynamics CRM SDK and it exposes two functions, Get-CrmOrganizations and Get-CrmConnection. See the link for more detail. [Use PowerShell cmdlets for XRM tooling to connect to CRM](https://docs.microsoft.com/en-us/powershell/module/microsoft.xrm.tooling.crmconnector.powershell/?view=pa-ps-latest) - (For reference, click for the [Previous Documentation Url](https://technet.microsoft.com/en-us/library/dn689040.aspx))  Powershell Gallery link to the XRM Tooling CrmConnector for Powershell (standalone): https://www.powershellgallery.com/packages/Microsoft.Xrm.Tooling.CrmConnector.PowerShell
 
 ### Preferred: Install the module via PowerShell Gallery
 Note this method requires: Powershell Management Framework 5 or higher - details: https://www.powershellgallery.com/ 
