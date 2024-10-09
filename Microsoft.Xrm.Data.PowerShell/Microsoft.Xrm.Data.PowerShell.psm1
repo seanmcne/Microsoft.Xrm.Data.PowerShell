@@ -1306,10 +1306,10 @@ function Add-CrmActivityToCrmRecord{
 			foreach($field in $Fields.GetEnumerator())
 			{  
 				$newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
-                $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
-                $newfield.Value = $field.Value
-                $newfields.Add($field.Key, $newfield)
-            }
+		                $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
+		                $newfield.Value = $field.Value
+		                $newfields.Add($field.Key, $newfield)
+		    	}
 		}
 
 		try
@@ -1648,6 +1648,7 @@ function Get-CrmRecordsByFetch{
         [parameter(Mandatory=$false, Position=5)]
         [switch]$AllRows
     )
+    write-output "test12"
     $conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     #default page number to 1 if not supplied
     if($PageNumber -eq 0)
@@ -1684,15 +1685,10 @@ function Get-CrmRecordsByFetch{
             {
                 throw LastCrmConnectorException($conn)
             }
-            if($records -ne $null){
-                $recordsList.AddRange([System.Collections.Generic.List[System.Management.Automation.PSObject]](parseRecordsPage -records $records -logicalname $logicalName -xml $xml -Verbose))
-                $PageNumber = $PageNumber + 1
-            }
-            else{
-                #resultset is null - break out of loop and return an empty result
-                $recordslist = New-Object "System.Collections.Generic.List[System.Management.Automation.PSObject]"
-                break
-            }
+
+            $recordsList.AddRange([System.Collections.Generic.List[System.Management.Automation.PSObject]](parseRecordsPage -records $records -logicalname $logicalName -xml $xml -Verbose))
+
+            $PageNumber = $PageNumber + 1
         } while ($NextPage -and $AllRows)
     }
     catch
@@ -5608,7 +5604,7 @@ function VerifyCrmConnectionParam {
 
 function MapFieldTypeByFieldValue {
     PARAM(
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$true)][AllowNull()]
         [object]$Value
     )
 
