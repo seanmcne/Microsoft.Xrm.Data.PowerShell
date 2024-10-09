@@ -1306,10 +1306,10 @@ function Add-CrmActivityToCrmRecord{
 			foreach($field in $Fields.GetEnumerator())
 			{  
 				$newfield = New-Object -TypeName 'Microsoft.Xrm.Tooling.Connector.CrmDataTypeWrapper'
-		                $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
-		                $newfield.Value = $field.Value
-		                $newfields.Add($field.Key, $newfield)
-		    	}
+                $newfield.Type = MapFieldTypeByFieldValue -Value $field.Value
+                $newfield.Value = $field.Value
+                $newfields.Add($field.Key, $newfield)
+            }
 		}
 
 		try
@@ -1648,7 +1648,6 @@ function Get-CrmRecordsByFetch{
         [parameter(Mandatory=$false, Position=5)]
         [switch]$AllRows
     )
-    write-output "test12"
     $conn = VerifyCrmConnectionParam -conn $conn -pipelineValue ($PSBoundParameters.ContainsKey('conn'))
     #default page number to 1 if not supplied
     if($PageNumber -eq 0)
@@ -1685,10 +1684,14 @@ function Get-CrmRecordsByFetch{
             {
                 throw LastCrmConnectorException($conn)
             }
-
-            $recordsList.AddRange([System.Collections.Generic.List[System.Management.Automation.PSObject]](parseRecordsPage -records $records -logicalname $logicalName -xml $xml -Verbose))
-
-            $PageNumber = $PageNumber + 1
+            if($records -ne $null){
+                $recordsList.AddRange([System.Collections.Generic.List[System.Management.Automation.PSObject]](parseRecordsPage -records $records -logicalname $logicalName -xml $xml -Verbose))
+                $PageNumber = $PageNumber + 1
+            }
+            else{
+                #resultset is null - break out of loop and return an empty result
+                break
+            }
         } while ($NextPage -and $AllRows)
     }
     catch
